@@ -1,20 +1,19 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllEvents } from "@/data/EventService";
 import {
   generateCalendarDays,
   generateMonthGrid,
-  generateWeekGrid,
   getMonthName,
   getNextMonth,
   getNextWeek,
   getPreviousMonth,
   getPreviousWeek,
   searchEvents,
+  daysInWeek,
 } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import {
@@ -24,18 +23,14 @@ import {
   ViewMode,
 } from "@/types/calendar";
 import { addDays, addMonths, isSameDay, isToday as isTodayFn } from "date-fns";
-import {
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  Plus,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import CalendarFilters from "./CalendarFilters";
 import DateCell from "./DateCell";
-import EventCard from "./EventCard";
+import EventDetails from "./EventDetails";
+import DailyCalendarView from "./DailyCalendarView";
+import MonthlyCalendarView from "./MonthlyCalendarView";
 
 interface CalendarViewPageProps {
   initialDate?: Date;
@@ -47,9 +42,8 @@ export default function CalendarViewPage({
   viewMode = "month",
 }: CalendarViewPageProps) {
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState(initialDate);
-  const [selectedViewMode, setSelectedViewMode] = useState<ViewMode>("daily");
-  const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
+  const [selectedViewMode, setSelectedViewMode] = useState<ViewMode>(viewMode);
+  const [selectDate, setSelectDate] = useState<Date>(initialDate);
   const [filters, setFilters] = useState<FilterState>({
     search: "",
     categories: [],
@@ -57,11 +51,12 @@ export default function CalendarViewPage({
     statuses: [],
   });
   const [showFilters, setShowFilters] = useState(false);
-  // Convert Bitcoin events to CalendarEvent format
+
   const bitcoinCalendarEvents: CalendarEvent[] = getAllEvents().map(
     (event) => ({
       id: event.id,
       title: event.name,
+      organizer: event.organizer,
       description: event.description,
       startDate: event.startDate,
       endDate: event.endDate,
@@ -83,15 +78,8 @@ export default function CalendarViewPage({
 
   // Generate calendar grid based on view mode
   const calendarDates = useMemo(() => {
-    switch (selectedViewMode) {
-      case "month":
-        return generateMonthGrid(currentDate);
-      case "week":
-        return generateWeekGrid(currentDate);
-      default:
-        return generateMonthGrid(currentDate);
-    }
-  }, [currentDate, selectedViewMode]);
+    return generateMonthGrid(selectDate);
+  }, [selectDate, selectedViewMode]);
 
   // Filter events based on current filters
   const filteredEvents = useMemo(() => {
@@ -142,58 +130,35 @@ export default function CalendarViewPage({
     return days;
   }, []);
 
-  // Selected day for daily view
-  const [selectedDayDate, setSelectedDayDate] = useState<Date>(new Date());
-  const selectedDayEvents = useMemo(() => {
-    return filteredEvents.filter((ev) =>
-      isSameDay(ev.startDate, selectedDayDate)
-    );
-  }, [filteredEvents, selectedDayDate]);
+  const selectEvent = useMemo(
+    () => filteredEvents.filter((ev) => isSameDay(ev.startDate, selectDate)),
+    [filteredEvents, selectDate]
+  );
 
   // Handle navigation
   const handlePrevious = () => {
     if (selectedViewMode === "month") {
-      setCurrentDate(getPreviousMonth(currentDate));
+      setSelectDate(getPreviousMonth(selectDate));
     } else {
-      setCurrentDate(getPreviousWeek(currentDate));
+      setSelectDate(getPreviousWeek(selectDate));
     }
   };
 
   const handleNext = () => {
     if (selectedViewMode === "month") {
-      setCurrentDate(getNextMonth(currentDate));
+      setSelectDate(getNextMonth(selectDate));
     } else {
-      setCurrentDate(getNextWeek(currentDate));
+      setSelectDate(getNextWeek(selectDate));
     }
   };
 
   const handleToday = () => {
-    setCurrentDate(new Date());
+    setSelectDate(new Date());
   };
 
-  // Handle event status change
-  const handleEventStatusChange = (
-    eventId: string,
-    status: CalendarEvent["userStatus"]
-  ) => {
-    setEvents((prev) =>
-      prev.map((event) =>
-        event.id === eventId ? { ...event, userStatus: status } : event
-      )
-    );
-  };
-
-  // Handle day selection
   const handleDayClick = (day: CalendarDay) => {
-    setSelectedDay(day);
+    setSelectDate(day.date);
   };
-
-  // Handle event click
-  const handleEventClick = (event: CalendarEvent) => {
-    router.push(`/event/${event.id}`);
-  };
-
-  // Remove popularEvents, upcomingEvents, conflicts, and their usage
 
   return (
     <div className="min-h-screen bg-background">
@@ -210,12 +175,9 @@ export default function CalendarViewPage({
                   setSelectedViewMode(value as ViewMode)
                 }
               >
-                <TabsList className="grid w-auto grid-cols-3 h-8">
+                <TabsList className="grid w-auto grid-cols-2 h-8">
                   <TabsTrigger value="month" className="text-xs">
                     Month
-                  </TabsTrigger>
-                  <TabsTrigger value="week" className="text-xs">
-                    Week
                   </TabsTrigger>
                   <TabsTrigger value="daily" className="text-xs">
                     Daily
@@ -247,7 +209,7 @@ export default function CalendarViewPage({
           {/* Date Display */}
           <div className="mt-1">
             <h2 className="text-base font-semibold text-muted-foreground">
-              {getMonthName(currentDate)}
+              {getMonthName(selectDate)}
             </h2>
           </div>
         </div>
@@ -271,181 +233,49 @@ export default function CalendarViewPage({
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-6 mt-[130px]">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div
-            className={
-              selectedViewMode === "daily" ? "lg:col-span-3" : "lg:col-span-3"
-            }
-          >
+          <div className="h-screen overflow-y-auto lg:col-span-3">
             {selectedViewMode === "daily" ? (
-              <Card>
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {dailyList.map((date) => {
-                      const dayEvents = filteredEvents.filter((ev) =>
-                        isSameDay(ev.startDate, date)
-                      );
-                      const isSelected = isSameDay(date, selectedDayDate);
-                      return (
-                        <div
-                          key={date.toISOString()}
-                          className={cn(
-                            "flex items-center py-3 px-2 cursor-pointer transition",
-                            isSelected
-                              ? "bg-blue-50"
-                              : "bg-white hover:bg-gray-50"
-                          )}
-                          onClick={() => setSelectedDayDate(date)}
-                        >
-                          <div
-                            className={cn(
-                              "w-48 font-semibold",
-                              isSelected ? "text-blue-700" : "text-gray-700"
-                            )}
-                          >
-                            {date.toLocaleDateString(undefined, {
-                              weekday: "short",
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </div>
-                          <div className="flex-1 flex flex-col gap-2">
-                            {dayEvents.length === 0 && (
-                              <span className="text-gray-400 text-sm">
-                                No events
-                              </span>
-                            )}
-                            {dayEvents.map((event) => (
-                              <div
-                                key={event.id}
-                                className="px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium shadow"
-                              >
-                                {event.title}
-                              </div>
-                            ))}
-                          </div>
-                          {isTodayFn(date) && (
-                            <span className="ml-2 px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
-                              Today
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+              <DailyCalendarView
+                dailyList={dailyList}
+                filteredEvents={filteredEvents}
+                selectDate={selectDate}
+                setSelectDate={setSelectDate}
+              />
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Calendar Grid */}
-                <div className="lg:col-span-4">
-                  <Card>
-                    <CardContent className="p-0">
-                      {/* Calendar Header */}
-                      <div className="grid grid-cols-7 border-b bg-muted/30">
-                        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                          (day) => (
-                            <div
-                              key={day}
-                              className="p-3 text-center font-medium text-sm"
-                            >
-                              {day}
-                            </div>
-                          )
-                        )}
-                      </div>
-                      {/* Calendar Grid */}
-                      <div
-                        className={cn("grid gap-px bg-border", "grid-cols-7")}
-                      >
-                        {calendarDays.map((day, index) => (
-                          <DateCell
-                            key={day.date.toISOString()}
-                            day={day}
-                            isCurrentMonth={
-                              selectedViewMode === "month"
-                                ? day.date.getMonth() === currentDate.getMonth()
-                                : true
-                            }
-                            onClick={handleDayClick}
-                            onAddEvent={(date) =>
-                              console.log("Add event for:", date)
-                            }
-                          />
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
+              <MonthlyCalendarView
+                calendarDays={calendarDays}
+                selectDate={selectDate}
+                selectedViewMode={selectedViewMode}
+                setSelectDate={setSelectDate}
+                daysInWeek={daysInWeek}
+              />
             )}
           </div>
-          {/* Sidebar: Selected Day Events (always visible) */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {selectedViewMode === "daily"
-                    ? selectedDayDate.toLocaleDateString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })
-                    : selectedDay
-                      ? selectedDay.date.toLocaleDateString("en-US", {
-                          weekday: "long",
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })
-                      : "No day selected"}
-                </CardTitle>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Badge variant="outline">
-                    {selectedViewMode === "daily"
-                      ? selectedDayEvents.length
-                      : selectedDay?.events.length || 0}{" "}
-                    events
-                  </Badge>
-                  {(selectedViewMode === "daily"
-                    ? selectedDayDate.getDay() === 0 ||
-                      selectedDayDate.getDay() === 6
-                    : selectedDay?.isWeekend) && (
-                    <Badge variant="secondary">Weekend</Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {(
-                  selectedViewMode === "daily"
-                    ? selectedDayEvents.length > 0
-                    : selectedDay && selectedDay.events.length > 0
-                ) ? (
-                  (selectedViewMode === "daily"
-                    ? selectedDayEvents
-                    : selectedDay?.events || []
-                  ).map((event: CalendarEvent) => (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      variant="compact"
-                      onClick={handleEventClick}
-                      onStatusChange={handleEventStatusChange}
-                    />
-                  ))
-                ) : (
-                  <div className="text-center py-4 text-muted-foreground">
-                    <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No events scheduled</p>
-                    <Button variant="outline" size="sm" className="mt-2">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Event
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <div
+            className={cn(
+              "space-y-6",
+              // On large screens: sticky left sidebar
+              "hidden md:block",
+              "md:col-span-1",
+              "md:sticky md:top-[130px]"
+            )}
+            style={{
+              maxWidth: "100vw",
+            }}
+          >
+            <EventDetails selectDate={selectDate} selectEvent={selectEvent} />
+          </div>
+          {/* Bottom bar for md and below */}
+          <div
+            className={cn(
+              "block md:hidden",
+              "fixed bottom-0 left-0 right-0 z-50 w-full px-2 pb-2 pointer-events-none"
+            )}
+            style={{
+              maxWidth: "100vw",
+            }}
+          >
+            <EventDetails selectDate={selectDate} selectEvent={selectEvent} />
           </div>
         </div>
       </div>

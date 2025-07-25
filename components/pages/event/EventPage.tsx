@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getAllEvents } from "@/data/EventService";
-import { ArrowRight, Calendar, Clock, Filter, MapPin, Users } from "lucide-react";
+import {
+  ArrowRight,
+  Calendar,
+  Clock,
+  Filter,
+  MapPin,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -15,15 +22,19 @@ export default function EventsPage() {
 
   const categories = ["All", "Bitcoin", "Bitcoin Conference", "Bitcoin Summit"];
 
-  const filteredEvents = getAllEvents().filter(event => {
+  const filteredEvents = getAllEvents().filter((event) => {
     const matchesSearch =
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (event.speakers &&
-        event.speakers.some((speaker: any) => speaker.name.toLowerCase().includes(searchQuery.toLowerCase())));
+        event.speakers.some((speaker: any) =>
+          speaker.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ));
 
     const matchesCategory =
-      selectedCategory === "All" || selectedCategory === "" || event.category === selectedCategory;
+      selectedCategory === "All" ||
+      selectedCategory === "" ||
+      event.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -38,7 +49,7 @@ export default function EventsPage() {
             <Input
               placeholder="Search events, speakers, or locations..."
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-64"
             />
             <Button variant="outline" className="flex items-center gap-2">
@@ -49,11 +60,14 @@ export default function EventsPage() {
         </div>
       </div>
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6 mt-[130px]">
+      <div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map(event => (
-            <Card key={event.id} className="cursor-pointer hover:shadow-lg transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-none mx-0 px-4">
+          {filteredEvents.map((event) => (
+            <Card
+              key={event.id}
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+            >
               <div className="relative">
                 {event.images && event.images.length > 0 && (
                   <div
@@ -69,7 +83,9 @@ export default function EventsPage() {
               </div>
               <CardContent className="p-4">
                 <CardTitle className="text-lg mb-2">{event.name}</CardTitle>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{event.description}</p>
+                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                  {event.description}
+                </p>
                 <div className="space-y-2 text-sm text-gray-600 mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
@@ -86,7 +102,9 @@ export default function EventsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    <span className="truncate">{event.location?.buildingName || "TBA"}</span>
+                    <span className="truncate">
+                      {event.location?.buildingName || "TBA"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
@@ -97,7 +115,11 @@ export default function EventsPage() {
                   <div className="flex gap-1">
                     {event.speakers &&
                       event.speakers.slice(0, 2).map((speaker: any, index) => (
-                        <Badge key={speaker.id || index} variant="secondary" className="text-xs">
+                        <Badge
+                          key={speaker.id || index}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {speaker.name}
                         </Badge>
                       ))}
@@ -108,7 +130,11 @@ export default function EventsPage() {
                     )}
                   </div>
                   <Link href={`/event/${event.id}`}>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
                       <ArrowRight className="h-4 w-4" />
                       Details
                     </Button>
@@ -120,7 +146,9 @@ export default function EventsPage() {
         </div>
         {filteredEvents.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No events found matching your criteria.</p>
+            <p className="text-gray-500 text-lg">
+              No events found matching your criteria.
+            </p>
             <Button
               variant="outline"
               className="mt-4"

@@ -103,9 +103,9 @@ export default function DateCell({
               event.color,
               "text-white font-semibold shadow-sm"
             )}
-            title={event.title}
+            title={event.organizer}
           >
-            {event.title}
+            {event.organizer}
           </div>
         ))}
 

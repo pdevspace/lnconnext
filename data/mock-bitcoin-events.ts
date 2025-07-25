@@ -29,10 +29,10 @@ const realBitcoinEvents: Event[] = [
     location: eventLocations[0],
     speakers: [],
     sections: [],
-    images: ["/lnconnext/images/bob-space.jpg"],
+    images: ["/images/bob-space.jpg"],
     category: "Bitcoin Meetup",
     tags: ["Bitcoin", "Mempool", "Transactions", "BOB Space", "Meetup"],
-    organizer: "BOB Space Community",
+    organizer: "BOB Space",
     website: [
       "https://www.meetup.com/bob-space-community-events/events/308880700/?recId=30f85881-a2ed-4c86-9f9d-0320d660a2a2&recSource=event-search&searchId=7bb6002d-fd3e-484b-8e31-19f0dff4a3ef&eventOrigin=find_page%24all",
     ],
@@ -56,8 +56,10 @@ const realBitcoinEvents: Event[] = [
     ],
     category: "Bitcoin Meetup",
     tags: ["Bitcoin", "Thonburi", "THON Meetup", "Community", "Networking"],
-    organizer: "THON Bitcoin Community",
-    website: ["https://web.facebook.com/groups/siamesebitcoiners/posts/1413219543083984/"],
+    organizer: "THON Meetup",
+    website: [
+      "https://web.facebook.com/groups/siamesebitcoiners/posts/1413219543083984/",
+    ],
     eventSeries: {
       seriesName: "THON Meetup",
     },
@@ -81,7 +83,8 @@ const realBitcoinEvents: Event[] = [
           location: eventLocations[2],
         },
         speakers: [],
-        description: "Morning Bitcoin meetup followed by community painting activities.",
+        description:
+          "Morning Bitcoin meetup followed by community painting activities.",
       },
       {
         id: "550e8400-e29b-41d4-a716-446655440025",
@@ -106,9 +109,16 @@ const realBitcoinEvents: Event[] = [
         description: "Live concert featuring Opensource Band.",
       },
     ],
-    images: ["/lnconnext/images/larngrongmans.jpg"],
+    images: ["/images/larngrongmans.jpg"],
     category: "Bitcoin Community Event",
-    tags: ["Bitcoin", "ลานเพื่อนเรา", "ลานกรองมันส์", "Community", "Market", "Concert"],
+    tags: [
+      "Bitcoin",
+      "ลานเพื่อนเรา",
+      "ลานกรองมันส์",
+      "Community",
+      "Market",
+      "Concert",
+    ],
     organizer: "ลานกรองมันส์",
     website: [
       "https://web.facebook.com/permalink.php?story_fbid=pfbid02sNCToBn68b9N5mDAtosHBXQnxz7ZJ63ooLfDcqBQnmXHeApG7sgNyKAri9T32Ueul&id=61573404784328",
@@ -126,7 +136,7 @@ const realBitcoinEvents: Event[] = [
     endDate: new Date("2025-07-21T23:59:59"),
     speakers: [],
     sections: [],
-    images: ["/lnconnext/images/age-of-bitcoin.jpg"],
+    images: ["/images/age-of-bitcoin.jpg"],
     category: "Bitcoin Event",
     tags: ["Bitcoin", "BitToon", "KICKSTARTER", "Community"],
     organizer: "BitToon",
