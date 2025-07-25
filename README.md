@@ -61,7 +61,6 @@ lnconnext/
 │   ├── event.ts                 # Event types
 ├── public/                      # Static assets
 │   └── images/                  # Event images
-└── .github/workflows/           # GitHub Actions
 ```
 
 ## 🚀 Getting Started
@@ -97,10 +96,6 @@ lnconnext/
 
 ## 🌐 Deployment
 
-### GitHub Pages
-
-This project is configured for deployment to GitHub Pages with the base path `/lnconnext`.
-
 #### Manual Deployment
 
 ```bash
@@ -110,15 +105,6 @@ yarn build
 # The built files will be in the `out` directory
 # Upload the contents of `out` to your GitHub Pages branch
 ```
-
-#### Setup GitHub Pages
-
-1. **Enable GitHub Pages** in your repository settings:
-   - Go to Settings → Pages
-   - Source: "Deploy from a branch"
-   - Branch: `gh-pages` (or your preferred branch)
-   - Folder: `/ (root)`
-2. **Your site will be available at**: `https://yourusername.github.io/lnconnext/`
 
 ### Local Build Testing
 
