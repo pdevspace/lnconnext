@@ -13,13 +13,13 @@ export interface Event {
   speakers: Speaker[];
   images: string[];
   website: Website[];
-  socialMedia: SocialMedia;
+  socialMedia: SocialMedia[];
 }
 
 export interface Organizer {
   id: string;
   name: string;
-  socialMedia: SocialMedia;
+  socialMedia: SocialMedia[];
   speakers: string[];
 }
 
@@ -47,7 +47,7 @@ export interface EventSection {
 export interface Speaker {
   id: string;
   name: string;
-  socialMedia: SocialMedia;
+  socialMedia: SocialMedia[];
 }
 
 export interface Website {
@@ -57,10 +57,11 @@ export interface Website {
   sourceUrl: string;
 }
 
-export interface SocialMediaEntry {
+export interface SocialMedia {
+  id: string
+  displayText: string
   username: string;
   platform: "facebook" | "youtube" | "other";
   urlLink: string;
 }
 
-export type SocialMedia = Record<string, SocialMediaEntry>;

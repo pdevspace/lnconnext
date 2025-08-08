@@ -2,9 +2,9 @@ import OrganizerPage from "@/components/pages/organizer/OrganizerPage";
 import { getAllOrganizers } from "@/data/OrganizerService";
 
 interface OrganizerPageProps {
-  params: {
+  params: Promise<{
     organizerId: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -14,6 +14,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function OrganizerPageRoute({ params }: OrganizerPageProps) {
-  return <OrganizerPage organizerId={params.organizerId} />;
+export default async function OrganizerPageRoute({ params }: OrganizerPageProps) {
+  const { organizerId } = await params;
+  return <OrganizerPage organizerId={organizerId} />;
 }

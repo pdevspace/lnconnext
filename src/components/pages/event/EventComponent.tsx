@@ -164,23 +164,22 @@ interface OrganizerBoxProps {
   organizer: {
     id: string;
     name: string;
-    socialMedia?: Record<
-      string,
-      {
-        username: string;
-        platform: "facebook" | "youtube" | "other";
-        urlLink: string;
-      }
-    >;
+    socialMedia?: Array<{
+      id: string;
+      displayText: string;
+      username: string;
+      platform: "facebook" | "youtube" | "other";
+      urlLink: string;
+    }>;
   };
 }
 
 export function OrganizerBox({ organizer }: OrganizerBoxProps) {
   return (
-    <Link href={`/organizer/${organizer.id}`}>
-      <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
-        <CardContent className="pt-6">
-          <div className="space-y-3">
+    <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
+      <CardContent className="pt-6">
+        <div className="space-y-3">
+          <Link href={`/organizer/${organizer.id}`} className="block">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
@@ -194,32 +193,29 @@ export function OrganizerBox({ organizer }: OrganizerBoxProps) {
               </div>
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </div>
+          </Link>
 
-            {organizer.socialMedia &&
-              Object.keys(organizer.socialMedia).length > 0 && (
-                <div
-                  className="flex gap-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {Object.entries(organizer.socialMedia).map(([k, data]) => (
-                    <Link
-                      key={`${organizer.id}-${data.username}-${data.platform}-${k}`}
-                      href={data.urlLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
-                    >
-                      <span className="text-xs font-medium capitalize">
-                        {k}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              )}
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+          {organizer.socialMedia &&
+            organizer.socialMedia.length > 0 && (
+              <div className="flex gap-2">
+                {organizer.socialMedia.map((social) => (
+                  <a
+                    key={`${organizer.id}-${social.id}`}
+                    href={social.urlLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    <span className="text-xs font-medium capitalize">
+                      {social.displayText}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

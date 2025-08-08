@@ -61,12 +61,11 @@ function joinEventData(event: any): Event {
   // Join with related data
   return {
     ...parsedEvent,
-    organizer: organizer || {
+    organizer: (organizer as Organizer) || {
       id: event.organizer,
       name: "Unknown Organizer",
-      socialMedia: {} as any,
-      platform: "other",
-      speakers: [] as any[],
+      socialMedia: [],
+      speakers: [],
     },
     location: location || undefined,
     speakers: speakers,

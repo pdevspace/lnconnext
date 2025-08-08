@@ -191,50 +191,46 @@ export default function OrganizerPage({ organizerId }: OrganizerPageProps) {
 
                   {/* Social Media Links */}
                   {organizer.socialMedia &&
-                    Object.keys(organizer.socialMedia).length > 0 && (
+                    organizer.socialMedia.length > 0 && (
                       <div className="flex gap-3">
-                        {Object.entries(organizer.socialMedia).map(
-                          ([platform, data]) => {
-                            // Get appropriate icon based on platform
-                            const getIcon = (platform: string) => {
-                              switch (platform.toLowerCase()) {
-                                case "facebook":
-                                case "facebook2":
-                                  return <Facebook className="h-4 w-4" />;
-                                case "youtube":
-                                  return <Youtube className="h-4 w-4" />;
-                                default:
-                                  return <Globe className="h-4 w-4" />;
-                              }
-                            };
+                        {organizer.socialMedia.map((social) => {
+                          // Get appropriate icon based on platform
+                          const getIcon = (platform: string) => {
+                            switch (platform.toLowerCase()) {
+                              case "facebook":
+                                return <Facebook className="h-4 w-4" />;
+                              case "youtube":
+                                return <Youtube className="h-4 w-4" />;
+                              default:
+                                return <Globe className="h-4 w-4" />;
+                            }
+                          };
 
-                            // Get display name based on platform
-                            const getDisplayName = (platform: string) => {
-                              switch (platform.toLowerCase()) {
-                                case "facebook":
-                                case "facebook2":
-                                  return "Facebook";
-                                case "youtube":
-                                  return "YouTube";
-                                default:
-                                  return platform;
-                              }
-                            };
+                          // Get display name based on platform
+                          const getDisplayName = (platform: string) => {
+                            switch (platform.toLowerCase()) {
+                              case "facebook":
+                                return "Facebook";
+                              case "youtube":
+                                return "YouTube";
+                              default:
+                                return platform;
+                            }
+                          };
 
-                            return (
-                              <a
-                                key={platform}
-                                href={data.urlLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:text-primary/80 transition-colors text-sm flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5"
-                              >
-                                {getIcon(platform)}
-                                <span>{getDisplayName(platform)}</span>
-                              </a>
-                            );
-                          }
-                        )}
+                          return (
+                            <a
+                              key={social.id}
+                              href={social.urlLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:text-primary/80 transition-colors text-sm flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5"
+                            >
+                              {getIcon(social.platform)}
+                              <span>{social.displayText}</span>
+                            </a>
+                          );
+                        })}
                       </div>
                     )}
                 </div>

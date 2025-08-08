@@ -102,6 +102,12 @@ export default function EventListPage() {
                 event.id === firstUpcomingEvent?.id ? upcomingEventRef : null
               }
             >
+              <div className="mb-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span className="font-medium">{formatDate(event.startDate)}</span>
+                </div>
+              </div>
               <Link href={`/event/${event.id}`}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-6">
@@ -141,14 +147,6 @@ export default function EventListPage() {
                         </p>
 
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {formatDate(event.startDate)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {formatTime(event.startDate)}
-                          </span>
                           {event.location && (
                             <span className="flex items-center gap-1">
                               <MapPin className="h-4 w-4" />
