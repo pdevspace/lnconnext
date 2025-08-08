@@ -1,6 +1,19 @@
-import { Event, Location, Organizer } from "@/types/event";
+import { Event, Location, Organizer ,Speaker} from "@/types/event";
 
 let bitcoinEvents: Event[] = [];
+
+const speakers: Record<string, Speaker> = {
+  test1: {
+    id: "7d3ef82d-5e48-4f0f-97d1-842d72a146e1",
+    name: "Test1",
+    socialMedia: {},
+  },
+  test2: {
+    id: "7d3ef82d-5e48-4f0f-97d1-842d72a146e2",
+    name: "Test2",
+    socialMedia: {},
+  },
+}
 
 const eventOrganizers: Record<string, Organizer> = {
   bittoon: {
