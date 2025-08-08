@@ -13,7 +13,13 @@ interface MonthlyCalendarViewProps {
   daysInWeek: string[];
 }
 
-const MonthlyCalendarView = ({ calendarDays, selectDate, selectedViewMode, setSelectDate, daysInWeek }: MonthlyCalendarViewProps) => {
+const MonthlyCalendarView = ({
+  calendarDays,
+  selectDate,
+  selectedViewMode,
+  setSelectDate,
+  daysInWeek,
+}: MonthlyCalendarViewProps) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-4">
@@ -22,17 +28,13 @@ const MonthlyCalendarView = ({ calendarDays, selectDate, selectedViewMode, setSe
             {/* Calendar Header */}
             <div className="grid grid-cols-7 border-b bg-muted/30">
               {daysInWeek.map((day) => (
-                <div
-                  key={day}
-                  className="p-3 text-center font-medium text-sm"
-                >
+                <div key={day} className="p-3 text-center font-medium text-sm">
                   {day}
                 </div>
               ))}
             </div>
             {/* Calendar Grid */}
-            <div className={cn("grid gap-px bg-border", "grid-cols-7")}
-            >
+            <div className={cn("grid gap-px bg-border", "grid-cols-7")}>
               {calendarDays.map((day) => (
                 <DateCell
                   key={day.date.toISOString()}
@@ -54,4 +56,4 @@ const MonthlyCalendarView = ({ calendarDays, selectDate, selectedViewMode, setSe
   );
 };
 
-export default MonthlyCalendarView; 
+export default MonthlyCalendarView;
