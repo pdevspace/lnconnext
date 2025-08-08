@@ -1,7 +1,7 @@
 "use client";
 
-import DashboardPage from "@/components/pages/dashboard/DashboardPage";
+import HomePage from "@/components/pages/home/HomePage";
 
 export default function Home() {
-  return <DashboardPage />;
+  return <HomePage />;
 }

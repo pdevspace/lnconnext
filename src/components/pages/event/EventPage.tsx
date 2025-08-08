@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-export default function EventsPage() {
+export default function EventPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredEvents = getAllEvents().filter((event) => {

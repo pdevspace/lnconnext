@@ -37,7 +37,7 @@ interface EventDetailsPageProps {
   eventId: string;
 }
 
-export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
+export default function EventDetailPage({ eventId }: EventDetailsPageProps) {
   const [event] = useState<Event>(() => {
     const foundEvent = getEventById(eventId);
     if (!foundEvent) {

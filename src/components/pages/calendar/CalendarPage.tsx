@@ -28,15 +28,15 @@ import EventDetails from "./EventDetails";
 import DailyCalendarView from "./DailyCalendarView";
 import MonthlyCalendarView from "./MonthlyCalendarView";
 
-interface CalendarViewPageProps {
+interface CalendarPageProps {
   initialDate?: Date;
   viewMode?: ViewMode;
 }
 
-export default function CalendarViewPage({
+export default function CalendarPage({
   initialDate = new Date(),
   viewMode = "month",
-}: CalendarViewPageProps) {
+}: CalendarPageProps) {
   const router = useRouter();
   const [selectedViewMode, setSelectedViewMode] = useState<ViewMode>(viewMode);
   const [selectDate, setSelectDate] = useState<Date>(initialDate);

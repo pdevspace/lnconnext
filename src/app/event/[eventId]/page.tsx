@@ -1,4 +1,4 @@
-import EventDetailsPage from "@/components/pages/event/details/EventDetailsPage";
+import EventDetailPage from "@/components/pages/event/details/EventDetailPage";
 import { getAllEvents } from "@/data/EventService";
 
 interface PageProps {
@@ -7,14 +7,14 @@ interface PageProps {
   }>;
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function EventDetail({ params }: PageProps) {
   const { eventId } = await params;
-  return <EventDetailsPage eventId={eventId} />;
+  return <EventDetailPage eventId={eventId} />;
 }
 
 export async function generateStaticParams() {
   const events = getAllEvents();
-  return events.map(event => ({
+  return events.map((event) => ({
     eventId: event.id,
   }));
 }
