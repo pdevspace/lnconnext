@@ -1,152 +1,232 @@
 "use client";
 
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { getAllEvents } from "@/data/EventService";
+import { getAllEvents, getEventById } from "@/data/EventService";
 import {
-  ArrowRight,
+  cn,
+  formatDate,
+  formatTime,
+  isEventLive,
+  isEventUpcoming,
+} from "@/lib/utils";
+import { Event } from "@/types/event";
+import {
   Calendar,
   Clock,
-  Filter,
+  ExternalLink,
+  Heart,
   MapPin,
-  Users,
+  Share2,
 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+import {
+  AddToCalendarButton,
+  VisitWebsiteButton,
+  EventTicketBox,
+  EventSpeakerBox,
+  EventParticipantBox,
+  OrganizerBox,
+  EventScheduleBox,
+  OtherEventsBox,
+} from "./event-card";
 
-export default function EventPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+interface EventPageProps {
+  eventId: string;
+}
 
-  const filteredEvents = getAllEvents().filter((event) => {
-    const matchesSearch =
-      event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (event.speakers &&
-        event.speakers.some((speaker: any) =>
-          speaker.name.toLowerCase().includes(searchQuery.toLowerCase())
-        ));
-
-    return matchesSearch;
+export default function EventPage({ eventId }: EventPageProps) {
+  const [event] = useState<Event>(() => {
+    const foundEvent = getEventById(eventId);
+    if (!foundEvent) {
+      // Return a default event if not found
+      return getAllEvents()[0];
+    }
+    return foundEvent;
   });
+  const [savedEvent, setSavedEvent] = useState(false);
+
+  const isLive = isEventLive(event.startDate, event.endDate);
+  const isUpcoming = isEventUpcoming(event.startDate);
+
+  const handleSaveEvent = () => {
+    setSavedEvent(!savedEvent);
+  };
+
+  const handleShareEvent = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: event.name,
+        text: event.description,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  const getEventStatus = () => {
+    if (isLive) return { text: "LIVE NOW", color: "bg-red-500" };
+    if (isUpcoming) return { text: "UPCOMING", color: "bg-green-500" };
+    return { text: "PAST EVENT", color: "bg-gray-500" };
+  };
+
+  const status = getEventStatus();
+
+  // Get other events by the same organizer
+  const otherOrganizerEvents = getAllEvents().filter(
+    (e) => e.id !== event.id && e.organizer?.id === event.organizer?.id
+  );
+
+  function safeFormatDate(date: unknown) {
+    return date instanceof Date ? formatDate(date) : "";
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Fixed Header Bar */}
-      <div className="border-b bg-card fixed top-[70px] left-0 w-full z-40">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-          <h1 className="text-xl font-bold">Events</h1>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Search events, speakers, or locations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64"
-            />
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-            </Button>
+      {/* Header with Status Badge and Action Buttons */}
+      <div className="sticky top-[70px] z-10 bg-background border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Badge className={cn("text-white border-0", status.color)}>
+                {status.text}
+              </Badge>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={handleShareEvent}>
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleSaveEvent}
+                className={cn(savedEvent && "bg-red-500/20 border-red-300")}
+              >
+                <Heart
+                  className={cn("h-4 w-4", savedEvent && "fill-current")}
+                />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
       {/* Main Content */}
-      <div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
-        {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-none mx-0 px-4">
-          {filteredEvents.map((event) => (
-            <Card
-              key={event.id}
-              className="cursor-pointer hover:shadow-lg transition-shadow"
-            >
-              <div className="relative">
-                {event.images && event.images.length > 0 && (
-                  <div
-                    className="h-48 bg-cover bg-center rounded-t-lg"
-                    style={{ backgroundImage: `url(${event.images[0]})` }}
-                  />
-                )}
+      <div className="max-w-7xl mx-auto px-6 py-8 h-[calc(100vh-80px)] mt-[70px]">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 h-full">
+          {/* Left Column - 30% */}
+          <div className="lg:col-span-3 space-y-6 overflow-y-auto pr-2 pb-[60px]">
+            {/* Event Image */}
+            <div className="aspect-square rounded-lg overflow-hidden relative">
+              <Image
+                src={event.images[0]}
+                alt={event.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 30vw"
+                priority
+              />
+            </div>
+
+            {/* Add to Calendar Button */}
+            <AddToCalendarButton event={event} />
+
+            {/* Visit Website */}
+            <div className="space-y-2">
+              {event.website &&
+                event.website.length > 0 &&
+                event.website.map((website, index) => (
+                  <VisitWebsiteButton key={index} website={website} />
+                ))}
+            </div>
+
+            {/* Event Ticket Box */}
+            {event.price > 0 && (
+              <EventTicketBox
+                price={event.price}
+                ticketWebsite={event.website?.[0]}
+              />
+            )}
+
+            {/* Event Speaker Box */}
+            <EventSpeakerBox speakers={event.speakers} />
+
+            {/* Event Participant Box */}
+            <EventParticipantBox participants={undefined} />
+          </div>
+
+          {/* Right Column - 70% */}
+          <div className="lg:col-span-7 space-y-6 overflow-y-auto pr-2 pb-[60px]">
+            {/* Big Event Name */}
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                {event.name}
+              </h1>
+            </div>
+
+            {/* Organizer Box */}
+            {event.organizer && <OrganizerBox organizer={event.organizer} />}
+
+            {/* Event Time */}
+            <div className="border rounded-lg p-4 space-y-2">
+              <div className="flex items-center gap-2 text-lg">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="font-semibold">
+                  {safeFormatDate(event.startDate)}
+                  {event.startDate && event.endDate && " - "}
+                  {safeFormatDate(event.endDate)}
+                </span>
               </div>
-              <CardContent className="p-4">
-                <CardTitle className="text-lg mb-2">{event.name}</CardTitle>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                  {event.description}
-                </p>
-                <div className="space-y-2 text-sm text-gray-600 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{event.startDate.toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    <span>
-                      {event.startDate.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span className="truncate">
-                      {event.location?.buildingName || "TBA"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    <span>{event.speakers?.length || 0} speakers</span>
-                  </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>
+                  {formatTime(event.startDate)} - {formatTime(event.endDate)}
+                </span>
+              </div>
+            </div>
+
+            {/* Event Location */}
+            {event.location && (
+              <div className="border rounded-lg p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-muted-foreground" />
+                  <span className="font-semibold">
+                    {event.location.buildingName}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-1">
-                    {event.speakers &&
-                      event.speakers.slice(0, 2).map((speaker: any, index) => (
-                        <Badge
-                          key={speaker.id || index}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {speaker.name}
-                        </Badge>
-                      ))}
-                    {event.speakers && event.speakers.length > 2 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{event.speakers.length - 2}
-                      </Badge>
-                    )}
-                  </div>
-                  <Link href={`/event/${event.id}`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                {event.location.googleMapsUrl && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a
+                      href={event.location.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-2"
                     >
-                      <ArrowRight className="h-4 w-4" />
-                      Details
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        {filteredEvents.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
-              No events found matching your criteria.
-            </p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => {
-                setSearchQuery("");
-              }}
-            >
-              Clear filters
-            </Button>
+                      <ExternalLink className="h-4 w-4" />
+                      View on Google Maps
+                    </a>
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {/* Event Short Description */}
+            <div className="space-y-3">
+              <h3 className="text-xl font-semibold">About This Event</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {event.description}
+              </p>
+            </div>
+
+            {/* Event Schedule Box */}
+            <EventScheduleBox sections={event.sections} />
+
+            {/* Other Events by Same Organizer */}
+            <OtherEventsBox organizerEvents={otherOrganizerEvents} />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

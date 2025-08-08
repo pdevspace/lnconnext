@@ -11,7 +11,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Speaker } from "@/types/event";
+import { Speaker, Website } from "@/types/event";
 
 interface AddToCalendarButtonProps {
   event: {
@@ -44,21 +44,19 @@ export function AddToCalendarButton({
 }
 
 interface VisitWebsiteButtonProps {
-  url: string;
-  index?: number;
+  website: Website;
   className?: string;
 }
 
 export function VisitWebsiteButton({
-  url,
-  index = 0,
+  website,
   className,
 }: VisitWebsiteButtonProps) {
   return (
     <Button variant="outline" className={cn("w-full", className)} asChild>
-      <a href={url} target="_blank" rel="noopener noreferrer">
+      <a href={website.sourceUrl} target="_blank" rel="noopener noreferrer">
         <ExternalLink className="h-4 w-4 mr-2" />
-        {index === 0 ? "Visit Website" : `Link ${index + 1}`}
+        {website.displayText}
       </a>
     </Button>
   );
@@ -66,11 +64,11 @@ export function VisitWebsiteButton({
 
 interface EventTicketBoxProps {
   price?: number;
-  ticketUrl?: string;
+  ticketWebsite?: Website;
 }
 
-export function EventTicketBox({ price, ticketUrl }: EventTicketBoxProps) {
-  if (!price && !ticketUrl) return null;
+export function EventTicketBox({ price, ticketWebsite }: EventTicketBoxProps) {
+  if (!price && !ticketWebsite) return null;
 
   return (
     <Card className="mb-4">
@@ -84,11 +82,11 @@ export function EventTicketBox({ price, ticketUrl }: EventTicketBoxProps) {
             <div className="text-sm text-muted-foreground">per ticket</div>
           </div>
         )}
-        {ticketUrl && (
+        {ticketWebsite && (
           <Button className="w-full" asChild>
-            <a href={ticketUrl} target="_blank" rel="noopener noreferrer">
+            <a href={ticketWebsite.sourceUrl} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4 mr-2" />
-              Get Tickets
+              {ticketWebsite.displayText}
             </a>
           </Button>
         )}

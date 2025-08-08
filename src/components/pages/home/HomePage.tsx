@@ -1,7 +1,7 @@
 "use client";
 
-import CalendarPage from "@/components/pages/calendar/CalendarPage";
+import EventListPage from "@/components/pages/event/EventListPage";
 
 export default function HomePage() {
-  return <CalendarPage />;
+  return <EventListPage />;
 }

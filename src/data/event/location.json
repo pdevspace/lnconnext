@@ -1,0 +1,19 @@
+{
+  "locations": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "buildingName": "BOB Space",
+      "googleMapsUrl": "https://maps.app.goo.gl/txMxnbfE6q7qvhLe7"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "buildingName": "Fitculty",
+      "googleMapsUrl": "https://maps.app.goo.gl/TgcTKqF2aDc7XHWk7"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "buildingName": "One day esthetic ART CAFE",
+      "googleMapsUrl": "https://maps.app.goo.gl/814R8DeKeg3k5jPo9"
+    }
+  ]
+} 

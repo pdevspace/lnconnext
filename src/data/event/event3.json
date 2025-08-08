@@ -1,0 +1,57 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440012",
+  "name": "ลานเพื่อนเรา",
+  "description": "A full-day Bitcoin community event featuring morning meetup, community painting, Bitcoin LN market, and live concert by Opensource Band. Join the ลานกรองมันส์ community for a day of Bitcoin culture and entertainment.",
+  "organizer": "9d0c6d03-36c3-4710-84f3-150c9e92d969",
+  "eventSeriesName": "ลานกรองมันส์",
+  "location": "550e8400-e29b-41d4-a716-446655440003",
+  "sections": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440024",
+      "sectionName": "Morning Meetup & Community Painting",
+      "startTime": "2025-07-19T08:00:00.000Z",
+      "endTime": "2025-07-19T12:00:00.000Z",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440003"
+      },
+      "speakers": [],
+      "description": "Morning Bitcoin meetup followed by community painting activities."
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440025",
+      "sectionName": "Bitcoin NL Market",
+      "startTime": "2025-07-19T12:00:00.000Z",
+      "endTime": "2025-07-19T17:30:00.000Z",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440003"
+      },
+      "speakers": [],
+      "description": "Bitcoin NL market with vendors and community trading."
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440026",
+      "sectionName": "Live Concert by Opensource Band",
+      "startTime": "2025-07-19T17:30:00.000Z",
+      "endTime": "2025-07-19T20:00:00.000Z",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440003"
+      },
+      "speakers": [],
+      "description": "Live concert featuring Opensource Band."
+    }
+  ],
+  "price": 0,
+  "startDate": "2025-07-19T08:00:00.000Z",
+  "endDate": "2025-07-19T20:00:00.000Z",
+  "speakers": [],
+  "images": ["/images/larngrongmans.jpg"],
+  "website": [
+    {
+      "id": "website-3",
+      "displayText": "Facebook Event",
+      "source": "facebook",
+      "sourceUrl": "https://web.facebook.com/permalink.php?story_fbid=pfbid02sNCToBn68b9N5mDAtosHBXQnxz7ZJ63ooLfDcqBQnmXHeApG7sgNyKAri9T32Ueul&id=61573404784328"
+    }
+  ],
+  "socialMedia": {}
+} 

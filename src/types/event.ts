@@ -12,7 +12,7 @@ export interface Event {
   endDate: Date;
   speakers: Speaker[];
   images: string[];
-  website: string[];
+  website: Website[];
   socialMedia: SocialMedia;
 }
 
@@ -48,6 +48,13 @@ export interface Speaker {
   id: string;
   name: string;
   socialMedia: SocialMedia;
+}
+
+export interface Website {
+  id: string;
+  displayText: string;
+  source: 'facebook' | 'website' | 'ticket'| 'other';
+  sourceUrl: string;
 }
 
 export type SocialMedia = Record<string, { username: string; urlLink: string }>;

@@ -1,5 +1,5 @@
-import EventPage from "@/components/pages/event/EventPage";
+import EventListPage from "@/components/pages/event/EventListPage";
 
-export default function Event() {
-  return <EventPage />;
+export default function EventListPageRoute() {
+  return <EventListPage />;
 }

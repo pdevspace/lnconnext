@@ -1,0 +1,14 @@
+{
+  "speakers": [
+    {
+      "id": "7d3ef82d-5e48-4f0f-97d1-842d72a146e1",
+      "name": "Test1",
+      "socialMedia": {}
+    },
+    {
+      "id": "7d3ef82d-5e48-4f0f-97d1-842d72a146e2",
+      "name": "Test2",
+      "socialMedia": {}
+    }
+  ]
+} 
