@@ -108,6 +108,8 @@ yarn build
 
 #### Deploy Using Vercel
 
+https://lnconnext.vercel.app/
+
 https://lnconnext-pdevspaces-projects.vercel.app/
 
 ### Local Build Testing
