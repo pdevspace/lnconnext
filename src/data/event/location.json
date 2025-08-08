@@ -14,6 +14,21 @@
       "id": "550e8400-e29b-41d4-a716-446655440003",
       "buildingName": "One day esthetic ART CAFE",
       "googleMapsUrl": "https://maps.app.goo.gl/814R8DeKeg3k5jPo9"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "buildingName": "ห้อง QS 2301 อาคารเฉลิมพระเกียรติ 72 พรรษา บรมราชินีนาถ มหาวิทยาลัยนเรศวร จ.พิษณุโลก",
+      "googleMapsUrl": "https://maps.app.goo.gl/example"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "buildingName": "Railway Park, Chiang Mai",
+      "googleMapsUrl": "https://www.google.com/maps/place/Chiangmai+Railway+station+Park+Mueang+Chiang+Mai+District/data=!4m2!3m1!1s0x30da2500427e9ca5:0x75ef58b3ee98ae41?sa=X&ved=1t:242&ictx=111"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440006",
+      "buildingName": "Bitcoin Learning Center Chiang Mai",
+      "googleMapsUrl": "https://www.google.com/maps/place/Bitcoin+Learning+Center/data=!4m2!3m1!1s0x0:0x45b9ed973f81fa8e?sa=X&ved=1t:2428&ictx=111"
     }
   ]
 } 

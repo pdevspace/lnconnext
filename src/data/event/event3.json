@@ -9,8 +9,8 @@
     {
       "id": "550e8400-e29b-41d4-a716-446655440024",
       "sectionName": "Morning Meetup & Community Painting",
-      "startTime": "2025-07-19T08:00:00.000Z",
-      "endTime": "2025-07-19T12:00:00.000Z",
+      "startTime": "2025-07-19T08:00:00.000+07:00",
+      "endTime": "2025-07-19T12:00:00.000+07:00",
       "spot": {
         "location": "550e8400-e29b-41d4-a716-446655440003"
       },
@@ -20,8 +20,8 @@
     {
       "id": "550e8400-e29b-41d4-a716-446655440025",
       "sectionName": "Bitcoin NL Market",
-      "startTime": "2025-07-19T12:00:00.000Z",
-      "endTime": "2025-07-19T17:30:00.000Z",
+      "startTime": "2025-07-19T12:00:00.000+07:00",
+      "endTime": "2025-07-19T17:30:00.000+07:00",
       "spot": {
         "location": "550e8400-e29b-41d4-a716-446655440003"
       },
@@ -31,8 +31,8 @@
     {
       "id": "550e8400-e29b-41d4-a716-446655440026",
       "sectionName": "Live Concert by Opensource Band",
-      "startTime": "2025-07-19T17:30:00.000Z",
-      "endTime": "2025-07-19T20:00:00.000Z",
+      "startTime": "2025-07-19T17:30:00.000+07:00",
+      "endTime": "2025-07-19T20:00:00.000+07:00",
       "spot": {
         "location": "550e8400-e29b-41d4-a716-446655440003"
       },
@@ -41,13 +41,13 @@
     }
   ],
   "price": 0,
-  "startDate": "2025-07-19T08:00:00.000Z",
-  "endDate": "2025-07-19T20:00:00.000Z",
+  "startDate": "2025-07-19T08:00:00.000+07:00",
+  "endDate": "2025-07-19T20:00:00.000+07:00",
   "speakers": [],
   "images": ["/images/larngrongmans.jpg"],
   "website": [
     {
-      "id": "website-3",
+      "id": "website-event3-facebook-event",
       "displayText": "Facebook Event",
       "source": "facebook",
       "sourceUrl": "https://web.facebook.com/permalink.php?story_fbid=pfbid02sNCToBn68b9N5mDAtosHBXQnxz7ZJ63ooLfDcqBQnmXHeApG7sgNyKAri9T32Ueul&id=61573404784328"

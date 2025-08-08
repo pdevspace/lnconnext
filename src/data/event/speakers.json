@@ -1,13 +1,48 @@
 {
   "speakers": [
     {
-      "id": "7d3ef82d-5e48-4f0f-97d1-842d72a146e1",
-      "name": "Test1",
+      "id": "speaker-piriyat",
+      "name": "อ.พิริยะ",
       "socialMedia": {}
     },
     {
-      "id": "7d3ef82d-5e48-4f0f-97d1-842d72a146e2",
-      "name": "Test2",
+      "id": "speaker-vichit",
+      "name": "อ.วิชิต",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-watcharaphon",
+      "name": "รศ.ดร.วัชรพล",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-khing",
+      "name": "อ.ขิง",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-sup",
+      "name": "คุณซุป",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-ta",
+      "name": "คุณต้า",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-issara",
+      "name": "คุณอิสระ",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-eve",
+      "name": "คุณอีฟ",
+      "socialMedia": {}
+    },
+    {
+      "id": "speaker-nattakit",
+      "name": "ร.ท.ณัฐกิตติ์",
       "socialMedia": {}
     }
   ]

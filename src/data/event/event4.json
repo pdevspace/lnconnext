@@ -1,25 +1,24 @@
 {
-  "id": "550e8400-e29b-41d4-a716-446655440011",
-  "name": "#THON110: Bitcoiners Meetup in Thonburi",
+  "id": "550e8400-e29b-41d4-a716-446655440013",
+  "name": "#THON111: Bitcoiners Meetup in Thonburi",
   "description": "Join the THON Bitcoin community for meetup #THON110. Connect with fellow Bitcoin enthusiasts in the Thonburi area for discussions, networking, and community building.",
   "organizer": "18f0c2b2-2c07-45f5-899c-2fc17c179c17",
   "eventSeriesName": "THON Meetup",
   "location": "550e8400-e29b-41d4-a716-446655440002",
   "sections": [],
   "price": 0,
-  "startDate": "2025-07-13T13:00:00.000+07:00",
-  "endDate": "2025-07-13T16:00:00.000+07:00",
+  "startDate": "2025-08-23T13:00:00.000+07:00",
+  "endDate": "2025-08-23T16:00:00.000+07:00",
   "speakers": [],
   "images": [
-    "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=800&h=400&fit=crop"
+    "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=400&fit=crop"
   ],
   "website": [
     {
-      "id": "website-event2-facebook-post",
+      "id": "website-event4-facebook-post",
       "displayText": "Facebook Post",
       "source": "facebook",
-      "sourceUrl": "https://web.facebook.com/groups/siamesebitcoiners/posts/1413219543083984/"
+      "sourceUrl": "https://web.facebook.com/groups/siamesebitcoiners/posts/1433788534360418/"
     }
   ],
   "socialMedia": {}

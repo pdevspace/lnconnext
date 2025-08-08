@@ -21,7 +21,7 @@ export interface Organizer {
   name: string;
   socialMedia: SocialMedia;
   speakers: string[];
-};
+}
 
 export interface Location {
   id: string;
@@ -53,8 +53,14 @@ export interface Speaker {
 export interface Website {
   id: string;
   displayText: string;
-  source: 'facebook' | 'website' | 'ticket'| 'other';
+  source: "facebook" | "website" | "ticket" | "other";
   sourceUrl: string;
 }
 
-export type SocialMedia = Record<string, { username: string; urlLink: string }>;
+export interface SocialMediaEntry {
+  username: string;
+  platform: "facebook" | "youtube" | "other";
+  urlLink: string;
+}
+
+export type SocialMedia = Record<string, SocialMediaEntry>;

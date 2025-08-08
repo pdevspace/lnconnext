@@ -30,7 +30,7 @@ import {
   OrganizerBox,
   EventScheduleBox,
   OtherEventsBox,
-} from "./event-card";
+} from "./EventComponent";
 
 interface EventPageProps {
   eventId: string;
@@ -224,7 +224,7 @@ export default function EventPage({ eventId }: EventPageProps) {
             <EventScheduleBox sections={event.sections} />
 
             {/* Other Events by Same Organizer */}
-            <OtherEventsBox organizerEvents={otherOrganizerEvents} />
+            {/* <OtherEventsBox organizerEvents={otherOrganizerEvents} /> */}
           </div>
         </div>
       </div>

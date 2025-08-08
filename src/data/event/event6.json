@@ -1,0 +1,72 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440015",
+  "name": "RUN FOR FREEDOM | Bitcoin Thailand Half Marathon 2025",
+  "description": "🏁 วิ่งไปพร้อมกับคลื่นแห่งอิสรภาพทางการเงิน และพลังแห่งโลกดิจิทัล\n🪙 สัมผัสประสบการณ์วิ่งครั้งแรกในโลกที่ผสาน \"Bitcoin + วิ่งมาราธอน\"\n📚 เรียนรู้เรื่อง Bitcoin พร้อมซึมซับวัฒนธรรมล้านนาแห่งเชียงใหม่ในบรรยากาศสุดพิเศษ\n📅 2 พฤศจิกายน 2568\n📍 สวนสาธารณะรถไฟ เชียงใหม่\n👟 3 ระยะทางให้เลือก :\n    5 KM 👉 สมัครเพียง 500.-\n    10 KM 👉 สมัครเพียง 600.-\n    21 KM 👉 สมัครเพียง 900.-\nพร้อมเหรียญผู้พิชิต, เสื้อวิ่ง, อาหารเครื่องดื่ม ของที่ระลึก และภาพถ่ายฟรีสำหรับนักวิ่งทุกคน\n🎯 ชิงเงินรางวัลรวมกว่า 450,000 บาท\n📞 ดูรายละเอียดเพิ่มเติม และ สมัครออนไลน์ได้ที่ >> Bitcoin Half Marathon",
+  "organizer": "b5a8c7d6-4e3f-2a1b-9c8d-7e6f5a4b3c2d",
+  "eventSeriesName": "BLC Chiang Mai",
+  "location": "550e8400-e29b-41d4-a716-446655440005",
+  "sections": [
+    {
+      "id": "section-21k",
+      "name": "21K (Half Marathon)",
+      "description": "A course through Chiang Mai's iconic landmarks and natural beauty, showcasing both historical and modern aspects of the city. No need to worry - the course is completely flat.",
+      "startTime": "2025-11-02T05:00:00.000+07:00",
+      "endTime": "2025-11-02T08:00:00.000+07:00",
+      "price": 900,
+      "speakers": [],
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440005"
+      }
+    },
+    {
+      "id": "section-10k",
+      "name": "10K",
+      "description": "A scenic loop that includes key cultural sites and parks, designed to offer a less demanding yet equally engaging run. No need to worry - the course is completely flat.",
+      "startTime": "2025-11-02T06:00:00.000+07:00",
+      "endTime": "2025-11-02T08:00:00.000+07:00",
+      "price": 600,
+      "speakers": [],
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440005"
+      }
+    },
+    {
+      "id": "section-5k",
+      "name": "5K",
+      "description": "Ideal for families and beginners, this route will be through central Chiang Mai, with opportunities to experience the city's charm at a comfortable pace. No need to worry - the course is completely flat.",
+      "startTime": "2025-11-02T07:00:00.000+07:00",
+      "endTime": "2025-11-02T08:30:00.000+07:00",
+      "price": 500,
+      "speakers": [],
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440005"
+      }
+    }
+  ],
+  "price": 500,
+  "startDate": "2025-11-01T05:00:00.000+07:00",
+  "endDate": "2025-11-02T23:00:00.000+07:00",
+  "speakers": [],
+  "images": ["/images/run-for-freedom.jpg"],
+  "website": [
+    {
+      "id": "website-event6-register",
+      "displayText": "Register Online",
+      "source": "website",
+      "sourceUrl": "https://share.google/w8lNUasBGtnRi9rQZ"
+    },
+    {
+      "id": "website-event6-facebook-post",
+      "displayText": "Facebook Post",
+      "source": "facebook",
+      "sourceUrl": "https://web.facebook.com/RunForFreedoms/posts/pfbid02AjF3Wcg7eB7Q4UqJ1J2TWEz2zvbxiPYfVdvUBsjaoc9EUqBZqd5TTGt47Hwo936Xl"
+    },
+    {
+      "id": "website-event6-facebook-page",
+      "displayText": "Facebook Page",
+      "source": "facebook",
+      "sourceUrl": "https://web.facebook.com/RunForFreedoms?_rdc=1&_rdr"
+    }
+  ],
+  "socialMedia": {}
+} 

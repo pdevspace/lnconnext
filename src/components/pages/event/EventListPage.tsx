@@ -16,13 +16,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { formatDate, formatTime, isEventUpcoming } from "@/lib/utils";
 
 export default function EventListPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasScrolledToUpcoming, setHasScrolledToUpcoming] = useState(false);
+  const upcomingEventRef = useRef<HTMLDivElement>(null);
 
-  const filteredEvents = getAllEvents().filter((event) => {
+  const allEvents = getAllEvents();
+  const upcomingEvents = allEvents.filter((event) =>
+    isEventUpcoming(event.startDate)
+  );
+  const firstUpcomingEvent = upcomingEvents[0];
+
+  const filteredEvents = allEvents.filter((event) => {
     const matchesSearch =
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -33,6 +41,34 @@ export default function EventListPage() {
 
     return matchesSearch;
   });
+
+  // Scroll to first upcoming event on page load
+  useEffect(() => {
+    if (
+      !hasScrolledToUpcoming &&
+      firstUpcomingEvent &&
+      upcomingEventRef.current
+    ) {
+      const timer = setTimeout(() => {
+        upcomingEventRef.current?.scrollIntoView({
+          behavior: "instant",
+          block: "start",
+        });
+
+        // Scroll 130px more up after the initial scroll
+        setTimeout(() => {
+          window.scrollBy({
+            top: -130,
+            behavior: "instant",
+          });
+        }, 10);
+
+        setHasScrolledToUpcoming(true);
+      }, 0);
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasScrolledToUpcoming, firstUpcomingEvent]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,9 +94,14 @@ export default function EventListPage() {
       {/* Main Content */}
       <div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
         {/* Events List */}
-        <div className="space-y-4 max-w-none mx-0 px-4">
+        <div className="space-y-4 max-w-none mx-0 px-4 mb-[130px]">
           {filteredEvents.map((event) => (
-            <div key={event.id}>
+            <div
+              key={event.id}
+              ref={
+                event.id === firstUpcomingEvent?.id ? upcomingEventRef : null
+              }
+            >
               <Link href={`/event/${event.id}`}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-6">
@@ -68,27 +109,37 @@ export default function EventListPage() {
                       {/* Event Image */}
                       <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                          src={event.images[0] || '/images/placeholder.jpg'}
+                          src={event.images[0] || "/images/placeholder.jpg"}
                           alt={event.name}
                           fill
                           className="object-cover"
                           sizes="96px"
                         />
                       </div>
-                      
+
                       {/* Event Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="text-lg font-semibold truncate">{event.name}</h3>
-                          <Badge variant={isEventUpcoming(event.startDate) ? 'default' : 'secondary'}>
-                            {isEventUpcoming(event.startDate) ? 'Upcoming' : 'Past'}
+                          <h3 className="text-lg font-semibold truncate">
+                            {event.name}
+                          </h3>
+                          <Badge
+                            variant={
+                              isEventUpcoming(event.startDate)
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {isEventUpcoming(event.startDate)
+                              ? "Upcoming"
+                              : "Past"}
                           </Badge>
                         </div>
-                        
+
                         <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
                           {event.description}
                         </p>
-                        
+
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
@@ -111,19 +162,21 @@ export default function EventListPage() {
                             </span>
                           )}
                         </div>
-                        
+
                         {/* Speaker Badges */}
                         {event.speakers && event.speakers.length > 0 && (
                           <div className="flex gap-1 mt-3">
-                            {event.speakers.slice(0, 3).map((speaker: any, index) => (
-                              <Badge
-                                key={speaker.id || index}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {speaker.name}
-                              </Badge>
-                            ))}
+                            {event.speakers
+                              .slice(0, 3)
+                              .map((speaker: any, index) => (
+                                <Badge
+                                  key={speaker.id || index}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
+                                  {speaker.name}
+                                </Badge>
+                              ))}
                             {event.speakers.length > 3 && (
                               <Badge variant="outline" className="text-xs">
                                 +{event.speakers.length - 3}
@@ -136,7 +189,7 @@ export default function EventListPage() {
                   </CardContent>
                 </Card>
               </Link>
-              
+
               {/* Website Links - Outside the main card link */}
               {event.website.length > 0 && (
                 <div className="flex gap-2 mt-2 ml-6">

@@ -9,9 +9,11 @@ import {
   Users,
   Mic,
   Calendar,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Speaker, Website } from "@/types/event";
+import Link from "next/link";
 
 interface AddToCalendarButtonProps {
   event: {
@@ -84,7 +86,11 @@ export function EventTicketBox({ price, ticketWebsite }: EventTicketBoxProps) {
         )}
         {ticketWebsite && (
           <Button className="w-full" asChild>
-            <a href={ticketWebsite.sourceUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              href={ticketWebsite.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <ExternalLink className="h-4 w-4 mr-2" />
               {ticketWebsite.displayText}
             </a>
@@ -158,52 +164,62 @@ interface OrganizerBoxProps {
   organizer: {
     id: string;
     name: string;
-    socialMedia?: Record<string, { username: string; urlLink: string }>;
+    socialMedia?: Record<
+      string,
+      {
+        username: string;
+        platform: "facebook" | "youtube" | "other";
+        urlLink: string;
+      }
+    >;
   };
 }
 
 export function OrganizerBox({ organizer }: OrganizerBoxProps) {
   return (
-    <Card className="mb-4">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">Organizer</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-lg font-semibold text-gray-600">
-                {organizer.name.charAt(0)}
-              </span>
+    <Link href={`/organizer/${organizer.id}`}>
+      <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent className="pt-6">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-lg font-semibold text-gray-600">
+                    {organizer.name.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <div className="font-semibold">{organizer.name}</div>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </div>
-            <div>
-              <div className="font-semibold">{organizer.name}</div>
-            </div>
-          </div>
 
-          {organizer.socialMedia &&
-            Object.keys(organizer.socialMedia).length > 0 && (
-              <div className="flex gap-2">
-                {Object.entries(organizer.socialMedia).map(
-                  ([platform, data]) => (
-                    <a
-                      key={platform}
+            {organizer.socialMedia &&
+              Object.keys(organizer.socialMedia).length > 0 && (
+                <div
+                  className="flex gap-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {Object.entries(organizer.socialMedia).map(([k, data]) => (
+                    <Link
+                      key={`${organizer.id}-${data.username}-${data.platform}-${k}`}
                       href={data.urlLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
                     >
                       <span className="text-xs font-medium capitalize">
-                        {platform}
+                        {k}
                       </span>
-                    </a>
-                  )
-                )}
-              </div>
-            )}
-        </div>
-      </CardContent>
-    </Card>
+                    </Link>
+                  ))}
+                </div>
+              )}
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 

@@ -1,0 +1,23 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440017",
+  "name": "Grassroots Lightning Month - Meetup 1",
+  "description": "August 2025 is Grassroots Lightning Month at BOB Space. This month, we hear from local Bitcoiners who have been promoting Grassroots Lightning adoption by educating small merchants in their respective areas about the Lightning payment network, including onboarding merchants to receive their first sats over Lightning.\n\nOn Friday August 8th, we kick off Grassroots Lightning Month with a special guest, My from WelB. Through the WelB initiative, My has been onboarding small merchants, especially in eastern Bangkok, to the Lightning network. Come listen to his story and learn why/how he's doing this. Q&A and free-flow discussion to follow.\n\nLocation: 64/1 Ekkamai Soi 4 (or Phatsana 2 alley) per map and details below. \"BOB Space\" now appears on Google Map.\n\nOnce again, this is a Bitcoin-only meetup. Do join us!",
+  "organizer": "b8f8f7e5-0658-4306-b3fd-f008c4e2b2e2",
+  "eventSeriesName": "BOB Space",
+  "location": "550e8400-e29b-41d4-a716-446655440001",
+  "sections": [],
+  "price": 0,
+  "startDate": "2025-08-08T18:30:00.000+07:00",
+  "endDate": "2025-08-08T21:00:00.000+07:00",
+  "speakers": [],
+  "images": ["/images/bob-space.jpg"],
+  "website": [
+    {
+      "id": "website-event8-meetup",
+      "displayText": "Join Meetup",
+      "source": "website",
+      "sourceUrl": "https://www.meetup.com/bob-space-community-events/events/310308479/?eventOrigin=group_upcoming_events"
+    }
+  ],
+  "socialMedia": {}
+} 

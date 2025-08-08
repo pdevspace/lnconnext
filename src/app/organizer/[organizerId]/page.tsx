@@ -8,13 +8,12 @@ interface OrganizerPageProps {
 }
 
 export async function generateStaticParams() {
-    const organizers = getAllOrganizers();
-    return organizers.map((organizer) => ({
-        organizerId: organizer.id,
-    }));
-  }
-  
+  const organizers = getAllOrganizers();
+  return organizers.map((organizer) => ({
+    organizerId: organizer.id,
+  }));
+}
 
 export default function OrganizerPageRoute({ params }: OrganizerPageProps) {
   return <OrganizerPage organizerId={params.organizerId} />;
-} 
+}

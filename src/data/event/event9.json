@@ -1,0 +1,29 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440018",
+  "name": "Inaugural outdoors Lightning Free Market at BOB Space",
+  "description": "August 2025 is Grassroots Lightning Month at BOB Space. In addition to hearing from great local Bitcoiners who have been promoting Grassroots Lightning adoption by educating small merchants in their respective areas about the Lightning payment network, we are excited to launch the first ever Lightning Free Market at BOB Space!\n\nOn Friday August 22nd, in conjunction with Grassroots Lightning Month Meetup 2, there will be the inaugural outdoors Lightning Free Market at BOB Space beginning at 5:30 pm. Think of a cross between the open-air night markets in Bangkok and the outdoors swap meets elsewhere. Food, beverages and other stuff will be available for purchase with Lightning, so get your wallets loaded up! This inaugural Lightning Free Market is made possible with the kind support and good works of the WelB initiative, so a big shout-out to My.\n\nLocation: 64/1 Ekkamai Soi 4 (or Phatsana 2 alley) per map and details below. \"BOB Space\" now appears on Google Map.\n\nCome hang out, chill, spend some sats, meet new folks, have fun and maybe learn something. Do join us!",
+  "organizer": "b8f8f7e5-0658-4306-b3fd-f008c4e2b2e2",
+  "eventSeriesName": "BOB Space",
+  "location": "550e8400-e29b-41d4-a716-446655440001",
+  "sections": [],
+  "price": 0,
+  "startDate": "2025-08-22T17:30:00.000+07:00",
+  "endDate": "2025-08-22T21:30:00.000+07:00",
+  "speakers": [],
+  "images": ["/images/bob-space.jpg"],
+  "website": [
+    {
+      "id": "website-event9-meetup-market",
+      "displayText": "Join Lightning Free Market",
+      "source": "website",
+      "sourceUrl": "https://www.meetup.com/bob-space-community-events/events/310308868/?eventOrigin=group_upcoming_events"
+    },
+    {
+      "id": "website-event9-meetup-2",
+      "displayText": "Join Meetup 2",
+      "source": "website",
+      "sourceUrl": "https://www.meetup.com/bob-space-community-events/events/310308762/?eventOrigin=group_upcoming_events"
+    }
+  ],
+  "socialMedia": {}
+} 

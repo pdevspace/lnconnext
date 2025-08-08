@@ -1,0 +1,107 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440014",
+  "name": "เตรียมความพร้อมด้านการเงิน สู่อนาคตที่มั่นคง Empower Your Future",
+  "description": "ภาคเหนือตอนล่างมาแล้วนะจ๊ะ รวมตัวกูรูชั้นนำจากสาย บิตคอยน์ - เศรษฐศาสตร์ - การเมือง\n\nเจาะลึกเรื่อง เงินเฟ้อ, Sound Money, Bitcoin และอำนาจรัฐ\nพร้อมเสวนาแนะแนว การเงิน & เส้นทางอาชีพ จากคนรุ่นใหม่ตัวจริง",
+  "organizer": "b5a8c7d6-4e3f-2a1b-9c8d-7e6f5a4b3c2d",
+  "eventSeriesName": "BLC Chiang Mai",
+  "location": "550e8400-e29b-41d4-a716-446655440004",
+  "sections": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440030",
+      "sectionName": "Session 1: เศรษฐศาสตร์การเงิน & Sound Money Bitcoin",
+      "startTime": "2025-08-10T09:30:00.000+07:00",
+      "endTime": "2025-08-10T10:30:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": ["speaker-piriyat"],
+      "description": "โดย อ.พิริยะ"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440031",
+      "sectionName": "พักเบรก /ถ่ายรูปกิจกรรม",
+      "startTime": "2025-08-10T10:30:00.000+07:00",
+      "endTime": "2025-08-10T10:45:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": [],
+      "description": "พักเบรก /ถ่ายรูปกิจกรรม"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440032",
+      "sectionName": "Session 2: แผนการเงินส่วนบุคคล ป้องกันผลกระทบเงินเฟ้อ",
+      "startTime": "2025-08-10T10:45:00.000+07:00",
+      "endTime": "2025-08-10T12:00:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": ["speaker-vichit"],
+      "description": "โดย อ.วิชิต"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440033",
+      "sectionName": "พักรับประทานอาหารกลางวัน",
+      "startTime": "2025-08-10T12:00:00.000+07:00",
+      "endTime": "2025-08-10T13:00:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": [],
+      "description": "พักรับประทานอาหารกลางวัน"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440034",
+      "sectionName": "Session 3: เศรษฐศาสตร์ & การเมือง – เงิน, อำนาจรัฐและการควบคุมชีวิตเรา",
+      "startTime": "2025-08-10T13:00:00.000+07:00",
+      "endTime": "2025-08-10T14:00:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": ["speaker-watcharaphon", "speaker-khing", "speaker-sup"],
+      "description": "เสวนาแลกเปลี่ยน โดย รศ.ดร.วัชรพล, อ.ขิง และ คุณซุป"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440035",
+      "sectionName": "Session 4: Workshop วางแผนการเงิน & Career Path",
+      "startTime": "2025-08-10T14:00:00.000+07:00",
+      "endTime": "2025-08-10T15:00:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": ["speaker-ta", "speaker-issara", "speaker-eve", "speaker-nattakit"],
+      "description": "ตัวอย่างจาก คุณต้า, คุณอิสระ, คุณอีฟ และ ร.ท.ณัฐกิตติ์ (ราชการ/อำนาจรัฐ)"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440036",
+      "sectionName": "สรุปความรู้ / Q&A / ถ่ายรูป / ปิดกิจกรรม",
+      "startTime": "2025-08-10T15:00:00.000+07:00",
+      "endTime": "2025-08-10T16:00:00.000+07:00",
+      "spot": {
+        "location": "550e8400-e29b-41d4-a716-446655440004"
+      },
+      "speakers": [],
+      "description": "สรุปความรู้ / Q&A / ถ่ายรูป / ปิดกิจกรรม"
+    }
+  ],
+  "price": 0,
+  "startDate": "2025-08-10T09:00:00.000+07:00",
+  "endDate": "2025-08-10T16:00:00.000+07:00",
+  "speakers": ["speaker-piriyat", "speaker-vichit", "speaker-watcharaphon", "speaker-khing", "speaker-sup", "speaker-ta", "speaker-issara", "speaker-eve", "speaker-nattakit"],
+  "images": ["/images/empower-your-future.jpg"],
+  "website": [
+    {
+      "id": "website-event5-facebook-post",
+      "displayText": "Facebook Post",
+      "source": "facebook",
+      "sourceUrl": "https://web.facebook.com/blcchiangmai/posts/pfbid0miui44viRbc4rfNjE8iZ3RRNS2nq6484zGbm2W3HT3KzLtK6Qd8MVT9kXxzwPFyql?_rdc=1&_rdr"
+    },
+    {
+        "id": "website-event5-google-form",
+        "displayText": "Google form",
+        "source": "ticket",
+        "sourceUrl": " https://forms.gle/BwHtawj4yS96K13UA"
+    }
+  ],
+  "socialMedia": {}
+} 

@@ -14,7 +14,6 @@ export async function generateStaticParams() {
   }));
 }
 
-
 export default async function EventPageRoute({ params }: PageProps) {
   const { eventId } = await params;
   return <EventPage eventId={eventId} />;
