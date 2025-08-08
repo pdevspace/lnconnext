@@ -106,6 +106,10 @@ yarn build
 # Upload the contents of `out` to your GitHub Pages branch
 ```
 
+#### Deploy Using Vercel
+
+https://lnconnext-pdevspaces-projects.vercel.app/
+
 ### Local Build Testing
 
 ```bash
