@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isFuture, isPast } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
-import { CalendarDay, CalendarEvent } from "@/types/calendar";
+import { CalendarDay } from "@/types/calendar";
+import { Event } from "@/types/event";
 import { Clock, Heart, Plus, Star } from "lucide-react";
 import React from "react";
 
@@ -16,21 +17,6 @@ interface DateCellProps {
   className?: string;
 }
 
-const availabilityColors: Record<CalendarDay["userAvailability"], string> = {
-  free: "bg-green-50 border-green-200",
-  busy: "bg-red-50 border-red-200",
-  maybe: "bg-yellow-50 border-yellow-200",
-};
-
-const availabilityIcons: Record<
-  CalendarDay["userAvailability"],
-  React.ComponentType<{ className?: string }>
-> = {
-  free: Star,
-  busy: Heart,
-  maybe: Clock,
-};
-
 export default function DateCell({
   day,
   isCurrentMonth = true,
@@ -38,7 +24,6 @@ export default function DateCell({
   onAddEvent,
   className,
 }: DateCellProps) {
-  const AvailabilityIcon = availabilityIcons[day.userAvailability];
   const isPastDate = isPast(day.date);
   const isFutureDate = isFuture(day.date);
   const hasMultipleEvents = day.events.length > 3;
@@ -57,7 +42,7 @@ export default function DateCell({
       className={cn(
         "relative min-h-[120px] p-2 border border-border hover:bg-muted/50 transition-colors cursor-pointer",
         !isCurrentMonth && "bg-gray-100 text-gray-400",
-        isCurrentMonth && availabilityColors[day.userAvailability],
+        isCurrentMonth && "bg-green-50 border-green-200",
         day.isToday && "ring-2 ring-primary",
         className
       )}
@@ -79,9 +64,6 @@ export default function DateCell({
         </div>
 
         <div className="flex items-center gap-1">
-          {day.userAvailability !== "free" && (
-            <AvailabilityIcon className="h-3 w-3 text-muted-foreground" />
-          )}
           <Button
             variant="ghost"
             size="sm"
@@ -95,17 +77,17 @@ export default function DateCell({
 
       {/* Event Indicators */}
       <div className="space-y-1">
-        {day.events.slice(0, 3).map((event: CalendarEvent, index: number) => (
+        {day.events.slice(0, 3).map((event: Event, index: number) => (
           <div
             key={event.id}
             className={cn(
               "h-6 rounded text-sm px-2 py-1 truncate cursor-pointer hover:opacity-80 transition-opacity",
-              event.color,
+              "bg-orange-500",
               "text-white font-semibold shadow-sm"
             )}
-            title={event.organizer}
+            // title={event.organizer.name}
           >
-            {event.organizer}
+            {event.organizer?.name ?? event.name}
           </div>
         ))}
 

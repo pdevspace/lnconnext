@@ -3,17 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import EventCard from "./EventCard";
-import {  CalendarEvent } from "@/types/calendar";
+import { Event } from "@/types/event";
 
 interface EventDetailsProps {
   selectDate: Date;
-  selectEvent: CalendarEvent[];
+  selectEvent: Event[];
 }
 
-const EventDetails = ({
-  selectDate,
-  selectEvent,
-}: EventDetailsProps) => {
+const EventDetails = ({ selectDate, selectEvent }: EventDetailsProps) => {
   return (
     <div className="pointer-events-auto bg-white rounded-lg shadow p-4">
       <div className="mb-4">
@@ -26,24 +23,18 @@ const EventDetails = ({
           })}
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-          <Badge variant="outline">
-            {selectEvent.length} events
-          </Badge>
+          <Badge variant="outline">{selectEvent.length} events</Badge>
           {(selectDate.getDay() === 0 || selectDate.getDay() === 6) && (
             <Badge variant="secondary">Weekend</Badge>
           )}
         </div>
       </div>
       <div className="space-y-3">
-        {selectEvent.length > 0 ? (
-          selectEvent.map((event: CalendarEvent) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              variant="compact"
-            />
-          ))
-        ):null}
+        {selectEvent.length > 0
+          ? selectEvent.map((event: Event) => (
+              <EventCard key={event.id} event={event} variant="compact" />
+            ))
+          : null}
       </div>
     </div>
   );

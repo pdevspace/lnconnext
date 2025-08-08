@@ -1,17 +1,27 @@
-export interface SocialLink {
-  platform: string;
-  url: string;
-}
-
-export interface Speaker {
+export interface Event {
   id: string;
   name: string;
-  title: string;
-  bio: string;
-  avatar: string;
-  socialLinks: SocialLink[];
-  expertise: string[];
+  description: string;
+  organizer: Organizer;
+  eventSeriesName?: string;
+  location?: Location;
+  sections: EventSection[];
+  price: number;
+
+  startDate: Date;
+  endDate: Date;
+  speakers: Speaker[];
+  images: string[];
+  website: string[];
+  socialMedia: SocialMedia;
 }
+
+export interface Organizer {
+  id: string;
+  name: string;
+  socialMedia: SocialMedia;
+  speakers: string[];
+};
 
 export interface Location {
   id: string;
@@ -34,31 +44,10 @@ export interface EventSection {
   speakers: Speaker[];
 }
 
-export interface EventSeries {
-  seriesName: string;
-}
-
-export interface Event {
+export interface Speaker {
   id: string;
   name: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  location?: Location;
-  speakers: Speaker[];
-  sections: EventSection[];
-  eventSeries?: EventSeries;
-  images: string[];
-  category: string;
-  tags: string[];
-  capacity?: number;
-  currentAttendees?: number;
-  price?: number;
-  organizer?: string;
-  website: string[];
-  socialMedia?: {
-    twitter?: string;
-    instagram?: string;
-    facebook?: string;
-  };
+  socialMedia: SocialMedia;
 }
+
+export type SocialMedia = Record<string, { username: string; urlLink: string }>;

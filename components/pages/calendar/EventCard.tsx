@@ -3,18 +3,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeRange, isToday } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
-import { CalendarEvent } from "@/types/calendar";
+import { Event } from "@/types/event";
 import { Clock, MapPin, Users } from "lucide-react";
 import React from "react";
 
 interface EventCardProps {
-  event: CalendarEvent;
+  event: Event;
   variant?: "compact" | "detailed";
-  onClick?: (event: CalendarEvent) => void;
-  onStatusChange?: (
-    eventId: string,
-    status: CalendarEvent["userStatus"]
-  ) => void;
+  onClick?: (event: Event) => void;
+  onStatusChange?: (eventId: string) => void;
   className?: string;
 }
 
@@ -29,12 +26,12 @@ export default function EventCard({ event, className }: EventCardProps) {
     e.stopPropagation();
     if (navigator.share) {
       navigator.share({
-        title: event.title,
+        title: event.name,
         text: event.description,
         url: window.location.href,
       });
     } else {
-      navigator.clipboard.writeText(`${event.title} - ${event.description}`);
+      navigator.clipboard.writeText(`${event.name} - ${event.description}`);
     }
   };
 
@@ -42,7 +39,6 @@ export default function EventCard({ event, className }: EventCardProps) {
     <Card
       className={cn(
         "cursor-pointer hover:shadow-md transition-all duration-200 border-l-4",
-        event.color.replace("bg-", "border-l-"),
         isEventToday && "ring-2 ring-blue-500",
         className
       )}
@@ -52,7 +48,7 @@ export default function EventCard({ event, className }: EventCardProps) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h4 className="font-medium text-sm truncate">{event.title}</h4>
+              <h4 className="font-medium text-sm truncate">{event.name}</h4>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
@@ -65,7 +61,7 @@ export default function EventCard({ event, className }: EventCardProps) {
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <MapPin className="h-3 w-3" />
-              <span className="truncate">{event.location}</span>
+              <span className="truncate">{event.location?.buildingName}</span>
             </div>
             {event.speakers.length > 0 && (
               <div className="flex items-center gap-1 mt-1">

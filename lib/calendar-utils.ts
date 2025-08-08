@@ -1,4 +1,8 @@
-import { CalendarDay, CalendarEvent } from "@/types/calendar";
+import { CalendarDay } from "@/types/calendar";
+import { Speaker } from "@/types/event";
+import { Event } from "@/types/event";
+
+export const daysInWeek: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // Get the first day of the month
 export function getFirstDayOfMonth(date: Date): Date {
@@ -98,7 +102,7 @@ export function generateWeekendGrid(date: Date): Date[] {
 // Generate calendar days with events for a given date range
 export function generateCalendarDays(
   dates: Date[],
-  events: CalendarEvent[]
+  events: Event[]
 ): CalendarDay[] {
   return dates.map(date => {
     const dayEvents = events.filter(event => {
@@ -117,7 +121,6 @@ export function generateCalendarDays(
       events: dayEvents,
       isWeekend: date.getDay() === 0 || date.getDay() === 6,
       isToday: isToday(date),
-      userAvailability: getUserAvailability(date, dayEvents),
     };
   });
 }
@@ -140,22 +143,6 @@ export function isFuture(date: Date): boolean {
   const today = new Date();
   today.setHours(23, 59, 59, 999);
   return date > today;
-}
-
-// Get user availability for a date based on events
-export function getUserAvailability(
-  date: Date,
-  events: CalendarEvent[]
-): "free" | "busy" | "maybe" {
-  if (events.length === 0) return "free";
-
-  const hasGoing = events.some(event => event.userStatus === "going");
-  const hasMaybe = events.some(event => event.userStatus === "maybe");
-  const hasBlocked = events.some(event => event.userStatus === "blocked");
-
-  if (hasGoing || hasBlocked) return "busy";
-  if (hasMaybe) return "maybe";
-  return "free";
 }
 
 // Format date for display
@@ -252,67 +239,26 @@ export function getDaysBetween(date1: Date, date2: Date): number {
   return Math.ceil(timeDiff / (1000 * 3600 * 24));
 }
 
-// Filter events by category
-export function filterEventsByCategory(
-  events: CalendarEvent[],
-  category: string
-): CalendarEvent[] {
-  if (!category) return events;
-  return events.filter(event => event.category === category);
-}
-
-// Filter events by location
-export function filterEventsByLocation(
-  events: CalendarEvent[],
-  location: string
-): CalendarEvent[] {
-  if (!location) return events;
-  return events.filter(event =>
-    event.location.toLowerCase().includes(location.toLowerCase())
-  );
-}
-
-// Filter events by user status
-export function filterEventsByStatus(
-  events: CalendarEvent[],
-  status: string
-): CalendarEvent[] {
-  if (!status) return events;
-  return events.filter(event => event.userStatus === status);
-}
-
 // Search events by title or description
 export function searchEvents(
-  events: CalendarEvent[],
+  events: Event[],
   query: string
-): CalendarEvent[] {
+): Event[] {
   if (!query) return events;
   const lowerQuery = query.toLowerCase();
   return events.filter(
     event =>
-      event.title.toLowerCase().includes(lowerQuery) ||
+      event.name.toLowerCase().includes(lowerQuery) ||
       event.description.toLowerCase().includes(lowerQuery) ||
-      event.speakers.some((speaker: string) =>
-        speaker.toLowerCase().includes(lowerQuery)
+      event.speakers.some((speaker: Speaker) =>
+        speaker.name.toLowerCase().includes(lowerQuery)
       )
   );
 }
 
-// Get unique categories from events
-export function getUniqueCategories(events: CalendarEvent[]): string[] {
-  const categories = events.map(event => event.category);
-  return Array.from(new Set(categories));
-}
-
-// Get unique locations from events
-export function getUniqueLocations(events: CalendarEvent[]): string[] {
-  const locations = events.map(event => event.location);
-  return Array.from(new Set(locations));
-}
-
 // Check for event conflicts on a given date
-export function getEventConflicts(events: CalendarEvent[]): CalendarEvent[][] {
-  const conflicts: CalendarEvent[][] = [];
+export function getEventConflicts(events: Event[]): Event[][] {
+  const conflicts: Event[][] = [];
 
   for (let i = 0; i < events.length; i++) {
     for (let j = i + 1; j < events.length; j++) {
@@ -330,8 +276,8 @@ export function getEventConflicts(events: CalendarEvent[]): CalendarEvent[][] {
 
 // Check if two events conflict (overlap in time)
 export function doEventsConflict(
-  event1: CalendarEvent,
-  event2: CalendarEvent
+  event1: Event,
+  event2: Event
 ): boolean {
   const start1 = new Date(event1.startDate);
   const end1 = new Date(event1.endDate);
@@ -341,26 +287,11 @@ export function doEventsConflict(
   return start1 < end2 && start2 < end1;
 }
 
-// Get the most popular events (by attendance)
-export function getPopularEvents(
-  events: CalendarEvent[],
-  limit: number = 5
-): CalendarEvent[] {
-  return events
-    .filter(event => event.currentAttendees && event.capacity)
-    .sort((a, b) => {
-      const ratioA = (a.currentAttendees || 0) / (a.capacity || 1);
-      const ratioB = (b.currentAttendees || 0) / (b.capacity || 1);
-      return ratioB - ratioA;
-    })
-    .slice(0, limit);
-}
-
 // Get upcoming events (next 30 days)
 export function getUpcomingEvents(
-  events: CalendarEvent[],
+  events: Event[],
   days: number = 30
-): CalendarEvent[] {
+): Event[] {
   const now = new Date();
   const futureDate = new Date();
   futureDate.setDate(now.getDate() + days);

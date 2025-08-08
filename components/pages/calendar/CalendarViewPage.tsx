@@ -16,17 +16,13 @@ import {
   daysInWeek,
 } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
-import {
-  CalendarDay,
-  CalendarEvent,
-  FilterState,
-  ViewMode,
-} from "@/types/calendar";
+import { CalendarDay, FilterState, ViewMode } from "@/types/calendar";
+import { Event } from "@/types/event";
 import { addDays, addMonths, isSameDay, isToday as isTodayFn } from "date-fns";
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import CalendarFilters from "./CalendarFilters";
+// import CalendarFilters from "./CalendarFilters";
 import DateCell from "./DateCell";
 import EventDetails from "./EventDetails";
 import DailyCalendarView from "./DailyCalendarView";
@@ -52,29 +48,9 @@ export default function CalendarViewPage({
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  const bitcoinCalendarEvents: CalendarEvent[] = getAllEvents().map(
-    (event) => ({
-      id: event.id,
-      title: event.name,
-      organizer: event.organizer,
-      description: event.description,
-      startDate: event.startDate,
-      endDate: event.endDate,
-      location: event.location?.buildingName ?? "No location",
-      category: event.category,
-      speakers: event.speakers?.map((speaker) => speaker.name) ?? [],
-      userStatus: "available" as const,
-      color: "bg-orange-500",
-      isMultiDay:
-        event.startDate.toDateString() !== event.endDate.toDateString(),
-      currentAttendees: event.currentAttendees || 0,
-      capacity: event.capacity || 0,
-      price: event.price || 0,
-      image: event.images?.[0] || "",
-    })
-  );
+  const bitcoinEvents: Event[] = getAllEvents();
 
-  const [events, setEvents] = useState<CalendarEvent[]>(bitcoinCalendarEvents);
+  const [events, setEvents] = useState<Event[]>(bitcoinEvents);
 
   // Generate calendar grid based on view mode
   const calendarDates = useMemo(() => {
@@ -87,26 +63,6 @@ export default function CalendarViewPage({
 
     if (filters.search) {
       filtered = searchEvents(filtered, filters.search);
-    }
-
-    if (filters.categories.length > 0) {
-      filtered = filtered.filter((event) =>
-        filters.categories.includes(event.category)
-      );
-    }
-
-    if (filters.locations.length > 0) {
-      filtered = filtered.filter((event) =>
-        filters.locations.some((location) =>
-          event.location.toLowerCase().includes(location.toLowerCase())
-        )
-      );
-    }
-
-    if (filters.statuses.length > 0) {
-      filtered = filtered.filter((event) =>
-        filters.statuses.includes(event.userStatus)
-      );
     }
 
     return filtered;
@@ -224,7 +180,7 @@ export default function CalendarViewPage({
               >
                 <span className="text-xl">×</span>
               </button>
-              <CalendarFilters events={events} onFiltersChange={setFilters} />
+              {/* <CalendarFilters events={events} onFiltersChange={setFilters} /> */}
             </div>
           </div>
         )}

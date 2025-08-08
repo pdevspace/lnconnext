@@ -18,9 +18,6 @@ import { useState } from "react";
 
 export default function EventsPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const categories = ["All", "Bitcoin", "Bitcoin Conference", "Bitcoin Summit"];
 
   const filteredEvents = getAllEvents().filter((event) => {
     const matchesSearch =
@@ -31,12 +28,7 @@ export default function EventsPage() {
           speaker.name.toLowerCase().includes(searchQuery.toLowerCase())
         ));
 
-    const matchesCategory =
-      selectedCategory === "All" ||
-      selectedCategory === "" ||
-      event.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   return (
@@ -75,11 +67,6 @@ export default function EventsPage() {
                     style={{ backgroundImage: `url(${event.images[0]})` }}
                   />
                 )}
-                <div className="absolute top-2 right-2">
-                  <Badge variant="outline" className="bg-white/90">
-                    {event.category}
-                  </Badge>
-                </div>
               </div>
               <CardContent className="p-4">
                 <CardTitle className="text-lg mb-2">{event.name}</CardTitle>
@@ -154,7 +141,6 @@ export default function EventsPage() {
               className="mt-4"
               onClick={() => {
                 setSearchQuery("");
-                setSelectedCategory("");
               }}
             >
               Clear filters

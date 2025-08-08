@@ -2,12 +2,35 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllEvents, getEventById } from "@/data/EventService";
-import { cn, formatDate, formatTime, getTimeRange, isEventLive, isEventUpcoming } from "@/lib/utils";
+import {
+  cn,
+  formatDate,
+  formatTime,
+  getTimeRange,
+  isEventLive,
+  isEventUpcoming,
+} from "@/lib/utils";
 import { Event } from "@/types/event";
-import { Calendar, Clock, ExternalLink, Gamepad2, Heart, MapPin, Mic, Share2, Users } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  ExternalLink,
+  Gamepad2,
+  Heart,
+  MapPin,
+  Mic,
+  Share2,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
 
 interface EventDetailsPageProps {
@@ -52,8 +75,10 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
   };
 
   const togglePersonalSchedule = (sectionId: string) => {
-    setPersonalSchedule(prev =>
-      prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
+    setPersonalSchedule((prev) =>
+      prev.includes(sectionId)
+        ? prev.filter((id) => id !== sectionId)
+        : [...prev, sectionId]
     );
   };
 
@@ -70,7 +95,7 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen overflow-y-auto min-h-screen bg-background">
       {/* Event Header Section */}
       <div className="relative">
         {/* Hero Image */}
@@ -79,7 +104,7 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
             src={event.images[0]}
             alt={event.name}
             className="w-full h-full object-cover object-center"
-            onError={e => {
+            onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.style.display = "none";
               target.parentElement!.style.backgroundColor = "#f3f4f6";
@@ -89,7 +114,9 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
 
           {/* Status Badge */}
           <div className="absolute top-4 left-4">
-            <Badge className={cn("text-white border-0", status.color)}>{status.text}</Badge>
+            <Badge className={cn("text-white border-0", status.color)}>
+              {status.text}
+            </Badge>
           </div>
 
           {/* Action Buttons */}
@@ -118,18 +145,14 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
           {/* Event Info Overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
             <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                  {event.category}
-                </Badge>
-                {event.eventSeries && (
-                  <Badge variant="outline" className="bg-white/20 text-white border-white/30">
-                    {event.eventSeries.seriesName}
-                  </Badge>
-                )}
-              </div>
-
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{event.name}</h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+                {event.name}
+              </h1>
+              {event.organizer && (
+                <h2 className="text-1xl md:text-3xl font-bold text-white mb-4">
+                  by {event.organizer?.name}
+                </h2>
+              )}
 
               <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
                 <div className="flex items-center gap-1">
@@ -149,12 +172,6 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                     {event.location.buildingName}
                   </a>
                 )}
-                {typeof event.currentAttendees === "number" && typeof event.capacity === "number" && (
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {event.currentAttendees?.toLocaleString()} / {event.capacity?.toLocaleString()} attendees
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -165,10 +182,15 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
           <div className="max-w-4xl mx-auto px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                {event.price && (
-                  <span className="text-2xl font-bold text-primary">฿{event.price.toLocaleString()}</span>
+                {event.website && event.website.length > 0 && (
+                  <a
+                    href={event.website[0]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline">Go to original link</Button>
+                  </a>
                 )}
-                <span className="text-muted-foreground">per ticket</span>
               </div>
 
               <div className="flex gap-2">
@@ -176,10 +198,10 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                   <Calendar className="h-4 w-4 mr-2" />
                   Add to Calendar
                 </Button>
-                <Button>
+                {/* <Button>
                   <Gamepad2 className="h-4 w-4 mr-2" />
                   Get Tickets
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>
@@ -188,7 +210,11 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8 mt-[70px] pb-[100px]">
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
+        <Tabs
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="speakers">Speakers</TabsTrigger>
@@ -220,31 +246,42 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                     <div className="mt-4">
                       <h3 className="font-semibold mb-2">Schedule</h3>
                       <ul className="space-y-2">
-                        {event.sections.map(section => (
+                        {event.sections.map((section) => (
                           <li key={section.id} className="border rounded p-2">
-                            <div className="font-semibold">{section.sectionName}</div>
-                            <div className="text-sm text-gray-600">
-                              {section.startTime ? formatTime(section.startTime) : ""}
-                              {section.endTime ? ` - ${formatTime(section.endTime)}` : ""}
-                              {section.spot && section.spot.name && ` @ ${section.spot.name}`}
+                            <div className="font-semibold">
+                              {section.sectionName}
                             </div>
-                            <div className="text-xs text-gray-500">{section.description}</div>
-                            {section.speakers && section.speakers.length > 0 && (
-                              <div className="flex gap-1 mt-1">
-                                {section.speakers.map((sp, i) => (
-                                  <Badge key={sp.id || i} variant="outline">
-                                    {sp.name}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
+                            <div className="text-sm text-gray-600">
+                              {section.startTime
+                                ? formatTime(section.startTime)
+                                : ""}
+                              {section.endTime
+                                ? ` - ${formatTime(section.endTime)}`
+                                : ""}
+                              {section.spot &&
+                                section.spot.name &&
+                                ` @ ${section.spot.name}`}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {section.description}
+                            </div>
+                            {section.speakers &&
+                              section.speakers.length > 0 && (
+                                <div className="flex gap-1 mt-1">
+                                  {section.speakers.map((sp, i) => (
+                                    <Badge key={sp.id || i} variant="outline">
+                                      {sp.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
-                  {event.website && event.website.length > 0 && (
+                  {/* {event.website && event.website.length > 0 && (
                     <div className="mt-4">
                       <h3 className="font-semibold mb-2">Event Links</h3>
                       <div className="flex flex-wrap gap-2">
@@ -262,20 +299,7 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                         ))}
                       </div>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Tags */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex flex-wrap gap-2">
-                  {event.tags.map(tag => (
-                    <Badge key={tag} variant="outline">
-                      {tag}
-                    </Badge>
-                  ))}
+                  )} */}
                 </div>
               </CardContent>
             </Card>
@@ -286,19 +310,24 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Featured Speakers</CardTitle>
-                <CardDescription>Meet the industry experts and thought leaders</CardDescription>
+                <CardDescription>
+                  Meet the industry experts and thought leaders
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {event.speakers.map(speaker => (
-                    <Card key={speaker.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                  {event.speakers.map((speaker) => (
+                    <Card
+                      key={speaker.id}
+                      className="cursor-pointer hover:shadow-md transition-shadow"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
                           <img
-                            src={speaker.avatar}
+                            // src={speaker.avatar}
                             alt={speaker.name}
                             className="w-16 h-16 rounded-full object-cover object-center bg-gray-200"
-                            onError={e => {
+                            onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = "none";
                               target.parentElement!.innerHTML = `
@@ -309,15 +338,9 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                             }}
                           />
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-sm truncate">{speaker.name}</h4>
-                            <p className="text-xs text-muted-foreground mb-2">{speaker.title}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {speaker.expertise.slice(0, 2).map(skill => (
-                                <Badge key={skill} variant="secondary" className="text-xs">
-                                  {skill}
-                                </Badge>
-                              ))}
-                            </div>
+                            <h4 className="font-semibold text-sm truncate">
+                              {speaker.name}
+                            </h4>
                           </div>
                         </div>
                       </CardContent>
@@ -337,31 +360,46 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {event.sections.map(section => (
-                    <Card key={section.id} className="border-l-4 border-l-primary">
+                  {event.sections.map((section) => (
+                    <Card
+                      key={section.id}
+                      className="border-l-4 border-l-primary"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-semibold">{section.sectionName}</h4>
+                              <h4 className="font-semibold">
+                                {section.sectionName}
+                              </h4>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => togglePersonalSchedule(section.id)}
+                                onClick={() =>
+                                  togglePersonalSchedule(section.id)
+                                }
                                 className={cn(
                                   "h-6 px-2 text-xs",
-                                  personalSchedule.includes(section.id) && "bg-primary/10 text-primary"
+                                  personalSchedule.includes(section.id) &&
+                                    "bg-primary/10 text-primary"
                                 )}
                               >
-                                {personalSchedule.includes(section.id) ? "Remove" : "Add"}
+                                {personalSchedule.includes(section.id)
+                                  ? "Remove"
+                                  : "Add"}
                               </Button>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">{section.description}</p>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {section.description}
+                            </p>
                             <div className="flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 {section.startTime && section.endTime
-                                  ? getTimeRange(section.startTime, section.endTime)
+                                  ? getTimeRange(
+                                      section.startTime,
+                                      section.endTime
+                                    )
                                   : "Time TBD"}
                               </span>
                               <span className="flex items-center gap-1">
@@ -371,8 +409,12 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-sm font-medium">{formatDate(section.startTime)}</div>
-                            <div className="text-xs text-muted-foreground">{formatTime(section.startTime)}</div>
+                            <div className="text-sm font-medium">
+                              {formatDate(section.startTime)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {formatTime(section.startTime)}
+                            </div>
                           </div>
                         </div>
 
@@ -383,14 +425,17 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                               Speakers:
                             </div>
                             <div className="flex flex-wrap gap-2">
-                              {section.speakers.map(speaker => (
-                                <div key={speaker.id} className="flex items-center gap-1">
+                              {section.speakers.map((speaker) => (
+                                <div
+                                  key={speaker.id}
+                                  className="flex items-center gap-1"
+                                >
                                   <img
-                                    src={speaker.avatar}
                                     alt={speaker.name}
                                     className="w-6 h-6 rounded-full object-cover object-center bg-gray-200"
-                                    onError={e => {
-                                      const target = e.target as HTMLImageElement;
+                                    onError={(e) => {
+                                      const target =
+                                        e.target as HTMLImageElement;
                                       target.style.display = "none";
                                       target.parentElement!.innerHTML = `
                                         <div class="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
@@ -399,7 +444,9 @@ export default function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                                       `;
                                     }}
                                   />
-                                  <span className="text-xs">{speaker.name}</span>
+                                  <span className="text-xs">
+                                    {speaker.name}
+                                  </span>
                                 </div>
                               ))}
                             </div>
