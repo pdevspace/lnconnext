@@ -1,0 +1,13 @@
+export const dynamic = "force-static";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({
+    tag: "payRequest",
+    callback: "https://lates.lightningok.win/lnurlp/api/v1/lnurl/cb/HEZLVv",
+    minSendable: 1000000,
+    maxSendable: 1000000000000,
+    metadata:
+      '[["text/plain", "Payment to lnconnext"], ["text/identifier", "lnconnext@lates.lightningok.win"]]',
+  });
+}
