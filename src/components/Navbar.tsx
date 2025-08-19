@@ -1,4 +1,4 @@
-import { Calendar, Users, Video, Building2 } from "lucide-react";
+import { Calendar, Users, Building2, Info } from "lucide-react";
 import Link from "next/link";
 
 export default function Navbar() {
@@ -18,12 +18,6 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="flex gap-2">
-            <Link href="/calendar">
-              <button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 transition">
-                <Calendar className="h-4 w-4" />
-                <span>Calendar</span>
-              </button>
-            </Link>
             <Link href="/event">
               <button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 transition">
                 <Users className="h-4 w-4" />
@@ -36,8 +30,19 @@ export default function Navbar() {
                 <span>Organizers</span>
               </button>
             </Link>
+            <Link href="/calendar">
+              <button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 transition">
+                <Calendar className="h-4 w-4" />
+                <span>Calendar</span>
+              </button>
+            </Link>
           </div>
           <div className="flex-1" />
+          <Link href="/info">
+            <button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 transition">
+              <Info className="h-5 w-5" />
+            </button>
+          </Link>
         </div>
       </div>
     </nav>
