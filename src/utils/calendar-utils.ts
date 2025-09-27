@@ -107,7 +107,7 @@ export function generateCalendarDays(
   return dates.map(date => {
     const dayEvents = events.filter(event => {
       const eventStart = new Date(event.startDate);
-      const eventEnd = new Date(event.endDate);
+      const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
       const dayStart = new Date(date);
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(date);
@@ -163,12 +163,17 @@ export function formatDateWithDay(date: Date): string {
 }
 
 // Format time range
-export function formatTimeRange(startDate: Date, endDate: Date): string {
+export function formatTimeRange(startDate: Date, endDate?: Date): string {
   const startTime = startDate.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
   });
+  
+  if (!endDate) {
+    return startTime;
+  }
+  
   const endTime = endDate.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -280,9 +285,9 @@ export function doEventsConflict(
   event2: Event
 ): boolean {
   const start1 = new Date(event1.startDate);
-  const end1 = new Date(event1.endDate);
+  const end1 = event1.endDate ? new Date(event1.endDate) : start1;
   const start2 = new Date(event2.startDate);
-  const end2 = new Date(event2.endDate);
+  const end2 = event2.endDate ? new Date(event2.endDate) : start2;
 
   return start1 < end2 && start2 < end1;
 }

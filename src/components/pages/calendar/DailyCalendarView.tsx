@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { isSameDay, isToday as isTodayFn } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { Event } from "@/types/event";
 import React from "react";
 

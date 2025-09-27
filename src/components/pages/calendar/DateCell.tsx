@@ -2,8 +2,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { isFuture, isPast } from "@/lib/calendar-utils";
-import { cn } from "@/lib/utils";
+import { isFuture, isPast } from "@/utils/calendar-utils";
+import { cn } from "@/utils/utils";
 import { CalendarDay } from "@/types/calendar";
 import { Event } from "@/types/event";
 import { Clock, Heart, Plus, Star } from "lucide-react";

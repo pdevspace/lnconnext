@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { formatDate, formatTime, isEventUpcoming } from "@/lib/utils";
+import { formatDate, formatTime, isEventUpcoming } from "@/utils/utils";
 
 export default function EventListPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,7 +94,7 @@ export default function EventListPage() {
       {/* Main Content */}
       <div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
         {/* Events List */}
-        <div className="space-y-4 max-w-none mx-0 px-4 mb-[130px]">
+        <div className="space-y-4 max-w-none mx-0 px-4 mb-[800px]">
           {filteredEvents.map((event) => (
             <div
               key={event.id}

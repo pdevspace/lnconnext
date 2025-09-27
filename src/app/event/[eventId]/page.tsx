@@ -1,4 +1,4 @@
-import EventPage from "@/components/pages/event/EventPage";
+import { EventPage } from "@/components/pages/event/EventPage";
 import { getAllEvents } from "@/data/EventService";
 
 interface PageProps {

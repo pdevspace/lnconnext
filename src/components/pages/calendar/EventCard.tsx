@@ -1,8 +1,8 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { formatTimeRange, isToday } from "@/lib/calendar-utils";
-import { cn } from "@/lib/utils";
+import { formatTimeRange, isToday } from "@/utils/calendar-utils";
+import { cn } from "@/utils/utils";
 import { Event } from "@/types/event";
 import { Clock, MapPin, Users } from "lucide-react";
 import React from "react";
@@ -55,7 +55,7 @@ export default function EventCard({ event, className }: EventCardProps) {
               <span>
                 {formatTimeRange(
                   new Date(event.startDate),
-                  new Date(event.endDate)
+                  event.endDate ? new Date(event.endDate) : undefined
                 )}
               </span>
             </div>

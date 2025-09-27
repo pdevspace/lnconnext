@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Bitcoiner {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  socialMedia SocialMedia[]
+  bio         String?
+  avatar      String?
+  expertise   String[]
+  location    String?
+  website     String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("bitcoiners")
+}
+
+model SocialMedia {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  displayText String
+  username    String
+  platform    String
+  urlLink     String
+  bitcoinerId String    @db.ObjectId
+  bitcoiner   Bitcoiner @relation(fields: [bitcoinerId], references: [id], onDelete: Cascade)
+
+  @@map("social_media")
+}

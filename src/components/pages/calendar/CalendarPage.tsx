@@ -14,8 +14,8 @@ import {
   getPreviousWeek,
   searchEvents,
   daysInWeek,
-} from "@/lib/calendar-utils";
-import { cn } from "@/lib/utils";
+} from "@/utils/calendar-utils";
+import { cn } from "@/utils/utils";
 import { CalendarDay, FilterState, ViewMode } from "@/types/calendar";
 import { Event } from "@/types/event";
 import { addDays, addMonths, isSameDay, isToday as isTodayFn } from "date-fns";

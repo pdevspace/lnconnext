@@ -1,5 +1,5 @@
 // Service to access Bitcoin event data
-import { Event, Organizer, Location, Speaker } from "@/types/event";
+import { Event, Organizer, Location, Speaker, Website, SocialMedia } from "@/types/event";
 import event1 from "./event/event1.json";
 import event2 from "./event/event2.json";
 import event3 from "./event/event3.json";
@@ -18,7 +18,7 @@ function parseEventDates(event: any): Event {
   return {
     ...event,
     startDate: new Date(event.startDate),
-    endDate: new Date(event.endDate),
+    endDate: event.endDate ? new Date(event.endDate) : undefined,
     sections: event.sections.map((section: any) => ({
       ...section,
       startTime: new Date(section.startTime),
@@ -47,7 +47,7 @@ function joinEventData(event: any): Event {
         speakersData.speakers.find((s: any) => s.id === speaker) || {
           id: speaker,
           name: "Unknown Speaker",
-          socialMedia: {},
+          socialMedia: [],
         }
       );
     }
@@ -83,7 +83,7 @@ function joinEventData(event: any): Event {
             speakersData.speakers.find((s: any) => s.id === speaker) || {
               id: speaker,
               name: "Unknown Speaker",
-              socialMedia: {},
+              socialMedia: [],
             }
           );
         }

@@ -6,14 +6,14 @@ export interface Event {
   eventSeriesName?: string;
   location?: Location;
   sections: EventSection[];
-  price: number;
 
   startDate: Date;
-  endDate: Date;
+  endDate?: Date;
   speakers: Speaker[];
   images: string[];
   website: Website[];
-  socialMedia: SocialMedia[];
+  price: number;
+  register?: Website;
 }
 
 export interface Organizer {
@@ -27,7 +27,6 @@ export interface Location {
   id: string;
   buildingName: string;
   googleMapsUrl?: string;
-  coordinates?: { lat: number; lng: number };
 }
 
 export interface EventSection {

@@ -27,7 +27,7 @@ import {
   Youtube,
   Mic,
 } from "lucide-react";
-import { cn, formatDate, formatTime, isEventUpcoming } from "@/lib/utils";
+import { cn, formatDate, formatTime, isEventUpcoming } from "@/utils/utils";
 
 interface OrganizerPageProps {
   organizerId: string;
