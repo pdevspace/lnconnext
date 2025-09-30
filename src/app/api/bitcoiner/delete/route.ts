@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BitcoinerService } from '@/prisma/BitcoinerService';
-
-interface DeleteRequest {
-  id: string;
-}
+import { BitcoinerService } from '@/service/BitcoinerService';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: DeleteRequest = await request.json();
-    
-    if (!body.id) {
+    const body = await request.json();
+    const { id } = body;
+
+    if (!id) {
       return NextResponse.json(
         {
           success: false,
@@ -19,9 +16,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    const success = await BitcoinerService.deleteBitcoiner(body.id);
-    
+
+    const success = await BitcoinerService.deleteBitcoiner(id);
+
     if (!success) {
       return NextResponse.json(
         {
@@ -32,14 +29,14 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
-      data: { deleted: true },
       message: 'Bitcoiner deleted successfully'
     });
   } catch (error) {
     console.error('Error deleting bitcoiner:', error);
+
     return NextResponse.json(
       {
         success: false,

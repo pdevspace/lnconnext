@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BitcoinerForm } from './BitcoinerForm';
-import { BitcoinerFormData } from '@/model/bitcoiner';
-import { useBitcoiners } from '@/model/service/useBitcoiner';
+import { BitcoinerFormData } from '@/types/bitcoiner';
+import { useBitcoiners } from '@/hooks/useBitcoiner';
 import { ArrowLeft } from 'lucide-react';
 
 export const CreateBitcoinerPage: React.FC = () => {

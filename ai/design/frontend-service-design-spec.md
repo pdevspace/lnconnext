@@ -532,33 +532,6 @@ const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 
 ## Data Validation
 
-### Zod Schemas
-
-```typescript
-// lib/validations.ts
-import { z } from 'zod';
-
-export const socialMediaSchema = z.object({
-  id: z.string().optional(), // Will be generated if not provided
-  displayText: z.string().min(1, 'Display text is required'),
-  username: z.string().min(1, 'Username is required'),
-  platform: z.string().min(1, 'Platform is required'),
-  urlLink: z.string().url('Invalid URL'),
-});
-
-export const bitcoinerSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
-  bio: z.string().max(500, 'Bio too long').optional(),
-  avatar: z.string().url('Invalid avatar URL').optional(),
-  expertise: z.array(z.string()).default([]),
-  location: z.string().max(100, 'Location too long').optional(),
-  website: z.string().url('Invalid website URL').optional(),
-  socialMedia: z.array(socialMediaSchema).default([]),
-  isActive: z.boolean().default(true),
-});
-
-export type BitcoinerFormData = z.infer<typeof bitcoinerSchema>;
-```
 
 ## State Management
 
@@ -705,8 +678,8 @@ export const getCachedBitcoiners = unstable_cache(
 
 ### Input Validation
 
-1. **Client-Side**: Zod schemas for form validation
-2. **Server-Side**: API route validation with Zod
+1. **Client-Side**: form validation
+2. **Server-Side**: API route validation
 3. **Database**: Prisma type safety
 4. **File Uploads**: Secure file handling for avatars
 
@@ -724,7 +697,7 @@ export const getCachedBitcoiners = unstable_cache(
 1. **Component Tests**: React Testing Library for UI components
 2. **Hook Tests**: Custom hook testing
 3. **Utility Tests**: Pure function testing
-4. **Validation Tests**: Zod schema testing
+4. **Validation Tests**: schema testing
 
 ### Integration Tests
 

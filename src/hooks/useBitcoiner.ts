@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Bitcoiner, BitcoinerFormData } from '@/model/bitcoiner';
+import { Bitcoiner, BitcoinerFormData } from '@/types/bitcoiner';
 
 export const useBitcoiner = (id?: string) => {
   const [bitcoiner, setBitcoiner] = useState<Bitcoiner | null>(null);

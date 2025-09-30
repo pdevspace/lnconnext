@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bitcoiner, SocialMedia, BitcoinerFormData } from '@/model/bitcoiner';
+import { Bitcoiner, SocialMedia, BitcoinerFormData } from '@/types/bitcoiner';
+import { validateBitcoinerForm, sanitizeText, sanitizeUrl } from '@/utils/frontendValidators';
 import { Plus, Trash2, Share2, Loader2 } from 'lucide-react';
 
 interface BitcoinerFormProps {
@@ -64,43 +65,26 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
     // Clear previous errors
     setErrors({});
 
-    // Basic validation
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
+    // Sanitize form data
+    const sanitizedFormData = {
+      name: sanitizeText(formData.name),
+      socialMedia: formData.socialMedia.map(social => ({
+        ...social,
+        displayText: sanitizeText(social.displayText),
+        username: sanitizeText(social.username),
+        urlLink: sanitizeUrl(social.urlLink)
+      }))
+    };
 
-    // Validate social media links
-    formData.socialMedia.forEach((social, index) => {
-      if (!social.displayText.trim()) {
-        newErrors[`social-${index}-displayText`] = 'Display text is required';
-      }
-      if (!social.username.trim()) {
-        newErrors[`social-${index}-username`] = 'Username is required';
-      }
-      if (!social.urlLink.trim()) {
-        newErrors[`social-${index}-urlLink`] = 'URL is required';
-      } else if (!isValidUrl(social.urlLink)) {
-        newErrors[`social-${index}-urlLink`] = 'Invalid URL format';
-      }
-    });
+    // Validate using frontend validation utilities
+    const validation = validateBitcoinerForm(sanitizedFormData);
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
       return;
     }
 
-    onSubmit(formData);
-  };
-
-  const isValidUrl = (url: string) => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
+    onSubmit(sanitizedFormData);
   };
 
   return (

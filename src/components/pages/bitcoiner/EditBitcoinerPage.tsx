@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BitcoinerForm } from './BitcoinerForm';
-import { useBitcoiner } from '@/model/service/useBitcoiner';
-import { BitcoinerFormData } from '@/model/bitcoiner';
+import { useBitcoiner } from '@/hooks/useBitcoiner';
+import { BitcoinerFormData } from '@/types/bitcoiner';
 import { ArrowLeft } from 'lucide-react';
 
 interface EditBitcoinerPageProps {
@@ -38,7 +38,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({ bitcoinerI
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
             <div className="animate-pulse">
@@ -55,7 +55,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({ bitcoinerI
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-center min-h-[400px]">
@@ -77,7 +77,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({ bitcoinerI
 
   if (!bitcoiner) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-center min-h-[400px]">
@@ -100,7 +100,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({ bitcoinerI
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen overflow-y-auto bg-background">
       {/* Fixed Header - follows established pattern */}
       <div className="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-4">
@@ -125,7 +125,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({ bitcoinerI
       </div>
 
       {/* Main Content - with proper navbar clearance and scrollable content */}
-      <div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
+      <div className="px-0 py-6 mt-[130px] w-full">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             {/* Form */}

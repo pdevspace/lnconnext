@@ -11,7 +11,7 @@ This document provides instructions for setting up and using the Bitcoiner servi
 - ✅ **Social Media Management**: Dynamic social media links with platform support
 - ✅ **Search & Filtering**: Search by name and filter by social media platform
 - ✅ **Responsive Design**: Mobile-first design with dark mode support
-- ✅ **Type Safety**: Full TypeScript implementation with Zod validation
+- ✅ **Type Safety**: Full TypeScript implementation with validation
 
 ## Prerequisites
 
@@ -208,7 +208,7 @@ src/
 │   └── useBitcoiner.ts                     # React hooks
 ├── lib/
 │   ├── prisma.ts                          # Prisma client
-│   └── validations.ts                     # Zod schemas
+│   └── validations.ts                     # Validations
 └── types/
     └── bitcoiner.ts                       # TypeScript interfaces
 ```

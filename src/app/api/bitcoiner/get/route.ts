@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BitcoinerService } from '@/prisma/BitcoinerService';
-
-interface GetRequest {
-  id: string;
-}
+import { BitcoinerService } from '@/service/BitcoinerService';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GetRequest = await request.json();
-    
-    if (!body.id) {
+    const body = await request.json();
+    const { id } = body;
+
+    if (!id) {
       return NextResponse.json(
         {
           success: false,
@@ -19,9 +16,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    const bitcoiner = await BitcoinerService.getBitcoinerById(body.id);
-    
+
+    const bitcoiner = await BitcoinerService.getBitcoinerById(id);
+
     if (!bitcoiner) {
       return NextResponse.json(
         {
@@ -32,14 +29,15 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       data: bitcoiner,
       message: 'Bitcoiner retrieved successfully'
     });
   } catch (error) {
-    console.error('Error getting bitcoiner:', error);
+    console.error('Error fetching bitcoiner:', error);
+
     return NextResponse.json(
       {
         success: false,

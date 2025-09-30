@@ -1,27 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BitcoinerService } from '@/prisma/BitcoinerService';
-
-interface ListRequest {
-  search?: string;
-  platform?: string;
-}
+import { BitcoinerService } from '@/service/BitcoinerService';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ListRequest = await request.json();
-    
-    const bitcoiners = await BitcoinerService.getAllBitcoiners({
-      search: body.search,
-      platform: body.platform
-    });
-    
+    const body = await request.json();
+    const { filters } = body;
+
+    const bitcoiners = await BitcoinerService.getAllBitcoiners(filters);
+
     return NextResponse.json({
       success: true,
       data: bitcoiners,
-      message: `Found ${bitcoiners.length} bitcoiners`
+      message: 'Bitcoiners retrieved successfully'
     });
   } catch (error) {
     console.error('Error listing bitcoiners:', error);
+
     return NextResponse.json(
       {
         success: false,

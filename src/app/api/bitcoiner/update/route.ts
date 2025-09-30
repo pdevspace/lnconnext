@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { bitcoinerSchema } from '@/model/validation/bitcoiner';
-import { BitcoinerService } from '@/prisma/BitcoinerService';
+import { validateApiRequest } from '@/utils/backendValidators';
+import { BitcoinerService } from '@/service/BitcoinerService';
 
 interface UpdateRequest {
   id: string;
@@ -17,7 +17,7 @@ interface UpdateRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: UpdateRequest = await request.json();
-    
+
     if (!body.id) {
       return NextResponse.json(
         {
@@ -28,19 +28,31 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Validate the request body (excluding id for validation)
     const { id, ...dataToValidate } = body;
-    const validatedData = bitcoinerSchema.parse(dataToValidate);
+    const validation = validateApiRequest(dataToValidate);
 
-    // Ensure all socialMedia items have an 'id' property of type string
-    const fixedSocialMedia = validatedData.socialMedia.map((item) => ({
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Validation error',
+          message: validation.message,
+          errors: validation.errors
+        },
+        { status: 400 }
+      );
+    }
+
+    // Ensure all socialMedia items have an 'id' property
+    const fixedSocialMedia = validation.data!.socialMedia.map((item: any, idx: number) => ({
       ...item,
-      id: item.id ?? '',
+      id: item.id || `${idx}-${Date.now()}`
     }));
 
     const updatedBitcoiner = await BitcoinerService.updateBitcoiner(id, {
-      ...validatedData,
+      ...validation.data!,
       socialMedia: fixedSocialMedia,
     });
 
@@ -54,7 +66,7 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       data: updatedBitcoiner,
@@ -62,18 +74,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error updating bitcoiner:', error);
-    
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Validation error',
-          message: error.message
-        },
-        { status: 400 }
-      );
-    }
-    
+
     return NextResponse.json(
       {
         success: false,

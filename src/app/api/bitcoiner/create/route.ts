@@ -1,38 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { bitcoinerSchema } from '@/model/validation/bitcoiner';
-import { BitcoinerService } from '@/prisma/BitcoinerService';
-
-interface CreateRequest {
-  name: string;
-  socialMedia: Array<{
-    id?: string;
-    displayText: string;
-    username: string;
-    platform: string;
-    urlLink: string;
-  }>;
-}
+import { validateApiRequest } from '@/utils/backendValidators';
+import { BitcoinerService } from '@/service/BitcoinerService';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateRequest = await request.json();
-    
-    // Validate the request body
-    const validatedData = bitcoinerSchema.parse(body);
+    const body = await request.json();
 
-    // Ensure all socialMedia items have an 'id' property of type string
-    const fixedSocialMedia = validatedData.socialMedia.map((item, idx) => ({
+    // Validate the request body using custom validators
+    const validation = validateApiRequest(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Validation error',
+          message: validation.message,
+          errors: validation.errors
+        },
+        { status: 400 }
+      );
+    }
+
+    // Ensure all socialMedia items have an 'id' property
+    const fixedSocialMedia = validation.data!.socialMedia.map((item: any, idx: number) => ({
       ...item,
-      id: typeof item.id === 'string' ? item.id : `${idx}-${Date.now()}`
+      id: item.id || `${idx}-${Date.now()}`
     }));
 
-    const fixedValidatedData = {
-      ...validatedData,
+    const finalData = {
+      ...validation.data!,
       socialMedia: fixedSocialMedia
     };
 
-    const newBitcoiner = await BitcoinerService.createBitcoiner(fixedValidatedData);
-    
+    const newBitcoiner = await BitcoinerService.createBitcoiner(finalData);
+
     return NextResponse.json({
       success: true,
       data: newBitcoiner,
@@ -40,18 +41,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
   } catch (error) {
     console.error('Error creating bitcoiner:', error);
-    
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Validation error',
-          message: error.message
-        },
-        { status: 400 }
-      );
-    }
-    
+
     return NextResponse.json(
       {
         success: false,

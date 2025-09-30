@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { BitcoinerCard } from './BitcoinerCard';
 import { BitcoinerFilters } from './BitcoinerFilters';
-import { useBitcoiners } from '@/model/service/useBitcoiner';
-import { Bitcoiner, BitcoinerFilters as FilterState } from '@/model/bitcoiner';
+import { useBitcoiners } from '@/hooks/useBitcoiner';
+import { Bitcoiner, BitcoinerFilters as FilterState } from '@/types/bitcoiner';
 import { Plus, Share2 } from 'lucide-react';
 
 export const BitcoinerListPage: React.FC = () => {
@@ -51,33 +51,10 @@ export const BitcoinerListPage: React.FC = () => {
     setFilters({ searchTerm: '', selectedPlatform: '' });
   };
 
-  const handleEdit = (id: string) => {
-    router.push(`/bitcoiner/edit/${id}`);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this bitcoiner?')) {
-      try {
-        const response = await fetch(`/api/bitcoiner/${id}`, {
-          method: 'DELETE',
-        });
-        
-        if (response.ok) {
-          // Refresh the list
-          fetchBitcoiners();
-        } else {
-          alert('Failed to delete bitcoiner');
-        }
-      } catch (error) {
-        console.error('Error deleting bitcoiner:', error);
-        alert('Failed to delete bitcoiner');
-      }
-    }
-  };
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -96,7 +73,7 @@ export const BitcoinerListPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen overflow-y-auto bg-background">
       {/* Fixed Header - follows established pattern */}
       <div className="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-4">
@@ -131,7 +108,7 @@ export const BitcoinerListPage: React.FC = () => {
       </div>
 
       {/* Main Content - with proper navbar clearance and scrollable content */}
-      <div className="h-screen overflow-y-auto px-0 py-6 mt-[264px] w-full">
+      <div className="px-0 py-6 mt-[264px] w-full">
         <div className="container mx-auto px-4">
           {/* Loading State */}
           {loading && (
@@ -151,9 +128,6 @@ export const BitcoinerListPage: React.FC = () => {
                 <BitcoinerCard 
                   key={bitcoiner.id} 
                   bitcoiner={bitcoiner}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  showActions={true}
                 />
               ))}
             </div>

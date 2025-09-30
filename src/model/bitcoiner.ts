@@ -1,33 +1,52 @@
+/**
+ * Backend Model Interfaces
+ * 
+ * This file contains the core data interfaces for the bitcoiner feature.
+ * These interfaces define the data structures used by the backend service layer
+ * and represent the actual data models in the database.
+ */
+
 export interface Bitcoiner {
   id: string;
   name: string;
   socialMedia: SocialMedia[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SocialMedia {
-  id: string;                    // Unique identifier (e.g., "social-1")
-  displayText: string;           // Display text (e.g., "เพจ BLC Chiang Mai")
-  username: string;              // Username/handle (e.g., "BLC Chiang Mai")
-  platform: string;             // Platform name (e.g., "facebook", "youtube")
-  urlLink: string;               // Full URL link
+  id: string;
+  displayText: string;
+  username: string;
+  platform: string;
+  urlLink: string;
+  bitcoinerId: string;
 }
 
 export interface BitcoinerFormData {
   name: string;
-  socialMedia: SocialMedia[];
+  socialMedia: SocialMediaData[];
+}
+
+export interface SocialMediaData {
+  id?: string;
+  displayText: string;
+  username: string;
+  platform: string;
+  urlLink: string;
 }
 
 export interface BitcoinerFilters {
-  searchTerm: string;
-  selectedPlatform: string;
+  search?: string;
+  platform?: string;
 }
 
-export type Platform = 'facebook' | 'youtube' | 'twitter' | 'linkedin' | 'instagram';
+export interface BitcoinerCreateData {
+  name: string;
+  socialMedia: Omit<SocialMediaData, 'id'>[];
+}
 
-export const PLATFORM_OPTIONS = [
-  { value: 'facebook', label: 'Facebook' },
-  { value: 'youtube', label: 'YouTube' },
-  { value: 'twitter', label: 'Twitter' },
-  { value: 'linkedin', label: 'LinkedIn' },
-  { value: 'instagram', label: 'Instagram' },
-] as const;
+export interface BitcoinerUpdateData {
+  name: string;
+  socialMedia: SocialMediaData[];
+}

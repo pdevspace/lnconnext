@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SocialMediaCard } from './SocialMediaCard';
-import { useBitcoiner } from '@/model/service/useBitcoiner';
+import { useBitcoiner } from '@/hooks/useBitcoiner';
 import { ArrowLeft, Edit, Trash2, Share2, User } from 'lucide-react';
 
 interface BitcoinerDetailPageProps {
@@ -30,7 +30,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({ bitcoi
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="animate-pulse">
@@ -52,7 +52,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({ bitcoi
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-center min-h-[400px]">
@@ -74,7 +74,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({ bitcoi
 
   if (!bitcoiner) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen overflow-y-auto bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-center min-h-[400px]">
@@ -97,7 +97,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({ bitcoi
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen overflow-y-auto bg-background">
       {/* Fixed Header - follows established pattern */}
       <div className="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-4">
@@ -133,7 +133,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({ bitcoi
       </div>
 
       {/* Main Content - with proper navbar clearance and scrollable content */}
-      <div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
+      <div className="px-0 py-6 mt-[130px] w-full">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* Profile Section */}

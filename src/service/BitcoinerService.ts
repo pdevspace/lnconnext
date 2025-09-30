@@ -42,8 +42,11 @@ export class BitcoinerService {
           displayText: social.displayText,
           username: social.username,
           platform: social.platform,
-          urlLink: social.urlLink
-        }))
+          urlLink: social.urlLink,
+          bitcoinerId: social.bitcoinerId
+        })),
+        createdAt: bitcoiner.createdAt,
+        updatedAt: bitcoiner.updatedAt
       }));
     } catch (error) {
       console.error('Error fetching bitcoiners:', error);
@@ -82,8 +85,11 @@ export class BitcoinerService {
           displayText: social.displayText,
           username: social.username,
           platform: social.platform,
-          urlLink: social.urlLink
-        }))
+          urlLink: social.urlLink,
+          bitcoinerId: social.bitcoinerId
+        })),
+        createdAt: bitcoiner.createdAt,
+        updatedAt: bitcoiner.updatedAt
       };
     } catch (error) {
       console.error('Error fetching bitcoiner:', error);
@@ -118,8 +124,11 @@ export class BitcoinerService {
           displayText: social.displayText,
           username: social.username,
           platform: social.platform,
-          urlLink: social.urlLink
-        }))
+          urlLink: social.urlLink,
+          bitcoinerId: social.bitcoinerId
+        })),
+        createdAt: bitcoiner.createdAt,
+        updatedAt: bitcoiner.updatedAt
       };
     } catch (error) {
       console.error('Error creating bitcoiner:', error);
@@ -161,8 +170,11 @@ export class BitcoinerService {
           displayText: social.displayText,
           username: social.username,
           platform: social.platform,
-          urlLink: social.urlLink
-        }))
+          urlLink: social.urlLink,
+          bitcoinerId: social.bitcoinerId
+        })),
+        createdAt: bitcoiner.createdAt,
+        updatedAt: bitcoiner.updatedAt
       };
     } catch (error) {
       console.error('Error updating bitcoiner:', error);

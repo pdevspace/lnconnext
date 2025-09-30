@@ -1,7 +1,7 @@
 'use client';
 
 import { SocialIcon } from '@/components/ui/social-icon';
-import { SocialMedia } from '@/model/bitcoiner';
+import { SocialMedia } from '@/types/bitcoiner';
 import { ExternalLink } from 'lucide-react';
 
 interface SocialMediaCardProps {
