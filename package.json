@@ -13,9 +13,14 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf node_modules package-lock.json yarn.lock .next out dist",
     "export": "next build && next export",
-    "db:seed": "tsx scripts/seed-bitcoiners.ts",
+    "db:seed": "tsx scripts/seed-all.ts",
+    "db:seed:bitcoiners": "tsx scripts/seed-bitcoiners.ts",
+    "db:seed:organizers": "tsx scripts/seed-organizers.ts",
+    "db:seed:locations": "tsx scripts/seed-locations.ts",
+    "db:seed:events": "tsx scripts/seed-events.ts",
     "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:reset": "prisma db push --force-reset && npm run db:seed"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",

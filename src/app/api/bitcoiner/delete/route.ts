@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BitcoinerService } from '@/service/BitcoinerService';
+import { BitcoinerService } from '@/services/BitcoinerService';
 
 export async function POST(request: NextRequest) {
   try {

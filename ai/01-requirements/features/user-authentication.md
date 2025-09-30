@@ -109,15 +109,15 @@ The User Authentication feature provides secure user authentication and authoriz
 **Target Implementation Files**:
 - `src/components/pages/auth/AuthPage.tsx`
 - `src/components/pages/user/UserProfilePage.tsx`
-- `src/service/AuthService.ts`
-- `src/service/UserService.ts`
+- `src/services/AuthService.ts`
+- `src/services/UserService.ts`
 - `src/app/api/auth/`
 
 **Target Test Files**:
 - `src/components/pages/auth/__tests__/AuthPage.test.tsx`
 - `src/components/pages/user/__tests__/UserProfilePage.test.tsx`
-- `src/service/__tests__/AuthService.test.ts`
-- `src/service/__tests__/UserService.test.ts`
+- `src/services/__tests__/AuthService.test.ts`
+- `src/services/__tests__/UserService.test.ts`
 - `src/app/api/auth/__tests__/`
 
 ---

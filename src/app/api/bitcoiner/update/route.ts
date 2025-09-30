@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateApiRequest } from '@/utils/backendValidators';
-import { BitcoinerService } from '@/service/BitcoinerService';
+import { validateBitcoinerApiRequest } from '@/utils/backendValidators';
+import { BitcoinerService } from '@/services/BitcoinerService';
 
 interface UpdateRequest {
   id: string;
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Validate the request body (excluding id for validation)
     const { id, ...dataToValidate } = body;
-    const validation = validateApiRequest(dataToValidate);
+    const validation = validateBitcoinerApiRequest(dataToValidate);
 
     if (!validation.success) {
       return NextResponse.json(

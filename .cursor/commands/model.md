@@ -40,7 +40,6 @@
 
 ### Requirements Phase
 ```
-*requirement [feature] [action]
 *req [feature] [action]
 ```
 **Purpose**: Create and manage requirements documentation
@@ -54,9 +53,9 @@
 5. Update appropriate requirements document(s) in `ai/01-requirements/` folder
 6. Validate requirements completeness and content guidelines compliance
 **Examples**:
-- `*requirement user-auth add login requirements`
+- `*req user-auth add login requirements`
 - `*req event-management update booking requirements`
-- `*requirement bitcoiner-profiles validate requirements`
+- `*req bitcoiner-profiles validate requirements`
 
 ### Design Phase
 ```
@@ -77,7 +76,6 @@
 
 ### Implementation Phase
 ```
-*implement [feature] [action]
 *code [feature] [action]
 ```
 **Purpose**: Implement features according to design specifications
@@ -89,9 +87,9 @@
 5. Implement features according to specifications in `ai/03-implementation/` folder
 6. Follow established patterns and conventions
 **Examples**:
-- `*implement bitcoiner-profiles create CRUD operations`
+- `*code bitcoiner-profiles create CRUD operations`
 - `*code event-management add calendar integration`
-- `*implement user-auth add JWT authentication`
+- `*code user-auth add JWT authentication`
 
 ### Testing Phase
 ```
@@ -263,21 +261,21 @@ performance [target] [action]
 ## Usage Instructions
 
 ### Basic Usage
-1. Start your prompt with a phase keyword (`*flow`, `*requirement`, etc.)
+1. Start your prompt with a phase keyword (`*flow`, `*req`, etc.)
 2. Specify the target feature or module
 3. Describe the action you want to perform
 4. The AI will follow the appropriate SDLC workflow
 
 ### Advanced Usage
-1. Combine multiple commands: `*implement bitcoiner-profiles create CRUD and generate tests`
+1. Combine multiple commands: `*code bitcoiner-profiles create CRUD and generate tests`
 2. Use validation commands to check work: `validate implementation bitcoiner-profiles`
-3. Chain phases: `*requirement user-auth add requirements` then `*design user-auth create design`
+3. Chain phases: `*req user-auth add requirements` then `*design user-auth create design`
 
 ### Examples
 ```
-*requirement event-management add booking system requirements
+*req event-management add booking system requirements
 *design event-management create booking UI design
-*implement event-management create booking API
+*code event-management create booking API
 *test event-management create booking tests
 *deploy production deploy booking system
 ```

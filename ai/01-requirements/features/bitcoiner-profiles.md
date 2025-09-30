@@ -101,13 +101,13 @@ The Bitcoiner Profiles feature provides comprehensive functionality for managing
 - `src/components/pages/bitcoiner/BitcoinerListPage.tsx`
 - `src/components/pages/bitcoiner/BitcoinerDetailPage.tsx`
 - `src/components/pages/bitcoiner/BitcoinerForm.tsx`
-- `src/service/BitcoinerService.ts`
+- `src/services/BitcoinerService.ts`
 - `src/app/api/bitcoiner/`
 
 **Target Test Files**:
 - `src/components/pages/bitcoiner/__tests__/BitcoinerListPage.test.tsx`
 - `src/components/pages/bitcoiner/__tests__/BitcoinerDetailPage.test.tsx`
-- `src/service/__tests__/BitcoinerService.test.ts`
+- `src/services/__tests__/BitcoinerService.test.ts`
 - `src/app/api/bitcoiner/__tests__/`
 
 ---

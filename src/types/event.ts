@@ -1,66 +1,72 @@
+import { Organizer } from "@/models/organizer";
+
 export interface Event {
   id: string;
   name: string;
   description: string;
+  organizerId: string;
   organizer: Organizer;
   eventSeriesName?: string;
   location?: Location;
   sections: EventSection[];
-
   startDate: Date;
   endDate?: Date;
-  speakers: Speaker[];
+  bitcoiners: Bitcoiner[];
   images: string[];
-  website: Website[];
+  websites: Website[];
   price: number;
   register?: Website;
-}
-
-export interface Organizer {
-  id: string;
-  name: string;
-  socialMedia: SocialMedia[];
-  speakers: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Location {
   id: string;
   buildingName: string;
-  googleMapsUrl?: string;
+  address: string;
+  city: string;
+  country: string;
+  googleMapsUrl: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export interface EventSection {
   id: string;
   sectionName: string;
-  description: string;
   startTime: Date;
-  endTime?: Date;
-  spot: {
-    location: Location;
-    name?: string;
-    floor?: string;
-  };
-  speakers: Speaker[];
+  endTime: Date;
+  spot: string;
+  description?: string;
+  bitcoiners: Bitcoiner[];
 }
 
-export interface Speaker {
+export interface Bitcoiner {
   id: string;
   name: string;
+  bio?: string;
+  avatar?: string;
+  expertise: string[];
+  isActive: boolean;
   socialMedia: SocialMedia[];
 }
 
 export interface Website {
   id: string;
-  displayText: string;
-  source: "facebook" | "website" | "ticket" | "other";
-  sourceUrl: string;
+  url: string;
+  type: 'facebook' | 'youtube' | 'twitter' | 'linkedin' | 'instagram' | 'other';
+  displayText?: string;
 }
 
 export interface SocialMedia {
-  id: string
-  displayText: string
+  id: string;
+  displayText: string;
   username: string;
-  platform: "facebook" | "youtube" | "other";
+  platform: string;
   urlLink: string;
+  ownerId: string;
+  ownerType: 'bitcoiner' | 'organizer';
 }
 

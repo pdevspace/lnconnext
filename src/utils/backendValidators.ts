@@ -6,7 +6,7 @@
  * and ensure data integrity at the server level.
  */
 
-import { BitcoinerFormData, SocialMediaData } from '@/model/bitcoiner';
+import { BitcoinerFormData, SocialMediaData } from '@/models/bitcoiner';
 
 // Type definitions for backend validation
 export interface ValidationResult {
@@ -145,7 +145,7 @@ export const validateBitcoinerApi = (data: BitcoinerFormData): ApiValidationResu
 };
 
 /**
- * Validates API request body structure
+ * Validates API request body structure (generic)
  */
 export const validateApiRequest = (body: any): ApiValidationResult => {
   if (!body || typeof body !== 'object') {
@@ -156,7 +156,25 @@ export const validateApiRequest = (body: any): ApiValidationResult => {
     };
   }
 
-  // Check required fields
+  return {
+    success: true,
+    data: body
+  };
+};
+
+/**
+ * Validates bitcoiner-specific API request body structure
+ */
+export const validateBitcoinerApiRequest = (body: any): ApiValidationResult => {
+  if (!body || typeof body !== 'object') {
+    return {
+      success: false,
+      errors: { body: 'Request body must be an object' },
+      message: 'Invalid request body'
+    };
+  }
+
+  // Check required fields for bitcoiner
   if (!body.name) {
     return {
       success: false,

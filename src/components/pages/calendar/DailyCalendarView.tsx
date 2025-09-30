@@ -58,7 +58,7 @@ const DailyCalendarView = ({
                       key={event.id}
                       className="px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium shadow"
                     >
-                      {`${event.name} by ${event.organizer}`}
+                      {`${event.name} by ${event.organizer.name}`}
                     </div>
                   ))}
                 </div>

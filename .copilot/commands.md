@@ -32,39 +32,29 @@
 
 ### Requirements Phase Commands
 ```typescript
-// @copilot:requirement [feature] [action] - Create and manage requirements
-// @copilot:requirement user-auth add login requirements
-// @copilot:requirement event-management update booking requirements
-// @copilot:requirement bitcoiner-profiles validate requirements
-
-// @copilot:req [feature] [action] - Short form for requirements
+// @copilot:req [feature] [action] - Create and manage requirements
 // @copilot:req user-auth add login requirements
+// @copilot:req profiles validate requirements
 ```
 
 ### Design Phase Commands
 ```typescript
 // @copilot:design [module] [action] - Create and manage design specifications
-// @copilot:design bitcoiner-profiles update UI design
-// @copilot:design event-management create API design
+// @copilot:design profiles update UI design
 // @copilot:design user-auth update component architecture
 ```
 
 ### Implementation Phase Commands
 ```typescript
-// @copilot:implement [feature] [action] - Implement features according to design
-// @copilot:implement bitcoiner-profiles create CRUD operations
-// @copilot:implement event-management add calendar integration
-// @copilot:implement user-auth add JWT authentication
-
-// @copilot:code [feature] [action] - Short form for implementation
-// @copilot:code bitcoiner-profiles create CRUD operations
+// @copilot:code [feature] [action] - Implement features according to design
+// @copilot:code profiles create CRUD operations
+// @copilot:code user-auth add JWT authentication
 ```
 
 ### Testing Phase Commands
 ```typescript
 // @copilot:test [feature] [action] - Create and execute test cases
-// @copilot:test bitcoiner-profiles create unit tests
-// @copilot:test event-management run integration tests
+// @copilot:test profiles create unit tests
 // @copilot:test user-auth validate security tests
 ```
 
@@ -82,23 +72,21 @@
 ```typescript
 // @copilot:generate component UserProfile
 // @copilot:generate api user-auth
-// @copilot:generate service EventService
 // @copilot:generate hook useUser
-// @copilot:generate test BitcoinerForm
+// @copilot:generate test UserForm
 // @copilot:generate type UserData
 ```
 
 ### Refactoring Commands
 ```typescript
 // @copilot:refactor UserComponent to-hooks
-// @copilot:refactor EventService to-typescript
-// @copilot:refactor BitcoinerCard optimize
+// @copilot:refactor UserCard optimize
 // @copilot:refactor UserAuth modernize
 ```
 
 ### Documentation Commands
 ```typescript
-// @copilot:docs bitcoiner-profiles update design spec
+// @copilot:docs profiles update design spec
 // @copilot:docs API create endpoint documentation
 // @copilot:docs README update project overview
 // @copilot:docs user-auth validate requirements
@@ -106,69 +94,19 @@
 
 ### Validation Commands
 ```typescript
-// @copilot:validate requirements bitcoiner-profiles
-// @copilot:validate design event-management
+// @copilot:validate requirements profiles
 // @copilot:validate implementation user-auth
-// @copilot:validate tests bitcoiner-profiles
+// @copilot:validate tests profiles
 // @copilot:validate deployment production
-```
-
-## Project-Specific Copilot Commands
-
-### Bitcoiner Module Commands
-```typescript
-// @copilot:bitcoiner create new profile form
-// @copilot:bitcoiner update social media validation
-// @copilot:bitcoiner validate API endpoints
-// @copilot:bitcoiner create CRUD operations
-// @copilot:bitcoiner update UI components
-```
-
-### Event Module Commands
-```typescript
-// @copilot:event create calendar integration
-// @copilot:event update booking system
-// @copilot:event validate date handling
-// @copilot:event create event management
-// @copilot:event update calendar UI
-```
-
-### User Module Commands
-```typescript
-// @copilot:user auth implement JWT
-// @copilot:user profile create settings page
-// @copilot:user permissions add role-based access
-// @copilot:user auth create login system
-// @copilot:user profile update user interface
-```
-
-## Architecture Commands
-
-### API Design Commands
-```typescript
-// @copilot:api bitcoiner create CRUD endpoints
-// @copilot:api event update calendar endpoints
-// @copilot:api user validate authentication
-// @copilot:api bitcoiner update validation
-// @copilot:api event create booking endpoints
 ```
 
 ### Database Commands
 ```typescript
-// @copilot:db migrate add bitcoiner tables
+// @copilot:db migrate add user tables
 // @copilot:db seed add sample data
 // @copilot:db validate schema consistency
-// @copilot:db optimize bitcoiner queries
-// @copilot:db migrate add event tables
-```
-
-### Frontend Commands
-```typescript
-// @copilot:frontend BitcoinerCard update styling
-// @copilot:frontend EventCalendar create component
-// @copilot:frontend UserProfile optimize performance
-// @copilot:frontend BitcoinerList update layout
-// @copilot:frontend EventForm create component
+// @copilot:db optimize user queries
+// @copilot:db migrate add user tables
 ```
 
 ## Quality Assurance Commands
@@ -187,8 +125,7 @@
 // @copilot:performance frontend optimize loading
 // @copilot:performance api improve response times
 // @copilot:performance database optimize queries
-// @copilot:performance bitcoiner optimize rendering
-// @copilot:performance event optimize calendar
+// @copilot:performance user optimize rendering
 ```
 
 ## GitHub Copilot Usage Instructions

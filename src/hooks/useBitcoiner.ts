@@ -15,7 +15,7 @@ export const useBitcoiner = (id?: string) => {
     setError(null);
     
     try {
-      const response = await fetch('/api/bitcoiner/get', {
+      const response = await fetch('/api/bitcoiner/get/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
@@ -42,7 +42,7 @@ export const useBitcoiner = (id?: string) => {
     setError(null);
     
     try {
-      const response = await fetch('/api/bitcoiner/update', {
+      const response = await fetch('/api/bitcoiner/update/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, ...data }),
@@ -71,7 +71,7 @@ export const useBitcoiner = (id?: string) => {
     setError(null);
     
     try {
-      const response = await fetch('/api/bitcoiner/delete', {
+      const response = await fetch('/api/bitcoiner/delete/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),

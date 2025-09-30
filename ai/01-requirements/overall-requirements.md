@@ -50,6 +50,7 @@
 - **Dual Content**: Both offline events and online content in one platform
 - **Community-Centric**: Built specifically for community building
 - **Mobile-First**: Optimized for mobile usage patterns
+- **Progressive Web App**: Native app-like experience without app store installation
 
 ### Market Positioning
 - **Unique Value Proposition**: "The go-to platform for Bitcoin events and content in Thailand"

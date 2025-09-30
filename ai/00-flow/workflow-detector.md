@@ -8,9 +8,9 @@ This document provides AI with a systematic approach to detect and process SDLC 
 
 ### Phase Keywords
 - `*flow` → AI Workflow Management Phase (not part of SDLC)
-- `*requirement` or `*req` → Requirements Phase
+- `*req` → Requirements Phase
 - `*design` → Design Phase  
-- `*implement` or `*code` → Implementation Phase
+- `*code` → Implementation Phase
 - `*test` → Testing Phase
 - `*deploy` → Deployment Phase
 
@@ -33,7 +33,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 5. Update AI implementation guides
 ```
 
-### Phase 1: Requirements (`*requirement`)
+### Phase 1: Requirements (`*req`)
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -57,15 +57,18 @@ This document provides AI with a systematic approach to detect and process SDLC 
 5. Ensure design traceability to requirements
 ```
 
-### Phase 3: Implementation (`*implement`)
+### Phase 3: Implementation (`*code`)
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
 1. Read ai/01-requirements/ (prerequisite)
-2. Read ai/02-design/ (prerequisite)
-3. Read existing codebase structure
-4. Implement features according to specifications in ai/03-implementation/ folder
-5. Follow established patterns and conventions
+2. Read ai/02-design/features/ (prerequisite)
+3. Review and update requirements/design if inconsistencies found
+4. Read existing codebase structure
+5. Create implementation documentation in ai/03-implementation/features/
+6. Implement features according to specifications
+7. Track implementation status (completed, in progress, pending, blocked)
+8. Follow established patterns and conventions
 ```
 
 ### Phase 4: Testing (`*test`)

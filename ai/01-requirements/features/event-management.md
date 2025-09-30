@@ -95,13 +95,13 @@ The Event Management feature provides comprehensive functionality for discoverin
 **Target Implementation Files**:
 - `src/components/pages/event/EventListPage.tsx`
 - `src/components/pages/event/EventDetailPage.tsx`
-- `src/service/EventService.ts`
+- `src/services/EventService.ts`
 - `src/app/api/event/`
 
 **Target Test Files**:
 - `src/components/pages/event/__tests__/EventListPage.test.tsx`
 - `src/components/pages/event/__tests__/EventDetailPage.test.tsx`
-- `src/service/__tests__/EventService.test.ts`
+- `src/services/__tests__/EventService.test.ts`
 - `src/app/api/event/__tests__/`
 
 ---

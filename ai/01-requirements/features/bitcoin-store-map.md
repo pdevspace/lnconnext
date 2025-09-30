@@ -114,13 +114,13 @@ The Bitcoin Store Map feature provides an interactive map view displaying cafes,
 - `src/components/pages/map/MapPage.tsx`
 - `src/components/pages/map/StoreMap.tsx`
 - `src/components/pages/map/StoreDetails.tsx`
-- `src/service/StoreService.ts`
+- `src/services/StoreService.ts`
 - `src/app/api/store/`
 
 **Target Test Files**:
 - `src/components/pages/map/__tests__/MapPage.test.tsx`
 - `src/components/pages/map/__tests__/StoreMap.test.tsx`
-- `src/service/__tests__/StoreService.test.ts`
+- `src/services/__tests__/StoreService.test.ts`
 - `src/app/api/store/__tests__/`
 
 ---

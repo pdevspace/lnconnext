@@ -106,13 +106,13 @@ The Calendar System feature provides comprehensive calendar functionality for vi
 - `src/components/pages/calendar/CalendarPage.tsx`
 - `src/components/pages/calendar/MonthlyCalendarView.tsx`
 - `src/components/pages/calendar/DailyCalendarView.tsx`
-- `src/service/CalendarService.ts`
+- `src/services/CalendarService.ts`
 - `src/app/api/calendar/`
 
 **Target Test Files**:
 - `src/components/pages/calendar/__tests__/CalendarPage.test.tsx`
 - `src/components/pages/calendar/__tests__/MonthlyCalendarView.test.tsx`
-- `src/service/__tests__/CalendarService.test.ts`
+- `src/services/__tests__/CalendarService.test.ts`
 - `src/app/api/calendar/__tests__/`
 
 ---

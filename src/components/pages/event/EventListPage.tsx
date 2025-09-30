@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getAllEvents } from "@/data/EventService";
+import { useEvents } from "@/hooks/useEvent";
 import {
   ArrowRight,
   Calendar,
@@ -24,7 +24,7 @@ export default function EventListPage() {
   const [hasScrolledToUpcoming, setHasScrolledToUpcoming] = useState(false);
   const upcomingEventRef = useRef<HTMLDivElement>(null);
 
-  const allEvents = getAllEvents();
+  const { events: allEvents, loading, error } = useEvents();
   const upcomingEvents = allEvents.filter((event) =>
     isEventUpcoming(event.startDate)
   );
@@ -34,9 +34,9 @@ export default function EventListPage() {
     const matchesSearch =
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (event.speakers &&
-        event.speakers.some((speaker: any) =>
-          speaker.name.toLowerCase().includes(searchQuery.toLowerCase())
+      (event.bitcoiners &&
+        event.bitcoiners.some((bitcoiner: any) =>
+          bitcoiner.name.toLowerCase().includes(searchQuery.toLowerCase())
         ));
 
     return matchesSearch;
@@ -69,6 +69,26 @@ export default function EventListPage() {
       return () => clearTimeout(timer);
     }
   }, [hasScrolledToUpcoming, firstUpcomingEvent]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading events...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-red-500">Error loading events: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -153,31 +173,31 @@ export default function EventListPage() {
                               {event.location.buildingName}
                             </span>
                           )}
-                          {event.speakers.length > 0 && (
+                          {event.bitcoiners.length > 0 && (
                             <span className="flex items-center gap-1">
                               <Users className="h-4 w-4" />
-                              {event.speakers.length} speakers
+                              {event.bitcoiners.length} speakers
                             </span>
                           )}
                         </div>
 
                         {/* Speaker Badges */}
-                        {event.speakers && event.speakers.length > 0 && (
+                        {event.bitcoiners && event.bitcoiners.length > 0 && (
                           <div className="flex gap-1 mt-3">
-                            {event.speakers
+                            {event.bitcoiners
                               .slice(0, 3)
-                              .map((speaker: any, index) => (
+                              .map((bitcoiner: any, index: number) => (
                                 <Badge
-                                  key={speaker.id || index}
+                                  key={bitcoiner.id || index}
                                   variant="secondary"
                                   className="text-xs"
                                 >
-                                  {speaker.name}
+                                  {bitcoiner.name}
                                 </Badge>
                               ))}
-                            {event.speakers.length > 3 && (
+                            {event.bitcoiners.length > 3 && (
                               <Badge variant="outline" className="text-xs">
-                                +{event.speakers.length - 3}
+                                +{event.bitcoiners.length - 3}
                               </Badge>
                             )}
                           </div>
@@ -189,18 +209,18 @@ export default function EventListPage() {
               </Link>
 
               {/* Website Links - Outside the main card link */}
-              {event.website.length > 0 && (
+              {event.websites.length > 0 && (
                 <div className="flex gap-2 mt-2 ml-6">
-                  {event.website.map((website, index) => (
+                  {event.websites.map((website: any, index: number) => (
                     <a
                       key={index}
-                      href={website.sourceUrl}
+                      href={website.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline text-sm flex items-center gap-1"
                     >
                       <ExternalLink className="h-3 w-3" />
-                      {website.displayText}
+                      {website.displayText || website.url}
                     </a>
                   ))}
                 </div>

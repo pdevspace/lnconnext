@@ -69,7 +69,7 @@ All SDLC phases must maintain traceability relationships:
 - **Purpose**: Provides standardized templates for creating new documents
 - **Contains**: Templates for requirements, design, implementation, testing, deployment
 
-## Requirements Phase (`*requirement`)
+## Requirements Phase (`*req`)
 
 #### Purpose
 The Requirements Phase is the first phase of the Software Development Life Cycle (SDLC) that focuses on gathering, analyzing, and documenting what the system should do. It establishes the foundation for all subsequent phases by clearly defining user needs, system capabilities, and constraints.
@@ -205,12 +205,12 @@ Each design file must include traceability information:
 
 #### Backend Data Flow
 
-**1. Model Layer** (`src/model/`)
+**1. Model Layer** (`src/models/`)
 - **Purpose**: Define data interfaces and validation schemas
 - **Contains**: `user.ts`
 - **Role**: TypeScript interfaces and validation schemas
 
-**2. Service Layer** (`src/service/`)
+**2. Service Layer** (`src/services/`)
 - **Purpose**: Business logic and database operations
 - **Contains**: `UserService.ts`, `EventService.ts`
 - **Role**: CRUD operations, business rules, data transformation
@@ -288,13 +288,13 @@ Each design file must include traceability information:
 **Backend Folders**:
 ```
 src/
-├── model/
+├── models/
 │   ├── user.ts               # Data interfaces
 │   ├── event.ts              # Data interfaces
 │   └── validation/
 │       ├── user.ts           # Validation schemas
 │       └── event.ts          # Validation schemas
-├── service/
+├── services/
 │   ├── UserService.ts        # Service layer
 │   └── EventService.ts       # Service layer
 └── app/api/
@@ -391,7 +391,7 @@ export default function Page({ params }: PageProps) {
 **`backend-modules/` folder**
 - **Purpose**: Store module-specific backend design specifications
 - **Objective**: Provide detailed design for each backend module matching requirements features
-- **Contains**: One file per module (e.g., `user-module.md`, `event-module.md`, `bitcoiner-module.md`)
+- **Contains**: One file per module (e.g., `user-module.md`, `event-module.md`)
 
 **Other Design Files:**
 
@@ -412,7 +412,7 @@ The project uses a 3-layer API architecture pattern:
 **1. Endpoint Layer** (`src/app/api/[module]/[section].[action]/route.ts`)
 - **Purpose**: Handle HTTP requests and responses
 - **Objective**: Validate input, call handlers, format responses
-- **Example**: `src/app/api/bitcoiner/profile.get/route.ts`
+- **Example**: `src/app/api/user/profile.get/route.ts`
 - **Contains**: Request validation, error handling, response formatting
 
 **2. Handler Layer**
@@ -464,11 +464,6 @@ The project uses a 3-layer API architecture pattern:
 - `/user/list` - List all users
 - `/user/profile.get` - Get user profile
 - `/user/profile.delete` - Delete user profile
-- `/store/list` - List all Bitcoin stores
-- `/store/get` - Get store details by ID
-- `/store/search` - Search stores by location or name
-- `/event/list` - List all events
-- `/event/get` - Get event details by ID
 
 **`security-design.md`**
 - **Purpose**: Define security measures and authentication patterns
@@ -487,7 +482,7 @@ Each design file must include:
 6. **Relations**: Dependencies and usage relationships
 7. **More Details**: Implementation specifics, edge cases, performance considerations
 
-## Implementation Phase (`*implement`)
+## Implementation Phase (`*code`)
 
 #### Purpose
 The Implementation Phase is the third phase of the Software Development Life Cycle (SDLC) that focuses on translating design specifications into working code. It involves creating the actual software components, services, and functionality according to the established design patterns.
@@ -501,12 +496,49 @@ To implement all designed features and components according to specifications, e
 #### Traceability Requirements
 Each implementation file must include traceability information:
 
-**Implementation Files** (e.g., `src/components/pages/UserProfile.tsx`, `src/service/UserService.ts`):
+**Implementation Files** (e.g., `src/components/pages/UserProfile.tsx`, `src/services/UserService.ts`):
 - **Traceability**: Must document:
   - **Source Design**: Which design file(s) this implementation follows
   - **Source Requirements**: Which requirement file(s) this implementation addresses
   - **Target Testing**: Which test file(s) will test this implementation
 - **Purpose**: Working code that implements specific functionality
+
+#### Implementation Workflow Requirements
+
+**1. Requirements and Design Review**:
+- **MANDATORY**: Before implementing any feature, AI must:
+  - Read and analyze relevant files in `ai/01-requirements/`
+  - Read and analyze relevant files in `ai/02-design/features/`
+  - Identify any gaps or inconsistencies between requirements and design
+  - Update requirements or design files if inconsistencies are found
+  - Document any changes made to requirements or design
+
+**2. Implementation Documentation**:
+- **MANDATORY**: Create corresponding `.md` files in `ai/03-implementation/` that:
+  - Duplicate the structure from `ai/02-design/features/` for the same feature
+  - Document the actual implementation status and progress
+  - Record what has been implemented vs. what remains to be done
+  - Include implementation notes, decisions, and challenges
+  - Maintain traceability to requirements and design
+
+**3. Status Tracking**:
+- **Implementation Status**: Each implementation file must track:
+  - **Completed**: What has been fully implemented and tested
+  - **In Progress**: What is currently being worked on
+  - **Pending**: What remains to be implemented
+  - **Blocked**: What cannot be implemented due to dependencies or issues
+  - **Notes**: Implementation-specific notes, decisions, and challenges
+
+**4. File Structure**:
+```
+ai/03-implementation/
+├── features/
+│   ├── event-management-implementation.md
+│   └── user-authentication-implementation.md
+└── overall/
+    ├── architecture-implementation.md
+    └── infrastructure-implementation.md
+```
 
 ## Testing Phase (`*test`)
 

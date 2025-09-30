@@ -1,5 +1,5 @@
 import { CalendarDay } from "@/types/calendar";
-import { Speaker } from "@/types/event";
+import { Bitcoiner } from "@/types/event";
 import { Event } from "@/types/event";
 
 export const daysInWeek: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -255,8 +255,8 @@ export function searchEvents(
     event =>
       event.name.toLowerCase().includes(lowerQuery) ||
       event.description.toLowerCase().includes(lowerQuery) ||
-      event.speakers.some((speaker: Speaker) =>
-        speaker.name.toLowerCase().includes(lowerQuery)
+      event.bitcoiners.some((bitcoiner: Bitcoiner) =>
+        bitcoiner.name.toLowerCase().includes(lowerQuery)
       )
   );
 }

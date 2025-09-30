@@ -13,15 +13,17 @@ datasource db {
 model Bitcoiner {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  socialMedia SocialMedia[]
   bio         String?
   avatar      String?
   expertise   String[]
-  location    String?
-  website     String?
   isActive    Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  
+  // Relations
+  socialMedia SocialMedia[] @relation("BitcoinerSocialMedia")
+  eventBitcoiners EventBitcoiner[]
+  sectionBitcoiners SectionBitcoiner[]
 
   @@map("bitcoiners")
 }
@@ -32,8 +34,139 @@ model SocialMedia {
   username    String
   platform    String
   urlLink     String
-  bitcoinerId String    @db.ObjectId
-  bitcoiner   Bitcoiner @relation(fields: [bitcoinerId], references: [id], onDelete: Cascade)
+  ownerId     String    @db.ObjectId
+  ownerType   String    // 'bitcoiner' or 'organizer'
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  bitcoiner   Bitcoiner? @relation("BitcoinerSocialMedia", fields: [ownerId], references: [id], onDelete: Cascade)
+  organizer   Organizer? @relation("OrganizerSocialMedia", fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@map("social_media")
+}
+
+model Event {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  description      String
+  eventSeriesName  String?
+  startDate        DateTime
+  endDate          DateTime?
+  price            Float          @default(0)
+  images           String[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  
+  // Relations
+  organizerId      String         @db.ObjectId
+  organizer        Organizer      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  
+  locationId       String?        @db.ObjectId
+  location         Location?      @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  
+  sections         EventSection[]
+  eventBitcoiners  EventBitcoiner[]
+  websites         Website[]      @relation("EventWebsites")
+  
+  registerId       String?        @db.ObjectId
+
+  @@map("events")
+}
+
+model Organizer {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  bio         String?
+  avatar      String?
+  website     String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Relations
+  socialMedia SocialMedia[] @relation("OrganizerSocialMedia")
+  events      Event[]
+  
+  @@map("organizers")
+}
+
+model Location {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  buildingName  String
+  address       String
+  city          String
+  country       String
+  googleMapsUrl String
+  coordinates   Json?     // { lat: number, lng: number }
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  events        Event[]
+  
+  @@map("locations")
+}
+
+model EventSection {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  sectionName String
+  startTime   DateTime
+  endTime     DateTime
+  spot        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  eventId     String    @db.ObjectId
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sectionBitcoiners SectionBitcoiner[]
+  
+  @@map("event_sections")
+}
+
+// Junction table for Event-Bitcoiner many-to-many relationship
+model EventBitcoiner {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String    @db.ObjectId
+  bitcoinerId String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  bitcoiner   Bitcoiner @relation(fields: [bitcoinerId], references: [id], onDelete: Cascade)
+  
+  @@unique([eventId, bitcoinerId])
+  @@map("event_bitcoiners")
+}
+
+// Junction table for EventSection-Bitcoiner many-to-many relationship
+model SectionBitcoiner {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  sectionId   String    @db.ObjectId
+  bitcoinerId String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  section     EventSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  bitcoiner   Bitcoiner    @relation(fields: [bitcoinerId], references: [id], onDelete: Cascade)
+  
+  @@unique([sectionId, bitcoinerId])
+  @@map("section_bitcoiners")
+}
+
+model Website {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  url         String
+  type        String    // 'facebook', 'youtube', 'twitter', 'linkedin', 'instagram', 'other'
+  displayText String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  eventId     String?   @db.ObjectId
+  event       Event?    @relation("EventWebsites", fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@map("websites")
 }

@@ -38,6 +38,14 @@ export const BitcoinerFilters: React.FC<BitcoinerFiltersProps> = ({
             </div>
           </div>
 
+          {/* Clear Filters */}
+          {(searchTerm || selectedPlatform) && (
+            <Button variant="outline" onClick={onClearFilters}>
+              <X className="w-4 h-4 mr-2" />
+              Clear
+            </Button>
+          )}
+
           {/* Platform Filter */}
           <div className="w-full sm:w-48">
             <Select value={selectedPlatform} onValueChange={onPlatformChange}>
@@ -54,14 +62,6 @@ export const BitcoinerFilters: React.FC<BitcoinerFiltersProps> = ({
               </SelectContent>
             </Select>
           </div>
-
-          {/* Clear Filters */}
-          {(searchTerm || selectedPlatform) && (
-            <Button variant="outline" onClick={onClearFilters}>
-              <X className="w-4 h-4 mr-2" />
-              Clear
-            </Button>
-          )}
         </div>
       </CardContent>
     </Card>

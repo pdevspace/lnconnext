@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAllEvents } from "@/data/EventService";
+import { useEvents } from "@/hooks/useEvent";
 import {
   generateCalendarDays,
   generateMonthGrid,
@@ -48,9 +48,7 @@ export default function CalendarPage({
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  const bitcoinEvents: Event[] = getAllEvents();
-
-  const [events, setEvents] = useState<Event[]>(bitcoinEvents);
+  const { events, loading, error } = useEvents();
 
   // Generate calendar grid based on view mode
   const calendarDates = useMemo(() => {
@@ -115,6 +113,26 @@ export default function CalendarPage({
   const handleDayClick = (day: CalendarDay) => {
     setSelectDate(day.date);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading calendar...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-red-500">Error loading events: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -93,7 +93,10 @@ async function seedBitcoiners() {
         data: {
           name: bitcoinerData.name,
           socialMedia: {
-            create: bitcoinerData.socialMedia
+            create: bitcoinerData.socialMedia.map(sm => ({
+              ...sm,
+              ownerType: 'bitcoiner'
+            }))
           }
         }
       });

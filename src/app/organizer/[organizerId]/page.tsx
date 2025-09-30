@@ -1,5 +1,9 @@
-import OrganizerPage from "@/components/pages/organizer/OrganizerPage";
-import { getAllOrganizers } from "@/data/OrganizerService";
+import { OrganizerDetailPage } from "@/components/pages/organizer/OrganizerDetailPage";
+import { OrganizerService } from "@/services/OrganizerService";
+import { Metadata } from "next";
+
+// Revalidate every hour
+export const revalidate = 3600;
 
 interface OrganizerPageProps {
   params: Promise<{
@@ -8,13 +12,56 @@ interface OrganizerPageProps {
 }
 
 export async function generateStaticParams() {
-  const organizers = getAllOrganizers();
-  return organizers.map((organizer) => ({
-    organizerId: organizer.id,
-  }));
+  try {
+    const organizers = await OrganizerService.getAllOrganizers();
+    return organizers.map((organizer) => ({
+      organizerId: organizer.id,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for organizers:', error);
+    return [];
+  }
 }
 
-export default async function OrganizerPageRoute({ params }: OrganizerPageProps) {
+export async function generateMetadata({ params }: OrganizerPageProps): Promise<Metadata> {
   const { organizerId } = await params;
-  return <OrganizerPage organizerId={organizerId} />;
+  
+  try {
+    const organizer = await OrganizerService.getOrganizerById(organizerId);
+    
+    if (!organizer) {
+      return {
+        title: 'Organizer Not Found',
+        description: 'The requested organizer could not be found.',
+      };
+    }
+
+    return {
+      title: `${organizer.name} - Event Organizer`,
+      description: organizer.bio || `Learn more about ${organizer.name}, an event organizer in the Bitcoin community.`,
+      openGraph: {
+        title: `${organizer.name} - Event Organizer`,
+        description: organizer.bio || `Learn more about ${organizer.name}, an event organizer in the Bitcoin community.`,
+        type: 'profile',
+        images: organizer.avatar ? [organizer.avatar] : [],
+      },
+      twitter: {
+        card: 'summary',
+        title: `${organizer.name} - Event Organizer`,
+        description: organizer.bio || `Learn more about ${organizer.name}, an event organizer in the Bitcoin community.`,
+        images: organizer.avatar ? [organizer.avatar] : [],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata for organizer:', error);
+    return {
+      title: 'Organizer',
+      description: 'Event organizer profile page.',
+    };
+  }
+}
+
+export default async function OrganizerDetailPageRoute({ params }: OrganizerPageProps) {
+  const { organizerId } = await params;
+  return <OrganizerDetailPage organizerId={organizerId} />;
 }

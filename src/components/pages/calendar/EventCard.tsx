@@ -63,13 +63,13 @@ export default function EventCard({ event, className }: EventCardProps) {
               <MapPin className="h-3 w-3" />
               <span className="truncate">{event.location?.buildingName}</span>
             </div>
-            {event.speakers.length > 0 && (
+            {event.bitcoiners.length > 0 && (
               <div className="flex items-center gap-1 mt-1">
                 <Users className="h-3 w-3 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground">
-                  {event.speakers.slice(0, 2).join(", ")}
-                  {event.speakers.length > 2 &&
-                    ` +${event.speakers.length - 2}`}
+                  {event.bitcoiners.slice(0, 2).join(", ")}
+                  {event.bitcoiners.length > 2 &&
+                    ` +${event.bitcoiners.length - 2}`}
                 </span>
               </div>
             )}

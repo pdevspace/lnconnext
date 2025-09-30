@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateApiRequest } from '@/utils/backendValidators';
-import { BitcoinerService } from '@/service/BitcoinerService';
+import { validateBitcoinerApiRequest } from '@/utils/backendValidators';
+import { BitcoinerService } from '@/services/BitcoinerService';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
     // Validate the request body using custom validators
-    const validation = validateApiRequest(body);
+    const validation = validateBitcoinerApiRequest(body);
 
     if (!validation.success) {
       return NextResponse.json(

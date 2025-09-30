@@ -107,15 +107,15 @@ The Online Content feature provides comprehensive functionality for discovering,
 **Target Implementation Files**:
 - `src/components/pages/online-content/OnlineContentPage.tsx`
 - `src/components/pages/online-content/ContentDetailPage.tsx`
-- `src/service/ContentService.ts`
-- `src/service/YouTubeService.ts`
+- `src/services/ContentService.ts`
+- `src/services/YouTubeService.ts`
 - `src/app/api/content/`
 
 **Target Test Files**:
 - `src/components/pages/online-content/__tests__/OnlineContentPage.test.tsx`
 - `src/components/pages/online-content/__tests__/ContentDetailPage.test.tsx`
-- `src/service/__tests__/ContentService.test.ts`
-- `src/service/__tests__/YouTubeService.test.ts`
+- `src/services/__tests__/ContentService.test.ts`
+- `src/services/__tests__/YouTubeService.test.ts`
 - `src/app/api/content/__tests__/`
 
 ---

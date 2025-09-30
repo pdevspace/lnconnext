@@ -76,46 +76,6 @@ model SocialMedia {
 }
 ```
 
-## Frontend Service Architecture
-
-### Project Structure
-
-```
-src/
-├── app/
-│   └── bitcoiner/
-│       ├── page.tsx                        # /bitcoiner (list page)
-│       ├── create/
-│       │   └── page.tsx                    # /bitcoiner/create
-│       └── [id]/
-│           ├── page.tsx                    # /bitcoiner/[id] (detail page)
-│           └── edit/
-│               └── page.tsx                # /bitcoiner/edit/[id]
-├── components/
-│   ├── pages/
-│   │   └── bitcoiner/
-│   │       ├── BitcoinerListPage.tsx       # Main list component
-│   │       ├── BitcoinerCard.tsx           # Individual bitcoiner card
-│   │       ├── BitcoinerDetailPage.tsx     # Detail view component
-│   │       ├── BitcoinerForm.tsx           # Create/Edit form
-│   │       └── BitcoinerFilters.tsx        # Filter and search component
-│   └── ui/
-│       ├── form.tsx                        # Form components
-│       ├── select.tsx                      # Select dropdown
-│       ├── dialog.tsx                      # Modal dialogs
-│       └── toast.tsx                       # Toast notifications
-├── prisma/
-│   ├── prisma.ts                          # Prisma client configuration
-│   └── BitcoinerService.ts                # Database service layer
-├── model/
-│   ├── bitcoiner.ts                       # TypeScript interfaces
-│   └── service/
-│       └── useBitcoiner.ts                # Custom React hooks
-└── utils/
-    ├── utils.ts                           # Utility functions
-    └── calendar-utils.ts                  # Calendar utility functions
-```
-
 ## Action-Based API Design
 
 ### API Endpoint Structure

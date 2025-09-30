@@ -11,6 +11,7 @@
 - **State Management**: React hooks (useState, useEffect)
 - **Icons**: Lucide React
 - **Date Handling**: date-fns library
+- **PWA**: Next.js PWA plugin or custom PWA implementation
 
 ### Hardware Requirements
 - **Server Requirements**: 
@@ -27,6 +28,8 @@
 - **MongoDB**: Atlas cloud database or local MongoDB 4.4+
 - **Browser Support**: Modern browsers with ES6+ support
 - **Mobile OS**: iOS 12+, Android 8+
+- **PWA Support**: Chrome mobile, Safari mobile, Firefox mobile
+- **HTTPS**: Required for PWA functionality
 
 ## Performance Requirements
 
@@ -35,6 +38,9 @@
 - **API Response Time**: < 500ms for database queries
 - **Image Load Time**: < 2 seconds for optimized images
 - **Search Results**: < 1 second for search queries
+- **PWA First Load**: < 3 seconds on 3G connection
+- **PWA Subsequent Loads**: < 1 second from cache
+- **Offline Response**: < 500ms for cached content
 
 ### Throughput
 - **Concurrent Users**: Support up to 1000 concurrent users
@@ -142,6 +148,36 @@
 
 ## Traceability
 
+## PWA Requirements
+
+### Progressive Web App Standards
+- **Web App Manifest**: Valid manifest.json with all required fields
+- **Service Worker**: Implemented for caching and offline functionality
+- **HTTPS**: Required for all PWA features
+- **Responsive Design**: Mobile-first responsive design
+- **App Shell**: Fast loading app shell architecture
+
+### PWA Performance Standards
+- **Lighthouse PWA Score**: Minimum 90/100
+- **First Contentful Paint**: < 2.5 seconds
+- **Largest Contentful Paint**: < 2.5 seconds
+- **Cumulative Layout Shift**: < 0.1
+- **First Input Delay**: < 100ms
+
+### Mobile Experience Requirements
+- **Touch Targets**: Minimum 44px touch targets
+- **Viewport**: Proper viewport meta tag
+- **Orientation**: Support both portrait and landscape
+- **Swipe Gestures**: Native-like swipe interactions
+- **Pull-to-Refresh**: Implement pull-to-refresh functionality
+
+### Offline Functionality
+- **Cache Strategy**: Implement appropriate caching strategies
+- **Offline Indicator**: Clear offline/online status indication
+- **Data Sync**: Background sync when connection restored
+- **Storage Limits**: Respect browser storage quotas
+- **Cache Management**: Automatic cache cleanup and updates
+
 **Traceability**: No specific relations required (system-wide constraints)
 **Purpose**: Technical foundation for all implementations
 **Target Design Files**: All design files in ai/02-design/
@@ -150,4 +186,4 @@
 
 ---
 
-*This document defines the technical constraints and quality attributes that must be met throughout the development and operation of the LNConnext platform.*
+*This document defines the technical constraints and quality attributes that must be met throughout the development and operation of the LNConnext platform, including Progressive Web App requirements.*

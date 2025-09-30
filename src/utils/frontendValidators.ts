@@ -125,3 +125,32 @@ export const sanitizeUrl = (url: string): string => {
   }
   return trimmed;
 };
+
+/**
+ * Validates organizer form data
+ */
+export function validateOrganizerForm(data: any): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!data.name.trim()) {
+    errors.name = 'Name is required';
+  } else if (data.name.length < 2) {
+    errors.name = 'Name must be at least 2 characters';
+  } else if (data.name.length > 100) {
+    errors.name = 'Name must be less than 100 characters';
+  }
+
+  if (data.bio && data.bio.length > 500) {
+    errors.bio = 'Bio must be less than 500 characters';
+  }
+
+  if (data.website && !isValidUrl(data.website)) {
+    errors.website = 'Please enter a valid URL';
+  }
+
+  if (data.avatar && !isValidUrl(data.avatar)) {
+    errors.avatar = 'Please enter a valid URL';
+  }
+
+  return errors;
+}
