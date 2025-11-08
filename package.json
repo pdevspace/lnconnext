@@ -35,6 +35,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "firebase": "^12.5.0",
     "lucide-react": "^0.468.0",
     "next": "^15.0.0",
     "postcss": "^8.5.0",
