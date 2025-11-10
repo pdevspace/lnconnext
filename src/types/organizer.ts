@@ -1,62 +1,86 @@
-/**
- * Frontend Organizer Types
- * TypeScript interfaces for organizer-related data
- */
+// Organizer Types
+
+export interface OrganizerSocialMedia {
+	id: string
+	displayText: string
+	platform: string
+	urlLink: string
+}
+
+export interface OrganizerBitcoinerItem {
+	id: string
+	name: string
+}
 
 export interface Organizer {
-  id: string;
-  name: string;
-  bio?: string;
-  avatar?: string;
-  website?: string;
-  isActive: boolean;
-  socialMedia: SocialMedia[];
-  events: Event[];
-  createdAt: Date;
-  updatedAt: Date;
+	id: string
+	name: string
+	bio: string
+	website: string
+	socialMedia: OrganizerSocialMedia[]
+	members: OrganizerBitcoinerItem[]
+	updatedAt: string | Date
 }
 
-export interface SocialMedia {
-  id: string;
-  displayText: string;
-  username: string;
-  platform: string;
-  urlLink: string;
-  ownerId: string;
-  ownerType: 'bitcoiner' | 'organizer';
+// Request Types
+export interface CreateOrganizerRequest {
+	name: string
+	bio: string
+	website: string
+	socialMedia: CreateOrganizerSocialMediaItem[]
 }
 
-export interface Event {
-  id: string;
-  name: string;
-  description: string;
-  startDate: Date;
-  endDate?: Date;
-  organizerId: string;
-  // ... other event fields
+export interface CreateOrganizerSocialMediaItem {
+	displayText: string
+	platform: string
+	urlLink: string
 }
 
-export interface OrganizerFilters {
-  search?: string;
-  isActive?: boolean;
-  hasEvents?: boolean;
-  limit?: number;
-  offset?: number;
+export interface UpdateOrganizerRequest {
+	id: string
+	name: string
+	bio: string
+	website: string
+	socialMedia: UpdateOrganizerSocialMediaItem[]
 }
 
-export interface OrganizerStats {
-  totalEvents: number;
-  upcomingEvents: number;
-  pastEvents: number;
-  totalSpeakers: number;
-  recentEvents: Event[];
+export interface UpdateOrganizerSocialMediaItem {
+	displayText: string
+	platform: string
+	urlLink: string
 }
 
-export interface OrganizerFormData {
-  name: string;
-  bio?: string;
-  avatar?: string;
-  website?: string;
-  isActive: boolean;
-  socialMediaIds: string[];
+export interface GetOrganizerRequest {
+	id: string
+}
+
+export interface ListOrganizerRequest {
+	filters?: {
+		searchTerm?: string
+		selectedPlatform?: string
+		limit?: number
+		offset?: number
+	}
+}
+
+export interface ListOrganizerSocialMediaItem {
+	id: string
+	displayText: string
+	platform: string
+	urlLink: string
+}
+
+export interface ListOrganizerItem {
+	id: string
+	name: string
+	socialMedia: ListOrganizerSocialMediaItem[]
+}
+
+export interface ListOrganizerResponse {
+	organizers: ListOrganizerItem[]
+	total: number
+}
+
+export interface DeleteOrganizerRequest {
+	id: string
 }

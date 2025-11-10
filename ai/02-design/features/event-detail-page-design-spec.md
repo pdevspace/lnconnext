@@ -7,6 +7,7 @@ This document provides comprehensive design specifications for the Event Detail 
 ## Prerequisites
 
 ### Requirement Understanding
+
 - **MANDATORY**: Before implementing any feature, ai must read and understand `ai/01-requirements/features/event-management.md`
 - All design decisions must trace back to the requirements specification
 - Implementation should align with the functional and non-functional requirements
@@ -15,12 +16,14 @@ This document provides comprehensive design specifications for the Event Detail 
 ## Traceability
 
 ### Source Requirements
+
 - **Primary Source**: `ai/01-requirements/features/event-management.md`
-- **Secondary Sources**: 
+- **Secondary Sources**:
   - `ai/01-requirements/overall-requirements.md` - Overall project requirements
   - `ai/01-requirements/non-functional-requirements.md` - Technical constraints
 
 ### Target Implementation Files
+
 - `src/app/event/[eventId]/page.tsx` - Event detail route
 - `src/components/pages/event/EventPage.tsx` - Main event page component
 - `src/components/pages/event/EventComponent.tsx` - Event display component
@@ -31,6 +34,7 @@ This document provides comprehensive design specifications for the Event Detail 
 - `src/utils/backendValidators.ts` - Backend validation
 
 ### Target Test Files
+
 - `src/components/pages/event/__tests__/EventPage.test.tsx`
 - `src/components/pages/event/__tests__/EventComponent.test.tsx`
 - `src/data/__tests__/EventService.test.ts`
@@ -41,71 +45,71 @@ This document provides comprehensive design specifications for the Event Detail 
 
 ```typescript
 interface Event {
-  id: string;
-  name: string;
-  description: string;
-  organizerId: string;
-  eventSeriesName?: string;
-  location?: Location;
-  sections: EventSection[];
-  startDate: Date;
-  endDate?: Date;
-  bitcoiners: Bitcoiner[];
-  images: string[];
-  website: Website[];
-  price: number;
-  register?: Website;
-  createdAt: Date;
-  updatedAt: Date;
+	id: string
+	name: string
+	description: string
+	organizerId: string
+	eventSeriesName?: string
+	location?: Location
+	sections: EventSection[]
+	startDate: Date
+	endDate?: Date
+	bitcoiners: Bitcoiner[]
+	images: string[]
+	website: Website[]
+	price: number
+	register?: Website
+	createdAt: Date
+	updatedAt: Date
 }
 
 interface Location {
-  id: string;
-  buildingName: string;
-  address: string;
-  city: string;
-  country: string;
-  googleMapsUrl: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+	id: string
+	buildingName: string
+	address: string
+	city: string
+	country: string
+	googleMapsUrl: string
+	coordinates?: {
+		lat: number
+		lng: number
+	}
 }
 
 interface EventSection {
-  id: string;
-  sectionName: string;
-  startTime: Date;
-  endTime: Date;
-  spot: string;
-  bitcoiners: Bitcoiner[];
-  description?: string;
+	id: string
+	sectionName: string
+	startTime: Date
+	endTime: Date
+	spot: string
+	bitcoiners: Bitcoiner[]
+	description?: string
 }
 
 interface Bitcoiner {
-  id: string;
-  name: string;
-  socialMedia: SocialMedia[];
-  avatar?: string;
-  bio?: string;
-  expertise?: string[];
+	id: string
+	name: string
+	socialMedia: SocialMedia[]
+	avatar?: string
+	bio?: string
+	expertise?: string[]
 }
 
 interface SocialMedia {
-  id: string;
-  displayText: string;
-  username: string;
-  platform: string;
-  urlLink: string;
-  ownerId: string;
-  ownerType: 'bitcoiner' | 'organizer';
+	id: string
+	displayText: string
+	username: string
+	platform: string
+	urlLink: string
+	ownerId: string
+	ownerType: 'bitcoiner' | 'organizer'
 }
 
 interface Website {
-  id: string;
-  url: string;
-  type: 'facebook' | 'youtube' | 'twitter' | 'linkedin' | 'instagram' | 'other';
-  displayText?: string;
+	id: string
+	url: string
+	type: 'facebook' | 'youtube' | 'twitter' | 'linkedin' | 'instagram' | 'other'
+	displayText?: string
 }
 ```
 
@@ -133,17 +137,17 @@ model Event {
   images           String[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
-  
+
   // Relations
   organizerId      String         @db.ObjectId
-  
+
   locationId       String?        @db.ObjectId
   location         Location?      @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  
+
   sections         EventSection[]
   bitcoiners       Bitcoiner[]    @relation("EventBitcoiners")
   websites         Website[]      @relation("EventWebsites")
-  
+
   registerId       String?        @db.ObjectId
   register         Website?       @relation("EventRegister", fields: [registerId], references: [id], onDelete: SetNull)
 
@@ -160,10 +164,10 @@ model Location {
   coordinates   Json?     // { lat: number, lng: number }
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   // Relations
   events        Event[]
-  
+
   @@map("locations")
 }
 
@@ -176,12 +180,12 @@ model EventSection {
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  
+
   // Relations
   eventId     String    @db.ObjectId
   event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
   bitcoiners  Bitcoiner[] @relation("SectionBitcoiners")
-  
+
   @@map("event_sections")
 }
 
@@ -194,12 +198,12 @@ model Bitcoiner {
   isActive    Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  
+
   // Relations
   socialMedia SocialMedia[] @relation("BitcoinerSocialMedia")
   events      Event[]       @relation("EventBitcoiners")
   sections    EventSection[] @relation("SectionBitcoiners")
-  
+
   @@map("bitcoiners")
 }
 
@@ -213,7 +217,7 @@ model SocialMedia {
   ownerType   String    // 'bitcoiner' or 'organizer'
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  
+
   @@map("social_media")
 }
 
@@ -224,14 +228,14 @@ model Website {
   displayText String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  
+
   // Relations
   eventId     String?   @db.ObjectId
   event       Event?    @relation("EventWebsites", fields: [eventId], references: [id], onDelete: Cascade)
-  
+
   registerEventId String? @db.ObjectId
   registerEvent   Event?  @relation("EventRegister", fields: [registerEventId], references: [id], onDelete: SetNull)
-  
+
   @@map("websites")
 }
 ```
@@ -243,53 +247,53 @@ model Website {
 ```typescript
 // src/services/EventService.ts
 export class EventService {
-  // Get event by ID with all related data
-  static async getEventById(eventId: string): Promise<Event | null> {
-    // Implementation with Prisma queries
-  }
+	// Get event by ID with all related data
+	static async getEventById(eventId: string): Promise<Event | null> {
+		// Implementation with Prisma queries
+	}
 
-  // Get events with filtering and pagination
-  static async getEvents(filters?: EventFilters): Promise<Event[]> {
-    // Implementation with Prisma queries
-  }
+	// Get events with filtering and pagination
+	static async getEvents(filters?: EventFilters): Promise<Event[]> {
+		// Implementation with Prisma queries
+	}
 
-  // Search events by query
-  static async searchEvents(query: string): Promise<Event[]> {
-    // Implementation with Prisma queries
-  }
+	// Search events by query
+	static async searchEvents(query: string): Promise<Event[]> {
+		// Implementation with Prisma queries
+	}
 
-  // Get events by organizer
-  static async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
-    // Implementation with Prisma queries
-  }
+	// Get events by organizer
+	static async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
+		// Implementation with Prisma queries
+	}
 
-  // Get events by speaker
-  static async getEventsBySpeaker(speakerId: string): Promise<Event[]> {
-    // Implementation with Prisma queries
-  }
+	// Get events by speaker
+	static async getEventsBySpeaker(speakerId: string): Promise<Event[]> {
+		// Implementation with Prisma queries
+	}
 
-  // Get upcoming events
-  static async getUpcomingEvents(limit?: number): Promise<Event[]> {
-    // Implementation with Prisma queries
-  }
+	// Get upcoming events
+	static async getUpcomingEvents(limit?: number): Promise<Event[]> {
+		// Implementation with Prisma queries
+	}
 
-  // Get past events
-  static async getPastEvents(limit?: number): Promise<Event[]> {
-    // Implementation with Prisma queries
-  }
+	// Get past events
+	static async getPastEvents(limit?: number): Promise<Event[]> {
+		// Implementation with Prisma queries
+	}
 }
 
 // Event filters interface
 interface EventFilters {
-  search?: string;
-  type?: 'meetup' | 'conference' | 'course';
-  status?: 'upcoming' | 'past' | 'live';
-  organizerId?: string;
-  speakerId?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-  limit?: number;
-  offset?: number;
+	search?: string
+	type?: 'meetup' | 'conference' | 'course'
+	status?: 'upcoming' | 'past' | 'live'
+	organizerId?: string
+	speakerId?: string
+	dateFrom?: Date
+	dateTo?: Date
+	limit?: number
+	offset?: number
 }
 ```
 
@@ -298,52 +302,52 @@ interface EventFilters {
 ```typescript
 // src/hooks/useEvent.ts
 export function useEvent(eventId: string): UseEventResult {
-  // Hook for fetching single event with loading and error states
-  // Returns: { event, loading, error, refetch }
+	// Hook for fetching single event with loading and error states
+	// Returns: { event, loading, error, refetch }
 }
 
 export function useEvents(filters: EventFilters = {}): UseEventsResult {
-  // Hook for fetching events list with filtering
-  // Returns: { events, loading, error, refetch }
+	// Hook for fetching events list with filtering
+	// Returns: { events, loading, error, refetch }
 }
 
 export function useUpcomingEvents(limit: number = 10): UseUpcomingEventsResult {
-  // Hook for fetching upcoming events
-  // Returns: { events, loading, error, refetch }
+	// Hook for fetching upcoming events
+	// Returns: { events, loading, error, refetch }
 }
 
 export function usePastEvents(limit: number = 10): UsePastEventsResult {
-  // Hook for fetching past events
-  // Returns: { events, loading, error, refetch }
+	// Hook for fetching past events
+	// Returns: { events, loading, error, refetch }
 }
 
 // Hook result interfaces
 interface UseEventResult {
-  event: Event | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	event: Event | null
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 interface UseEventsResult {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	events: Event[]
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 interface UseUpcomingEventsResult {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	events: Event[]
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 interface UsePastEventsResult {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	events: Event[]
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 ```
 
@@ -395,7 +399,7 @@ export function EventPage({ eventId }: EventPageProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div 
+    <div
       ref={scrollContainerRef}
       className="fixed inset-0 top-16 overflow-y-auto bg-white dark:bg-gray-900"
       style={{ height: 'calc(100vh - 64px)' }}
@@ -430,7 +434,7 @@ export function EventComponent({ event }: EventComponentProps) {
           <EventOriginalLinks event={event} />
           <EventSpeakers event={event} />
         </div>
-        
+
         {/* Right Column (70%) */}
         <div className="lg:col-span-8 space-y-6">
           <EventHeader event={event} />
@@ -461,6 +465,7 @@ export function EventComponent({ event }: EventComponentProps) {
 ### Sub-Components Design
 
 #### EventImage Component
+
 ```typescript
 interface EventImageProps {
   event: Event;
@@ -483,6 +488,7 @@ export function EventImage({ event }: EventImageProps) {
 ```
 
 #### EventActionButtons Component
+
 ```typescript
 interface EventActionButtonsProps {
   event: Event;
@@ -519,6 +525,7 @@ export function EventActionButtons({ event }: EventActionButtonsProps) {
 ```
 
 #### EventOrganizer Component
+
 ```typescript
 interface EventOrganizerProps {
   event: Event;
@@ -555,6 +562,7 @@ export function EventOrganizer({ event }: EventOrganizerProps) {
 ```
 
 #### EventSchedule Component
+
 ```typescript
 interface EventScheduleProps {
   event: Event;
@@ -596,6 +604,7 @@ export function EventSchedule({ event }: EventScheduleProps) {
 ## Data Flow Architecture
 
 ### Frontend Data Flow
+
 1. **Route Parameter**: Extract `eventId` from URL
 2. **Data Fetching**: Call `EventService.getEventById(eventId)`
 3. **State Management**: Store event data in component state
@@ -603,6 +612,7 @@ export function EventSchedule({ event }: EventScheduleProps) {
 5. **User Interactions**: Handle user actions (calendar, register, share)
 
 ### Backend Data Flow
+
 1. **API Request**: Receive POST request with eventId
 2. **Validation**: Validate eventId parameter
 3. **Database Query**: Query MongoDB with Prisma
@@ -612,70 +622,78 @@ export function EventSchedule({ event }: EventScheduleProps) {
 ## Validation Architecture
 
 ### Frontend Validation
+
 ```typescript
 // src/utils/frontendValidators.ts
 export const validateEventId = (eventId: string): boolean => {
-  return eventId && eventId.length > 0;
-};
+	return eventId && eventId.length > 0
+}
 
 export const validateEventData = (event: Event): ValidationResult => {
-  // Validate event data structure
-  // Check required fields
-  // Validate date formats
-  // Validate URL formats
-};
+	// Validate event data structure
+	// Check required fields
+	// Validate date formats
+	// Validate URL formats
+}
 ```
 
 ### Backend Validation
+
 ```typescript
 // src/utils/backendValidators.ts
 export const validateEventApiRequest = (body: any): ApiValidationResult => {
-  // Validate request body structure
-  // Check eventId format
-  // Validate required fields
-  // Sanitize input data
-};
+	// Validate request body structure
+	// Check eventId format
+	// Validate required fields
+	// Sanitize input data
+}
 ```
 
 ## Performance Considerations
 
 ### Image Optimization
+
 - **Next.js Image**: Automatic optimization and lazy loading
 - **Priority Loading**: Event image loads with priority
 - **Responsive Sizing**: Appropriate sizes for different viewports
 - **Fallback Images**: Graceful handling of missing images
 
 ### Data Loading
+
 - **Server-Side Rendering**: Initial page loads with SSR
 - **Client-Side Caching**: React Query for client-side data management
 - **Optimistic Updates**: Immediate UI updates for better UX
 - **Error Boundaries**: Graceful error handling
 
 ### Caching Strategy
+
 ```typescript
 // lib/cache.ts
 export const getCachedEvent = unstable_cache(
-  async (eventId: string) => {
-    return EventService.getEventById(eventId);
-  },
-  ['event'],
-  { revalidate: 300 } // 5 minutes
-);
+	async (eventId: string) => {
+		return EventService.getEventById(eventId)
+	},
+	['event'],
+	{ revalidate: 300 } // 5 minutes
+)
 ```
 
 ## Accessibility Features
 
 ### ARIA Labels
+
 - **Action Buttons**: Proper labeling for screen readers
 - **Event Information**: Clear status communication
 - **Navigation Links**: Descriptive link text
 
 ### Keyboard Navigation
+
 - **Tab Order**: Logical tab sequence through interface
 - **Button Focus**: Visible focus states for all interactive elements
 - **Keyboard Shortcuts**: Standard keyboard navigation support
 
 ### Visual Accessibility
+
 - **Color Contrast**: Sufficient contrast for all text and backgrounds
 - **Status Indicators**: Color and text for status communication
 - **Icon Usage**: Icons paired with text labels where appropriate
@@ -683,11 +701,13 @@ export const getCachedEvent = unstable_cache(
 ## Responsive Design
 
 ### Desktop Layout (1024px+)
+
 - **Two-Column Layout**: Left (30%) and right (70%) columns
 - **Synchronized Scrolling**: Both columns scroll together
 - **Fixed Sidebar**: Action buttons and speakers in left column
 
 ### Mobile Layout (< 1024px)
+
 - **Single Column**: Stacked layout from top to bottom
 - **Sticky Elements**: Event name and action buttons stay visible
 - **Touch-Friendly**: Larger touch targets for mobile interaction
@@ -695,35 +715,40 @@ export const getCachedEvent = unstable_cache(
 ## Error Handling
 
 ### Error States
+
 - **Loading State**: Spinner with loading message
 - **Not Found**: Clear error message with navigation back
 - **Network Error**: Retry mechanism with error message
 - **Validation Error**: Form validation with specific error messages
 
 ### Error Boundaries
+
 ```typescript
 // components/ErrorBoundary.tsx
 export class EventErrorBoundary extends React.Component {
-  // Handle component errors gracefully
-  // Display user-friendly error messages
-  // Provide recovery options
+	// Handle component errors gracefully
+	// Display user-friendly error messages
+	// Provide recovery options
 }
 ```
 
 ## Testing Strategy
 
 ### Unit Tests
+
 - **Component Tests**: React Testing Library for UI components
 - **Hook Tests**: Custom hook testing
 - **Utility Tests**: Pure function testing
 - **Validation Tests**: Schema testing
 
 ### Integration Tests
+
 - **API Tests**: API route testing
 - **Database Tests**: Prisma integration testing
 - **E2E Tests**: Full user flow testing
 
 ### Test Structure
+
 ```
 __tests__/
 ├── components/
@@ -743,12 +768,14 @@ __tests__/
 ## Security Considerations
 
 ### Input Validation
+
 - **Client-Side**: Form validation with real-time feedback
 - **Server-Side**: API route validation
 - **Database**: Prisma type safety
 - **XSS Prevention**: Input sanitization
 
 ### Data Protection
+
 - **SQL Injection**: Prisma ORM prevents injection attacks
 - **CSRF Protection**: Next.js built-in CSRF protection
 - **Rate Limiting**: API rate limiting to prevent abuse
@@ -756,12 +783,14 @@ __tests__/
 ## Future Enhancements
 
 ### Advanced Features
+
 - **Real-time Updates**: WebSocket integration for live event updates
 - **Event Analytics**: Usage analytics and reporting
 - **Social Features**: Comments and discussions
 - **Recommendations**: AI-powered event recommendations
 
 ### Integration Features
+
 - **Calendar Sync**: Multiple calendar provider support
 - **Social Sharing**: Enhanced social media sharing
 - **Notifications**: Push notifications for event updates

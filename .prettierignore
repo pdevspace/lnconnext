@@ -1,0 +1,14 @@
+node_modules
+.next
+build
+dist
+*.min.js
+*.min.css
+.env*
+public
+.copilot
+.cursor
+.vscode
+ai
+ai-old
+docs

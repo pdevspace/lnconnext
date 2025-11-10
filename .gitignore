@@ -27,3 +27,6 @@ yarn-error.log*
 # vscode
 .vscode/
 /src/generated/prisma
+
+# database backups
+/backup

@@ -7,40 +7,43 @@ This document provides a comprehensive design specification for the LNConnext pl
 ## Prerequisites
 
 ### Requirement Understanding
+
 - **MANDATORY**: Before implementing any feature, ai must read and understand `ai/requirement-spec.md`
 - All design decisions must trace back to the requirements specification
 - Implementation should align with the functional and non-functional requirements
 - Technical constraints and acceptance criteria must be considered
 
 ### UI/UX Design
+
 - **Design System**: Consistent visual language across all pages
-- **Color Palette**: 
+- **Color Palette**:
   - Primary: Bitcoin orange (#F7931A) for accents and CTAs
   - Secondary: Dark backgrounds with light text for readability
   - Neutral: Grays for borders, dividers, and secondary text
-- **Typography**: 
+- **Typography**:
   - Headings: Bold, clear hierarchy (h1-h6)
   - Body text: Readable font sizes with proper line height
   - Code/Technical: Monospace font for technical content
 - **Spacing**: Consistent padding and margins using Tailwind spacing scale
 - **Visual Hierarchy**: Clear information architecture with proper contrast
 - **Accessibility**: WCAG 2.1 AA compliance with proper color contrast ratios
-- **Dark Mode Support**: 
+- **Dark Mode Support**:
   - CSS custom properties for theme switching
   - Dark/light mode toggle functionality
   - Consistent theming across all components
   - Automatic system preference detection
 
 ### Component Design
+
 - **Atomic Design**: Components built using atomic design principles
-- **Reusable Components**: 
+- **Reusable Components**:
   - Button variants (primary, secondary, outline, ghost)
   - Card components with consistent styling
   - Input fields with validation states
   - Badge components for status indicators
   - Modal and dialog components
 - **Component Library**: shadcn/ui components with Radix UI primitives
-- **Custom Components**: 
+- **Custom Components**:
   - EventCard: Standardized event display
   - SpeakerBox: Speaker information display
   - SocialMediaBox: Social media links
@@ -50,12 +53,14 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Error States**: Consistent error message display
 
 ### Public Components
+
 - **Location**: `src/components/pages/public/`
 - **Purpose**: Reusable components that can be used across multiple pages
 - **Examples**: SocialMediaBox, SpeakerBox, and other shared UI components
 - **Usage**: Import and use these components to maintain consistency across the application
 
 ### Data Flow & API Integration
+
 - **Data Services**: Centralized data access through service layer
   - `EventService.ts`: Event data management
   - `OrganizerService.ts`: Organizer data management
@@ -64,7 +69,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Static Data**: JSON-based data storage with type validation
 - **Data Fetching**: Server-side rendering with Next.js App Router
 - **Caching Strategy**: Static generation with ISR (Incremental Static Regeneration)
-- **API Integration**: 
+- **API Integration**:
   - YouTube API for video metadata
   - Calendar integration (Google Calendar)
   - Social media link validation
@@ -72,7 +77,8 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Loading States**: Proper loading indicators during data fetching
 
 ### UI Behavior & Interaction
-- **Navigation**: 
+
+- **Navigation**:
   - Fixed navbar with smooth scrolling
   - Breadcrumb navigation for deep pages
   - Mobile-friendly hamburger menu
@@ -81,7 +87,7 @@ This document provides a comprehensive design specification for the LNConnext pl
   - Smooth transitions and animations
   - Touch-friendly mobile interactions
   - Keyboard navigation support
-- **State Management**: 
+- **State Management**:
   - React hooks for local state
   - URL state for filters and search
   - Persistent state for user preferences
@@ -100,6 +106,7 @@ This document provides a comprehensive design specification for the LNConnext pl
   - Focus management
 
 ### Traceability
+
 - **Requirement Mapping**: Each feature maps to specific requirements in `ai/requirement-spec.md`
 - **Design Decisions**: Documented rationale for design choices
 - **Component Documentation**: JSDoc comments for all components
@@ -113,6 +120,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 ## Global Design System
 
 ### Navbar Implementation
+
 - **Component**: `src/components/Navbar.tsx`
 - **Height**: Fixed 60px height with `z-50` positioning
 - **Navigation Structure**:
@@ -124,6 +132,7 @@ This document provides a comprehensive design specification for the LNConnext pl
   - **Info**: Info icon → `/info/` (Info Page)
 
 ### Layout Integration
+
 - **Global Layout**: `src/app/layout.tsx` includes navbar globally
 - **Top Spacing**: All pages use `mt-[130px]` or `pt-16` for navbar clearance
 - **Scroll Control**: Custom scroll containers with `overflow: hidden` on body
@@ -132,12 +141,14 @@ This document provides a comprehensive design specification for the LNConnext pl
 ## Page Design Specifications
 
 ### 1. Home Page (`/`)
+
 - **Route**: `src/app/page.tsx`
 - **Component**: `src/components/pages/home/HomePage.tsx`
 - **Implementation**: Redirects to EventListPage
 - **Status**: ✅ Implemented
 
 ### 2. Event List Page (`/event/`)
+
 - **Route**: `src/app/event/page.tsx`
 - **Component**: `src/components/pages/event/EventListPage.tsx`
 - **Features**:
@@ -149,6 +160,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Status**: ✅ Implemented
 
 ### 3. Event Detail Page (`/event/[eventId]`)
+
 - **Route**: `src/app/event/[eventId]/page.tsx`
 - **Component**: `src/components/pages/event/EventPage.tsx`
 - **Features**:
@@ -160,6 +172,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Status**: ✅ Implemented
 
 ### 4. Calendar Page (`/calendar/`)
+
 - **Route**: `src/app/calendar/page.tsx`
 - **Component**: `src/components/pages/calendar/CalendarPage.tsx`
 - **Features**:
@@ -171,6 +184,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Status**: ✅ Implemented
 
 ### 5. Organizer List Page (`/organizer/`)
+
 - **Route**: `src/app/organizer/page.tsx`
 - **Component**: `src/components/pages/organizer/OrganizerListPage.tsx`
 - **Features**:
@@ -181,6 +195,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Status**: ✅ Implemented
 
 ### 6. Organizer Detail Page (`/organizer/[organizerId]`)
+
 - **Route**: `src/app/organizer/[organizerId]/page.tsx`
 - **Component**: `src/components/pages/organizer/OrganizerPage.tsx`
 - **Features**:
@@ -190,6 +205,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Status**: ✅ Implemented
 
 ### 7. Content Page (`/content/`) - **NEW**
+
 - **Route**: `src/app/content/page.tsx`
 - **Component**: `src/components/pages/content/ContentListPage.tsx`
 - **Features**:
@@ -201,6 +217,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Status**: ✅ Implemented (Basic Structure)
 
 ### 8. Info Page (`/info/`)
+
 - **Route**: `src/app/info/page.tsx`
 - **Component**: `src/components/pages/info/InfoPage.tsx`
 - **Features**:
@@ -211,11 +228,13 @@ This document provides a comprehensive design specification for the LNConnext pl
 ## Responsive Design Specifications
 
 ### Breakpoints
+
 - **Mobile**: < 768px (Single column, full-width cards)
 - **Tablet**: 768px - 1024px (2-3 column layouts)
 - **Desktop**: > 1024px (3-7 column layouts)
 
 ### Mobile-First Features
+
 - **Touch Targets**: Minimum 44px for all interactive elements
 - **Typography**: Responsive font sizes using Tailwind classes
 - **Navigation**: Touch-friendly button sizes and spacing
@@ -223,6 +242,7 @@ This document provides a comprehensive design specification for the LNConnext pl
 - **Images**: Responsive sizing with proper aspect ratios
 
 ### Layout Patterns
+
 - **Fixed Headers**: All pages use fixed headers below navbar
 - **Scroll Containers**: Custom scrollable areas with controlled behavior
 - **Grid Systems**: Responsive grid layouts for different screen sizes
@@ -231,62 +251,68 @@ This document provides a comprehensive design specification for the LNConnext pl
 ## Data Integration
 
 ### Event Data Structure
+
 ```typescript
 interface Event {
-  id: string;
-  name: string;
-  description: string;
-  organizer: Organizer;
-  eventSeriesName?: string;
-  location?: Location;
-  sections: EventSection[];
-  startDate: Date;
-  endDate?: Date;
-  speakers: Speaker[];
-  images: string[];
-  website: Website[];
-  price: number;
-  register?: Website;
+	id: string
+	name: string
+	description: string
+	organizer: Organizer
+	eventSeriesName?: string
+	location?: Location
+	sections: EventSection[]
+	startDate: Date
+	endDate?: Date
+	speakers: Speaker[]
+	images: string[]
+	website: Website[]
+	price: number
+	register?: Website
 }
 ```
 
 ### Content Data Structure (Future)
+
 ```typescript
 interface Content {
-  id: string;
-  name: string;
-  description: string;
-  type: 'offline' | 'online';
-  category: 'meetup' | 'conference' | 'course' | 'video' | 'series' | 'guest';
-  creator: Creator;
-  youtubeUrl?: string;
-  videoId?: string;
-  duration?: number;
-  viewCount?: number;
-  // ... additional fields
+	id: string
+	name: string
+	description: string
+	type: 'offline' | 'online'
+	category: 'meetup' | 'conference' | 'course' | 'video' | 'series' | 'guest'
+	creator: Creator
+	youtubeUrl?: string
+	videoId?: string
+	duration?: number
+	viewCount?: number
+	// ... additional fields
 }
 ```
 
 ## Implementation Guidelines
 
 ### CSS Classes and Styling
+
 - **Spacing**: Use Tailwind spacing classes (`p-4`, `m-6`, `gap-4`)
 - **Colors**: Use CSS custom properties for consistent theming
 - **Typography**: Semantic font size classes (`text-sm`, `text-lg`, `text-xl`)
 - **Layout**: Flexbox and Grid classes for responsive layouts
 
 ### Component Structure
+
 - **Page Components**: Main page layout and structure
 - **Feature Components**: Specific functionality components
 - **Data Components**: Components that handle data display
 
 ### Performance Considerations
+
 - **Image Optimization**: Next.js Image component with proper sizing
 - **Lazy Loading**: Implement for large lists and images
 - **Code Splitting**: Use dynamic imports for large components
 - **Caching**: Implement proper caching strategies
 
 ### Accessibility Features
+
 - **Semantic HTML**: Proper HTML elements and structure
 - **ARIA Labels**: Screen reader support
 - **Keyboard Navigation**: All interactive elements accessible
@@ -296,12 +322,14 @@ interface Content {
 ## Testing and Quality Assurance
 
 ### Component Testing
+
 - **Unit Tests**: Individual component testing
 - **Integration Tests**: Component interaction testing
 - **Visual Tests**: Responsive layout testing
 - **Accessibility Tests**: Screen reader and keyboard navigation testing
 
 ### Performance Testing
+
 - **Load Testing**: Large dataset handling
 - **Mobile Testing**: Various mobile device testing
 - **Browser Testing**: Cross-browser compatibility
@@ -310,18 +338,21 @@ interface Content {
 ## Future Enhancements
 
 ### Content Page Enhancements
+
 - **YouTube Integration**: Full YouTube API integration
 - **Video Thumbnails**: Actual video thumbnails and metadata
 - **Series Support**: Multi-episode series display
 - **Creator Profiles**: Detailed creator information
 
 ### PWA Features
+
 - **Web App Manifest**: Installation support
 - **Service Worker**: Offline functionality
 - **Push Notifications**: Event and content notifications
 - **App Shell**: Native app-like experience
 
 ### Advanced Features
+
 - **Search Enhancement**: Advanced filtering and sorting
 - **User Accounts**: Personalization and saved content
 - **Social Features**: Sharing and community features
@@ -330,6 +361,7 @@ interface Content {
 ## Dark Mode Implementation
 
 ### Theme System
+
 - **CSS Custom Properties**: Theme variables for consistent color management
 - **Theme Provider**: React context for theme state management
 - **System Preference**: Automatic detection of user's system theme preference
@@ -337,6 +369,7 @@ interface Content {
 - **Theme Persistence**: Local storage to remember user's theme choice
 
 ### Dark Mode Components
+
 - **Theme Toggle**: Toggle button in navbar for switching themes
 - **Theme Context**: React context provider for theme state
 - **CSS Variables**: Dynamic color variables that change based on theme
@@ -344,6 +377,7 @@ interface Content {
 - **Image Handling**: Proper image contrast in both themes
 
 ### Implementation Details
+
 ```typescript
 // Theme context structure
 interface ThemeContextType {
@@ -371,6 +405,7 @@ interface ThemeContextType {
 ```
 
 ### Theme Integration
+
 - **Tailwind CSS**: Dark mode classes with `dark:` prefix
 - **Component Library**: shadcn/ui components with built-in dark mode support
 - **Custom Components**: All custom components implement theme-aware styling
@@ -380,6 +415,7 @@ interface ThemeContextType {
 ## Development Guidelines
 
 ### Before Implementation
+
 1. **Read Requirements**: Always read `ai/requirement-spec.md` before starting
 2. **Understand Context**: Review existing components and patterns
 3. **Check Public Components**: Look for reusable components in `src/components/pages/public/`
@@ -387,6 +423,7 @@ interface ThemeContextType {
 5. **Follow Design System**: Use established patterns and components
 
 ### Component Development
+
 1. **Use Public Components**: Import and use existing public components
 2. **Implement Dark Mode**: Add dark mode support to all new components
 3. **Follow TypeScript**: Use proper TypeScript interfaces
@@ -394,6 +431,7 @@ interface ThemeContextType {
 5. **Test Responsiveness**: Ensure components work on all screen sizes
 
 ### Quality Assurance
+
 1. **Accessibility**: Test with screen readers and keyboard navigation
 2. **Performance**: Optimize images and loading states
 3. **Cross-browser**: Test on different browsers and devices

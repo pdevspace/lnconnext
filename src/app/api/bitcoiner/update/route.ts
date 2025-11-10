@@ -1,87 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateBitcoinerApiRequest } from '@/utils/backendValidators';
-import { BitcoinerService } from '@/services/BitcoinerService';
+import { createSuccessResponse, handleError } from '@/api'
 
-interface UpdateRequest {
-  id: string;
-  name: string;
-  socialMedia: Array<{
-    id?: string;
-    displayText: string;
-    username: string;
-    platform: string;
-    urlLink: string;
-  }>;
-}
+import { NextRequest } from 'next/server'
+
+import { UpdateBitcoiner } from './service'
 
 export async function POST(request: NextRequest) {
-  try {
-    const body: UpdateRequest = await request.json();
+	// UpdateBitcoiner
+	console.log('/api/bitcoiner/update')
+	try {
+		const handler = await UpdateBitcoiner.fromRequest(request)
 
-    if (!body.id) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'ID is required',
-          message: 'Please provide a valid bitcoiner ID'
-        },
-        { status: 400 }
-      );
-    }
+		const result = await handler.toResult()
 
-    // Validate the request body (excluding id for validation)
-    const { id, ...dataToValidate } = body;
-    const validation = validateBitcoinerApiRequest(dataToValidate);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Validation error',
-          message: validation.message,
-          errors: validation.errors
-        },
-        { status: 400 }
-      );
-    }
-
-    // Ensure all socialMedia items have an 'id' property
-    const fixedSocialMedia = validation.data!.socialMedia.map((item: any, idx: number) => ({
-      ...item,
-      id: item.id || `${idx}-${Date.now()}`
-    }));
-
-    const updatedBitcoiner = await BitcoinerService.updateBitcoiner(id, {
-      ...validation.data!,
-      socialMedia: fixedSocialMedia,
-    });
-
-    if (!updatedBitcoiner) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Bitcoiner not found',
-          message: 'No bitcoiner found with the provided ID'
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: updatedBitcoiner,
-      message: 'Bitcoiner updated successfully'
-    });
-  } catch (error) {
-    console.error('Error updating bitcoiner:', error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to update bitcoiner',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
+		return createSuccessResponse(result)
+	} catch (error) {
+		return handleError(error)
+	}
 }

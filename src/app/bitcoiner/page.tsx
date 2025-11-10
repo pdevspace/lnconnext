@@ -1,5 +1,7 @@
-import { BitcoinerListPage } from '@/components/pages/bitcoiner/BitcoinerListPage';
+'use client'
+
+import { BitcoinerListPage } from '@/components/pages/bitcoiner/BitcoinerListPage'
 
 export default function BitcoinerPageRoute() {
-  return <BitcoinerListPage />;
+	return <BitcoinerListPage />
 }

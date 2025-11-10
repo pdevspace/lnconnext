@@ -1,329 +1,209 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Event } from '@/types/event';
-import { EventFilters } from '@/models/event';
+import {
+	CreateEventRequest,
+	DeleteEventRequest,
+	Event,
+	GetEventRequest,
+	ListEventItem,
+	ListEventRequest,
+	ListEventResponse,
+	UpdateEventRequest,
+} from '@/types'
+import { apiRequest, authenticatedApiRequest } from '@/utils/api'
 
-interface UseEventResult {
-  event: Event | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+import { useCallback, useEffect, useState } from 'react'
+
+// Helper to convert date strings to Date objects
+function parseEventDates(event: Event): Event {
+	return {
+		...event,
+		startDate: new Date(event.startDate),
+		endDate: new Date(event.endDate),
+		updatedAt: new Date(event.updatedAt),
+		sections: event.sections.map((section) => ({
+			...section,
+			startTime: new Date(section.startTime),
+			endTime: new Date(section.endTime),
+		})),
+	}
 }
 
-export function useEvent(eventId: string): UseEventResult {
-  const [event, setEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchEvent = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/event/get/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ eventId }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch event');
-      }
-
-      // Convert string dates to Date objects
-      const eventWithDates = {
-        ...data.data,
-        startDate: new Date(data.data.startDate),
-        endDate: data.data.endDate ? new Date(data.data.endDate) : undefined,
-        createdAt: new Date(data.data.createdAt),
-        updatedAt: new Date(data.data.updatedAt),
-        sections: data.data.sections?.map((section: any) => ({
-          ...section,
-          startTime: new Date(section.startTime),
-          endTime: new Date(section.endTime),
-          bitcoiners: section.bitcoiners?.map((bitcoiner: any) => ({
-            ...bitcoiner,
-            socialMedia: bitcoiner.socialMedia?.map((sm: any) => ({
-              ...sm,
-              createdAt: new Date(sm.createdAt),
-              updatedAt: new Date(sm.updatedAt)
-            })) || []
-          })) || []
-        })) || [],
-        bitcoiners: data.data.bitcoiners?.map((bitcoiner: any) => ({
-          ...bitcoiner,
-          socialMedia: bitcoiner.socialMedia?.map((sm: any) => ({
-            ...sm,
-            createdAt: new Date(sm.createdAt),
-            updatedAt: new Date(sm.updatedAt)
-          })) || []
-        })) || [],
-        websites: data.data.websites?.map((website: any) => ({
-          ...website,
-          createdAt: new Date(website.createdAt),
-          updatedAt: new Date(website.updatedAt)
-        })) || []
-      };
-      
-      setEvent(eventWithDates);
-    } catch (err) {
-      console.error('Error fetching event:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch event');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (eventId) {
-      fetchEvent();
-    }
-  }, [eventId]);
-
-  return {
-    event,
-    loading,
-    error,
-    refetch: fetchEvent,
-  };
+// Helper to convert list event date strings to Date objects
+function parseListEventDates(event: ListEventItem): ListEventItem {
+	return {
+		...event,
+		startDate: new Date(event.startDate),
+	}
 }
 
-interface UseEventsResult {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+// Single Event Hook
+export function useEvent(id?: string) {
+	const [event, setEvent] = useState<Event | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
+
+	const fetchEvent = useCallback(async () => {
+		if (!id) return
+
+		setLoading(true)
+		setError(null)
+
+		try {
+			const response = await apiRequest<Event>('/api/event/get', {
+				method: 'POST',
+				body: JSON.stringify({ id } as GetEventRequest),
+			})
+
+			if (!response.success) {
+				throw new Error(response.error)
+			}
+
+			setEvent(parseEventDates(response.data))
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+		} finally {
+			setLoading(false)
+		}
+	}, [id])
+
+	const updateEvent = useCallback(
+		async (data: Omit<UpdateEventRequest, 'id'>) => {
+			if (!id) return
+
+			setLoading(true)
+			setError(null)
+
+			try {
+				const response = await authenticatedApiRequest<{}>(
+					'/api/event/update',
+					{
+						method: 'POST',
+						body: JSON.stringify({ id, ...data } as UpdateEventRequest),
+					}
+				)
+
+				if (!response.success) {
+					throw new Error(response.error)
+				}
+
+				await fetchEvent()
+			} catch (err) {
+				setError(err instanceof Error ? err.message : 'Unknown error')
+				throw err
+			} finally {
+				setLoading(false)
+			}
+		},
+		[id, fetchEvent]
+	)
+
+	const deleteEvent = useCallback(async () => {
+		if (!id) return
+
+		setLoading(true)
+		setError(null)
+
+		try {
+			const response = await authenticatedApiRequest<{}>('/api/event/delete', {
+				method: 'POST',
+				body: JSON.stringify({ id } as DeleteEventRequest),
+			})
+
+			if (!response.success) {
+				throw new Error(response.error)
+			}
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+			throw err
+		} finally {
+			setLoading(false)
+		}
+	}, [id])
+
+	useEffect(() => {
+		fetchEvent()
+	}, [fetchEvent])
+
+	return {
+		event,
+		loading,
+		error,
+		updateEvent,
+		deleteEvent,
+		refetch: fetchEvent,
+	}
 }
 
-export function useEvents(filters: EventFilters = {}): UseEventsResult {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// Multiple Events Hook
+export function useEvents(filters?: ListEventRequest['filters']) {
+	const [events, setEvents] = useState<ListEventItem[]>([])
+	const [total, setTotal] = useState(0)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+	const fetchEvents = useCallback(async () => {
+		setLoading(true)
+		setError(null)
 
-      const response = await fetch('/api/event/list/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ filters }),
-      });
+		try {
+			const response = await apiRequest<ListEventResponse>('/api/event/list', {
+				method: 'POST',
+				body: JSON.stringify({ filters } as ListEventRequest),
+			})
 
-      const data = await response.json();
+			if (!response.success) {
+				throw new Error(response.error)
+			}
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch events');
-      }
+			setEvents(response.data.events.map(parseListEventDates))
+			setTotal(response.data.total)
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+		} finally {
+			setLoading(false)
+		}
+	}, [filters])
 
-      // Convert string dates to Date objects
-      const eventsWithDates = data.data.map((event: any) => ({
-        ...event,
-        startDate: new Date(event.startDate),
-        endDate: event.endDate ? new Date(event.endDate) : undefined,
-        createdAt: new Date(event.createdAt),
-        updatedAt: new Date(event.updatedAt),
-        sections: event.sections?.map((section: any) => ({
-          ...section,
-          startTime: new Date(section.startTime),
-          endTime: new Date(section.endTime),
-          bitcoiners: section.bitcoiners?.map((bitcoiner: any) => ({
-            ...bitcoiner,
-            socialMedia: bitcoiner.socialMedia?.map((sm: any) => ({
-              ...sm,
-              createdAt: new Date(sm.createdAt),
-              updatedAt: new Date(sm.updatedAt)
-            })) || []
-          })) || []
-        })) || [],
-        bitcoiners: event.bitcoiners?.map((bitcoiner: any) => ({
-          ...bitcoiner,
-          socialMedia: bitcoiner.socialMedia?.map((sm: any) => ({
-            ...sm,
-            createdAt: new Date(sm.createdAt),
-            updatedAt: new Date(sm.updatedAt)
-          })) || []
-        })) || [],
-        websites: event.websites?.map((website: any) => ({
-          ...website,
-          createdAt: new Date(website.createdAt),
-          updatedAt: new Date(website.updatedAt)
-        })) || []
-      }));
-      
-      setEvents(eventsWithDates);
-    } catch (err) {
-      console.error('Error fetching events:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch events');
-    } finally {
-      setLoading(false);
-    }
-  };
+	const createEvent = useCallback(
+		async (data: CreateEventRequest) => {
+			setLoading(true)
+			setError(null)
 
-  useEffect(() => {
-    fetchEvents();
-  }, [JSON.stringify(filters)]);
+			try {
+				const response = await authenticatedApiRequest<{}>(
+					'/api/event/create',
+					{
+						method: 'POST',
+						body: JSON.stringify(data),
+					}
+				)
 
-  return {
-    events,
-    loading,
-    error,
-    refetch: fetchEvents,
-  };
-}
+				if (!response.success) {
+					throw new Error(response.error)
+				}
 
-interface UseUpcomingEventsResult {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
+				await fetchEvents()
+			} catch (err) {
+				setError(err instanceof Error ? err.message : 'Unknown error')
+				throw err
+			} finally {
+				setLoading(false)
+			}
+		},
+		[fetchEvents]
+	)
 
-export function useUpcomingEvents(limit: number = 10): UseUpcomingEventsResult {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+	useEffect(() => {
+		fetchEvents()
+	}, [fetchEvents])
 
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/event/upcoming/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ limit }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch upcoming events');
-      }
-
-      // Convert string dates to Date objects
-      const eventsWithDates = data.data.map((event: any) => ({
-        ...event,
-        startDate: new Date(event.startDate),
-        endDate: event.endDate ? new Date(event.endDate) : undefined,
-        createdAt: new Date(event.createdAt),
-        updatedAt: new Date(event.updatedAt),
-        bitcoiners: event.bitcoiners?.map((bitcoiner: any) => ({
-          ...bitcoiner,
-          socialMedia: bitcoiner.socialMedia?.map((sm: any) => ({
-            ...sm,
-            createdAt: new Date(sm.createdAt),
-            updatedAt: new Date(sm.updatedAt)
-          })) || []
-        })) || [],
-        websites: event.websites?.map((website: any) => ({
-          ...website,
-          createdAt: new Date(website.createdAt),
-          updatedAt: new Date(website.updatedAt)
-        })) || []
-      }));
-      
-      setEvents(eventsWithDates);
-    } catch (err) {
-      console.error('Error fetching upcoming events:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch upcoming events');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, [limit]);
-
-  return {
-    events,
-    loading,
-    error,
-    refetch: fetchEvents,
-  };
-}
-
-interface UsePastEventsResult {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
-
-export function usePastEvents(limit: number = 10): UsePastEventsResult {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/event/past/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ limit }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch past events');
-      }
-
-      // Convert string dates to Date objects
-      const eventsWithDates = data.data.map((event: any) => ({
-        ...event,
-        startDate: new Date(event.startDate),
-        endDate: event.endDate ? new Date(event.endDate) : undefined,
-        createdAt: new Date(event.createdAt),
-        updatedAt: new Date(event.updatedAt),
-        bitcoiners: event.bitcoiners?.map((bitcoiner: any) => ({
-          ...bitcoiner,
-          socialMedia: bitcoiner.socialMedia?.map((sm: any) => ({
-            ...sm,
-            createdAt: new Date(sm.createdAt),
-            updatedAt: new Date(sm.updatedAt)
-          })) || []
-        })) || [],
-        websites: event.websites?.map((website: any) => ({
-          ...website,
-          createdAt: new Date(website.createdAt),
-          updatedAt: new Date(website.updatedAt)
-        })) || []
-      }));
-      
-      setEvents(eventsWithDates);
-    } catch (err) {
-      console.error('Error fetching past events:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch past events');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, [limit]);
-
-  return {
-    events,
-    loading,
-    error,
-    refetch: fetchEvents,
-  };
+	return {
+		events,
+		total,
+		loading,
+		error,
+		fetchEvents,
+		createEvent,
+	}
 }

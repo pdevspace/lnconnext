@@ -1,5 +1,5 @@
-import { OrganizerListPage } from "@/components/pages/organizer/OrganizerListPage";
+import { OrganizerListPage } from '@/components/pages/organizer/OrganizerListPage'
 
 export default function OrganizerListPageRoute() {
-  return <OrganizerListPage />;
-} 
+	return <OrganizerListPage />
+}

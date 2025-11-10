@@ -1,28 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { BitcoinerService } from '@/services/BitcoinerService';
+import { createSuccessResponse, handleError } from '@/api'
+
+import { NextRequest } from 'next/server'
+
+import { ListBitcoiner } from './service'
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { filters } = body;
+	// ListBitcoiner
+	console.log('/api/bitcoiner/list')
+	try {
+		const handler = await ListBitcoiner.fromRequest(request)
 
-    const bitcoiners = await BitcoinerService.getAllBitcoiners(filters);
+		const result = await handler.toResult()
 
-    return NextResponse.json({
-      success: true,
-      data: bitcoiners,
-      message: 'Bitcoiners retrieved successfully'
-    });
-  } catch (error) {
-    console.error('Error listing bitcoiners:', error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch bitcoiners',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
+		return createSuccessResponse(result)
+	} catch (error) {
+		return handleError(error)
+	}
 }

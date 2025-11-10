@@ -7,14 +7,16 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Phase Detection Rules
 
 ### Phase Keywords
+
 - `*flow` → AI Workflow Management Phase (not part of SDLC)
 - `*req` → Requirements Phase
-- `*design` → Design Phase  
+- `*design` → Design Phase
 - `*code` → Implementation Phase
 - `*test` → Testing Phase
 - `*deploy` → Deployment Phase
 
 ### Detection Logic
+
 1. **Exact Match**: Check if prompt starts with phase keyword
 2. **Case Insensitive**: Convert to lowercase for matching
 3. **Whitespace Handling**: Trim whitespace before detection
@@ -23,6 +25,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Workflow Execution
 
 ### Phase 0: AI Workflow Management (`*flow`)
+
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -34,6 +37,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ```
 
 ### Phase 1: Requirements (`*req`)
+
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -47,6 +51,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ```
 
 ### Phase 2: Design (`*design`)
+
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -58,6 +63,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ```
 
 ### Phase 3: Implementation (`*code`)
+
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -72,6 +78,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ```
 
 ### Phase 4: Testing (`*test`)
+
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -83,6 +90,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ```
 
 ### Phase 5: Deployment (`*deploy`)
+
 ```typescript
 // AI Behavior
 0. Read ai/00-flow/ai-implementation-guide.md (detailed steps)
@@ -98,6 +106,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Document Reading Strategy
 
 ### Required Documents by Phase
+
 - **AI Workflow Management**: `ai/00-flow/` (workflow system files)
 - **Requirements**: `ai/01-requirements/` (overall, non-functional, and feature requirements)
 - **Design**: `ai/01-requirements/` + `ai/02-design/`
@@ -106,7 +115,8 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - **Deployment**: All previous folders + `ai/05-deployment/`
 
 ### Reading Order
-1. **AI Workflow Management** (for *flow phase only)
+
+1. **AI Workflow Management** (for \*flow phase only)
 2. **Requirements** (for requirements phase and beyond)
 3. **Design** (for design phase and beyond)
 4. **Implementation** (for implementation phase and beyond)
@@ -115,16 +125,19 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Error Handling
 
 ### Invalid Phase Detection
+
 - If no phase keyword detected, ask user to specify phase
 - If ambiguous phase, ask for clarification
 - Default to requirements phase if unclear
 
 ### Missing Documents
+
 - If required document doesn't exist, create it
 - If document is incomplete, ask user for clarification
 - Maintain document structure and format
 
 ### Inconsistent Requirements
+
 - If requirements conflict, ask user to resolve
 - If design doesn't match requirements, flag inconsistency
 - If implementation doesn't match design, flag inconsistency
@@ -132,6 +145,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Quality Checks
 
 ### Requirements Phase
+
 - [ ] All functional requirements defined
 - [ ] Non-functional requirements specified
 - [ ] Constraints documented
@@ -139,6 +153,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - [ ] Stakeholder requirements included
 
 ### Design Phase
+
 - [ ] Design traces to requirements
 - [ ] UI/UX specifications complete
 - [ ] Component design defined
@@ -146,6 +161,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - [ ] Responsive design specified
 
 ### Architecture Phase
+
 - [ ] System architecture defined
 - [ ] Component relationships clear
 - [ ] Technology stack specified
@@ -153,6 +169,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - [ ] Performance considerations included
 
 ### Implementation Phase
+
 - [ ] Code follows design specifications
 - [ ] Established patterns used
 - [ ] Error handling implemented
@@ -160,6 +177,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - [ ] Component structure consistent
 
 ### Testing Phase
+
 - [ ] Test cases cover requirements
 - [ ] Unit tests implemented
 - [ ] Integration tests created
@@ -167,6 +185,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - [ ] Test results documented
 
 ### Deployment Phase
+
 - [ ] Deployment configuration complete
 - [ ] Environment variables set
 - [ ] Build process working
@@ -176,12 +195,14 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Summary Generation
 
 ### Requirements Summary
+
 - New requirements added
 - Modified requirements
 - Requirements validation status
 - Next steps recommendation
 
 ### Design Summary
+
 - Design changes made
 - Component specifications
 - UI/UX updates
@@ -189,6 +210,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - Next steps recommendation
 
 ### Implementation Summary
+
 - Features implemented
 - Code structure
 - Patterns used
@@ -196,6 +218,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - Next steps recommendation
 
 ### Testing Summary
+
 - Test cases created
 - Test results
 - Coverage metrics
@@ -203,6 +226,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - Next steps recommendation
 
 ### Deployment Summary
+
 - Deployment configuration
 - Build status
 - Deployment success
@@ -212,12 +236,14 @@ This document provides AI with a systematic approach to detect and process SDLC 
 ## Workflow Validation
 
 ### Phase Progression
+
 - Ensure proper phase order
 - Validate prerequisites are met
 - Check document consistency
 - Verify implementation matches design
 
 ### Document Consistency
+
 - Requirements → Design traceability
 - Design → Architecture traceability
 - Architecture → Implementation traceability
@@ -225,6 +251,7 @@ This document provides AI with a systematic approach to detect and process SDLC 
 - Testing → Deployment traceability
 
 ### Quality Assurance
+
 - Code quality standards
 - Documentation completeness
 - Test coverage adequacy
@@ -232,4 +259,4 @@ This document provides AI with a systematic approach to detect and process SDLC 
 
 ---
 
-*This workflow detector ensures systematic and consistent SDLC execution for the LNConnext project.*
+_This workflow detector ensures systematic and consistent SDLC execution for the LNConnext project._

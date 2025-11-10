@@ -1,67 +1,19 @@
-/**
- * Get Event API Endpoint
- * POST /api/event/get
- */
+import { createSuccessResponse, handleError } from '@/api'
 
-import { NextRequest, NextResponse } from 'next/server';
-import { EventService } from '@/services/EventService';
-import { validateApiRequest } from '@/utils/backendValidators';
+import { NextRequest } from 'next/server'
+
+import { GetEvent } from './service'
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    
-    // Validate request
-    const validation = validateApiRequest(body);
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid request',
-          errors: validation.errors
-        },
-        { status: 400 }
-      );
-    }
+	// GetEvent
+	console.log('/api/event/get')
+	try {
+		const handler = await GetEvent.fromRequest(request)
 
-    const { eventId } = body;
+		const result = await handler.toResult()
 
-    if (!eventId || typeof eventId !== 'string') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Event ID is required'
-        },
-        { status: 400 }
-      );
-    }
-
-    // Get event
-    const event = await EventService.getEventById(eventId);
-
-    if (!event) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Event not found'
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: event
-    });
-
-  } catch (error) {
-    console.error('Error in get event API:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error'
-      },
-      { status: 500 }
-    );
-  }
+		return createSuccessResponse(result)
+	} catch (error) {
+		return handleError(error)
+	}
 }

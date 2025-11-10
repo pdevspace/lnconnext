@@ -1,177 +1,192 @@
-'use client';
+'use client'
 
-import { useState, useCallback, useEffect } from 'react';
-import { Bitcoiner, BitcoinerFormData } from '@/types/bitcoiner';
+import {
+	Bitcoiner,
+	CreateBitcoinerRequest,
+	DeleteBitcoinerRequest,
+	GetBitcoinerRequest,
+	ListBitcoinerItem,
+	ListBitcoinerRequest,
+	ListBitcoinerResponse,
+	UpdateBitcoinerRequest,
+} from '@/types'
+import { apiRequest, authenticatedApiRequest } from '@/utils/api'
 
-export const useBitcoiner = (id?: string) => {
-  const [bitcoiner, setBitcoiner] = useState<Bitcoiner | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+import { useCallback, useEffect, useState } from 'react'
 
-  const fetchBitcoiner = useCallback(async () => {
-    if (!id) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/bitcoiner/get/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch bitcoiner');
-      }
-      
-      setBitcoiner(result.data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+// Single Bitcoiner Hook
+export function useBitcoiner(id?: string) {
+	const [bitcoiner, setBitcoiner] = useState<Bitcoiner | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
-  const updateBitcoiner = useCallback(async (data: BitcoinerFormData) => {
-    if (!id) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/bitcoiner/update/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, ...data }),
-      });
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update bitcoiner');
-      }
-      
-      setBitcoiner(result.data);
-      return result.data;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+	const fetchBitcoiner = useCallback(async () => {
+		if (!id) return
 
-  const deleteBitcoiner = useCallback(async () => {
-    if (!id) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/bitcoiner/delete/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to delete bitcoiner');
-      }
-      
-      return true;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+		setLoading(true)
+		setError(null)
 
-  useEffect(() => {
-    fetchBitcoiner();
-  }, [fetchBitcoiner]);
+		try {
+			const response = await apiRequest<Bitcoiner>('/api/bitcoiner/get', {
+				method: 'POST',
+				body: JSON.stringify({ id } as GetBitcoinerRequest),
+			})
 
-  return { 
-    bitcoiner, 
-    loading, 
-    error, 
-    updateBitcoiner, 
-    deleteBitcoiner,
-    refetch: fetchBitcoiner 
-  };
-};
+			if (!response.success) {
+				throw new Error(response.error)
+			}
 
-export const useBitcoiners = () => {
-  const [bitcoiners, setBitcoiners] = useState<Bitcoiner[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+			setBitcoiner(response.data)
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+		} finally {
+			setLoading(false)
+		}
+	}, [id])
 
-  const fetchBitcoiners = useCallback(async (filters?: { search?: string; platform?: string }) => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/bitcoiner/list', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filters || {}),
-      });
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch bitcoiners');
-      }
-      
-      setBitcoiners(result.data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+	const updateBitcoiner = useCallback(
+		async (data: Omit<UpdateBitcoinerRequest, 'id'>) => {
+			if (!id) return
 
-  const createBitcoiner = useCallback(async (data: BitcoinerFormData) => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/bitcoiner/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to create bitcoiner');
-      }
-      
-      setBitcoiners(prev => [result.data, ...prev]);
-      return result.data;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+			setLoading(true)
+			setError(null)
 
-  useEffect(() => {
-    fetchBitcoiners();
-  }, [fetchBitcoiners]);
+			try {
+				const response = await authenticatedApiRequest<{}>(
+					'/api/bitcoiner/update',
+					{
+						method: 'POST',
+						body: JSON.stringify({ id, ...data } as UpdateBitcoinerRequest),
+					}
+				)
 
-  return { 
-    bitcoiners, 
-    loading, 
-    error, 
-    fetchBitcoiners, 
-    createBitcoiner 
-  };
-};
+				if (!response.success) {
+					throw new Error(response.error)
+				}
+
+				await fetchBitcoiner()
+			} catch (err) {
+				setError(err instanceof Error ? err.message : 'Unknown error')
+				throw err
+			} finally {
+				setLoading(false)
+			}
+		},
+		[id, fetchBitcoiner]
+	)
+
+	const deleteBitcoiner = useCallback(async () => {
+		if (!id) return
+
+		setLoading(true)
+		setError(null)
+
+		try {
+			const response = await authenticatedApiRequest<{}>(
+				'/api/bitcoiner/delete',
+				{
+					method: 'POST',
+					body: JSON.stringify({ id } as DeleteBitcoinerRequest),
+				}
+			)
+
+			if (!response.success) {
+				throw new Error(response.error)
+			}
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+			throw err
+		} finally {
+			setLoading(false)
+		}
+	}, [id])
+
+	useEffect(() => {
+		fetchBitcoiner()
+	}, [fetchBitcoiner])
+
+	return {
+		bitcoiner,
+		loading,
+		error,
+		updateBitcoiner,
+		deleteBitcoiner,
+		refetch: fetchBitcoiner,
+	}
+}
+
+// Multiple Bitcoiners Hook
+export function useBitcoiners(filters?: ListBitcoinerRequest['filters']) {
+	const [bitcoiners, setBitcoiners] = useState<ListBitcoinerItem[]>([])
+	const [total, setTotal] = useState(0)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
+
+	const fetchBitcoiners = useCallback(async () => {
+		setLoading(true)
+		setError(null)
+
+		try {
+			const response = await apiRequest<ListBitcoinerResponse>(
+				'/api/bitcoiner/list',
+				{
+					method: 'POST',
+					body: JSON.stringify({ filters } as ListBitcoinerRequest),
+				}
+			)
+
+			if (!response.success) {
+				throw new Error(response.error)
+			}
+
+			setBitcoiners(response.data.bitcoiners)
+			setTotal(response.data.total)
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+		} finally {
+			setLoading(false)
+		}
+	}, [filters])
+
+	const createBitcoiner = useCallback(
+		async (data: CreateBitcoinerRequest) => {
+			setLoading(true)
+			setError(null)
+
+			try {
+				const response = await authenticatedApiRequest<{}>(
+					'/api/bitcoiner/create',
+					{
+						method: 'POST',
+						body: JSON.stringify(data),
+					}
+				)
+
+				if (!response.success) {
+					throw new Error(response.error)
+				}
+
+				await fetchBitcoiners()
+			} catch (err) {
+				setError(err instanceof Error ? err.message : 'Unknown error')
+				throw err
+			} finally {
+				setLoading(false)
+			}
+		},
+		[fetchBitcoiners]
+	)
+
+	useEffect(() => {
+		fetchBitcoiners()
+	}, [fetchBitcoiners])
+
+	return {
+		bitcoiners,
+		total,
+		loading,
+		error,
+		fetchBitcoiners,
+		createBitcoiner,
+	}
+}

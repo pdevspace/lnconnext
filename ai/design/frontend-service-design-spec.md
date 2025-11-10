@@ -7,6 +7,7 @@ This document provides a comprehensive design specification for the frontend ser
 ## Prerequisites
 
 ### Requirement Understanding
+
 - **MANDATORY**: Before implementing any feature, ai must read and understand `ai/requirement-spec.md`
 - All design decisions must trace back to the requirements specification
 - Implementation should align with the functional and non-functional requirements
@@ -20,17 +21,17 @@ The bitcoiner collection will store speaker/bitcoiner information with the follo
 
 ```typescript
 interface Bitcoiner {
-  id: string;
-  name: string;
-  socialMedia: SocialMedia[];
+	id: string
+	name: string
+	socialMedia: SocialMedia[]
 }
 
 interface SocialMedia {
-  id: string;                    // Unique identifier (e.g., "social-1")
-  displayText: string;           // Display text (e.g., "เพจ BLC Chiang Mai")
-  username: string;              // Username/handle (e.g., "BLC Chiang Mai")
-  platform: string;             // Platform name (e.g., "facebook", "youtube")
-  urlLink: string;               // Full URL link
+	id: string // Unique identifier (e.g., "social-1")
+	displayText: string // Display text (e.g., "เพจ BLC Chiang Mai")
+	username: string // Username/handle (e.g., "BLC Chiang Mai")
+	platform: string // Platform name (e.g., "facebook", "youtube")
+	urlLink: string // Full URL link
 }
 ```
 
@@ -110,10 +111,10 @@ All endpoints return a consistent response format:
 
 ```typescript
 interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
+	success: boolean
+	data?: T
+	error?: string
+	message?: string
 }
 ```
 
@@ -133,29 +134,32 @@ The service will provide direct database access methods:
 
 ```typescript
 class BitcoinerService {
-  // Get all bitcoiners with optional filtering
-  static async getAllBitcoiners(filters?: {
-    search?: string;
-    platform?: string;
-  }): Promise<Bitcoiner[]>
+	// Get all bitcoiners with optional filtering
+	static async getAllBitcoiners(filters?: {
+		search?: string
+		platform?: string
+	}): Promise<Bitcoiner[]>
 
-  // Get single bitcoiner by ID
-  static async getBitcoinerById(id: string): Promise<Bitcoiner | null>
+	// Get single bitcoiner by ID
+	static async getBitcoinerById(id: string): Promise<Bitcoiner | null>
 
-  // Create new bitcoiner
-  static async createBitcoiner(data: BitcoinerFormData): Promise<Bitcoiner>
+	// Create new bitcoiner
+	static async createBitcoiner(data: BitcoinerFormData): Promise<Bitcoiner>
 
-  // Update existing bitcoiner
-  static async updateBitcoiner(id: string, data: BitcoinerFormData): Promise<Bitcoiner | null>
+	// Update existing bitcoiner
+	static async updateBitcoiner(
+		id: string,
+		data: BitcoinerFormData
+	): Promise<Bitcoiner | null>
 
-  // Delete bitcoiner
-  static async deleteBitcoiner(id: string): Promise<boolean>
+	// Delete bitcoiner
+	static async deleteBitcoiner(id: string): Promise<boolean>
 
-  // Search bitcoiners by name
-  static async searchBitcoiners(query: string): Promise<Bitcoiner[]>
+	// Search bitcoiners by name
+	static async searchBitcoiners(query: string): Promise<Bitcoiner[]>
 
-  // Filter by social media platform
-  static async filterByPlatform(platform: string): Promise<Bitcoiner[]>
+	// Filter by social media platform
+	static async filterByPlatform(platform: string): Promise<Bitcoiner[]>
 }
 ```
 
@@ -164,6 +168,7 @@ class BitcoinerService {
 ### 1. Bitcoiner List Page (`/bitcoiner`)
 
 **Features**:
+
 - Grid layout of bitcoiner cards
 - Search and filter functionality
 - Pagination controls
@@ -171,65 +176,71 @@ class BitcoinerService {
 - Responsive design with mobile-first approach
 
 **Layout**:
+
 ```tsx
 <div className="container mx-auto px-4 py-8">
-  <div className="flex justify-between items-center mb-6">
-    <h1 className="text-3xl font-bold">Bitcoiners</h1>
-    <Button href="/bitcoiner/create">Add New Bitcoiner</Button>
-  </div>
-  
-  <BitcoinerFilters />
-  
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {bitcoiners.map(bitcoiner => (
-      <BitcoinerCard key={bitcoiner.id} bitcoiner={bitcoiner} />
-    ))}
-  </div>
-  
-  <Pagination />
+	<div className="flex justify-between items-center mb-6">
+		<h1 className="text-3xl font-bold">Bitcoiners</h1>
+		<Button href="/bitcoiner/create">Add New Bitcoiner</Button>
+	</div>
+
+	<BitcoinerFilters />
+
+	<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		{bitcoiners.map((bitcoiner) => (
+			<BitcoinerCard key={bitcoiner.id} bitcoiner={bitcoiner} />
+		))}
+	</div>
+
+	<Pagination />
 </div>
 ```
 
 ### 2. Bitcoiner Detail Page (`/bitcoiner/[id]`)
 
 **Features**:
+
 - Full bitcoiner information display
 - Social media links
 - Edit and delete actions
 - Responsive layout
 
 **Layout**:
+
 ```tsx
 <div className="container mx-auto px-4 py-8">
-  <div className="max-w-4xl mx-auto">
-    <div className="flex justify-between items-start mb-6">
-      <div>
-        <h1 className="text-3xl font-bold">{bitcoiner.name}</h1>
-        {bitcoiner.bio && <p className="text-gray-600 mt-2">{bitcoiner.bio}</p>}
-      </div>
-      <div className="flex gap-2">
-        <Button href={`/bitcoiner/edit/${bitcoiner.id}`}>Edit</Button>
-        <Button variant="destructive" onClick={handleDelete}>Delete</Button>
-      </div>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Information</h2>
-        {/* Bitcoiner details */}
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Social Media</h2>
-        {/* Social media links */}
-      </div>
-    </div>
-  </div>
+	<div className="max-w-4xl mx-auto">
+		<div className="flex justify-between items-start mb-6">
+			<div>
+				<h1 className="text-3xl font-bold">{bitcoiner.name}</h1>
+				{bitcoiner.bio && <p className="text-gray-600 mt-2">{bitcoiner.bio}</p>}
+			</div>
+			<div className="flex gap-2">
+				<Button href={`/bitcoiner/edit/${bitcoiner.id}`}>Edit</Button>
+				<Button variant="destructive" onClick={handleDelete}>
+					Delete
+				</Button>
+			</div>
+		</div>
+
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+			<div>
+				<h2 className="text-xl font-semibold mb-4">Information</h2>
+				{/* Bitcoiner details */}
+			</div>
+			<div>
+				<h2 className="text-xl font-semibold mb-4">Social Media</h2>
+				{/* Social media links */}
+			</div>
+		</div>
+	</div>
 </div>
 ```
 
 ### 3. Create Bitcoiner Page (`/bitcoiner/create`)
 
 **Features**:
+
 - Form with validation
 - Social media management
 - Image upload for avatar
@@ -237,6 +248,7 @@ class BitcoinerService {
 - Responsive form layout
 
 **Form Fields**:
+
 - Name (required)
 - Bio (optional)
 - Avatar (file upload)
@@ -249,6 +261,7 @@ class BitcoinerService {
 ### 4. Edit Bitcoiner Page (`/bitcoiner/edit/[id]`)
 
 **Features**:
+
 - Pre-populated form with existing data
 - Same validation as create form
 - Update functionality
@@ -260,238 +273,266 @@ class BitcoinerService {
 
 ```tsx
 interface BitcoinerCardProps {
-  bitcoiner: Bitcoiner;
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
+	bitcoiner: Bitcoiner
+	onEdit?: (id: string) => void
+	onDelete?: (id: string) => void
 }
 
-const BitcoinerCard: React.FC<BitcoinerCardProps> = ({ bitcoiner, onEdit, onDelete }) => {
-  return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            {bitcoiner.avatar ? (
-              <img 
-                src={bitcoiner.avatar} 
-                alt={bitcoiner.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                <User className="w-6 h-6 text-gray-400" />
-              </div>
-            )}
-            <div>
-              <h3 className="font-semibold text-lg">{bitcoiner.name}</h3>
-              {bitcoiner.location && (
-                <p className="text-sm text-gray-500">{bitcoiner.location}</p>
-              )}
-            </div>
-          </div>
-          <Badge variant={bitcoiner.isActive ? "default" : "secondary"}>
-            {bitcoiner.isActive ? "Active" : "Inactive"}
-          </Badge>
-        </div>
-        
-        {bitcoiner.bio && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">{bitcoiner.bio}</p>
-        )}
-        
-        {bitcoiner.expertise.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-4">
-            {bitcoiner.expertise.map((skill, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        )}
-        
-        <div className="flex items-center justify-between">
-        <div className="flex space-x-2">
-          {bitcoiner.socialMedia.slice(0, 3).map((social, index) => (
-            <a
-              key={social.id || index}
-              href={social.urlLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-gray-600"
-              title={social.displayText}
-            >
-              <SocialIcon platform={social.platform} />
-            </a>
-          ))}
-        </div>
-          <div className="flex space-x-1">
-            <Button size="sm" variant="outline" onClick={() => onEdit?.(bitcoiner.id)}>
-              Edit
-            </Button>
-            <Button size="sm" variant="destructive" onClick={() => onDelete?.(bitcoiner.id)}>
-              Delete
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+const BitcoinerCard: React.FC<BitcoinerCardProps> = ({
+	bitcoiner,
+	onEdit,
+	onDelete,
+}) => {
+	return (
+		<Card className="hover:shadow-lg transition-shadow">
+			<CardContent className="p-6">
+				<div className="flex items-start justify-between mb-4">
+					<div className="flex items-center space-x-3">
+						{bitcoiner.avatar ? (
+							<img
+								src={bitcoiner.avatar}
+								alt={bitcoiner.name}
+								className="w-12 h-12 rounded-full object-cover"
+							/>
+						) : (
+							<div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+								<User className="w-6 h-6 text-gray-400" />
+							</div>
+						)}
+						<div>
+							<h3 className="font-semibold text-lg">{bitcoiner.name}</h3>
+							{bitcoiner.location && (
+								<p className="text-sm text-gray-500">{bitcoiner.location}</p>
+							)}
+						</div>
+					</div>
+					<Badge variant={bitcoiner.isActive ? 'default' : 'secondary'}>
+						{bitcoiner.isActive ? 'Active' : 'Inactive'}
+					</Badge>
+				</div>
+
+				{bitcoiner.bio && (
+					<p className="text-gray-600 text-sm mb-4 line-clamp-3">
+						{bitcoiner.bio}
+					</p>
+				)}
+
+				{bitcoiner.expertise.length > 0 && (
+					<div className="flex flex-wrap gap-1 mb-4">
+						{bitcoiner.expertise.map((skill, index) => (
+							<Badge key={index} variant="outline" className="text-xs">
+								{skill}
+							</Badge>
+						))}
+					</div>
+				)}
+
+				<div className="flex items-center justify-between">
+					<div className="flex space-x-2">
+						{bitcoiner.socialMedia.slice(0, 3).map((social, index) => (
+							<a
+								key={social.id || index}
+								href={social.urlLink}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-gray-400 hover:text-gray-600"
+								title={social.displayText}
+							>
+								<SocialIcon platform={social.platform} />
+							</a>
+						))}
+					</div>
+					<div className="flex space-x-1">
+						<Button
+							size="sm"
+							variant="outline"
+							onClick={() => onEdit?.(bitcoiner.id)}
+						>
+							Edit
+						</Button>
+						<Button
+							size="sm"
+							variant="destructive"
+							onClick={() => onDelete?.(bitcoiner.id)}
+						>
+							Delete
+						</Button>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+	)
+}
 ```
 
 ### BitcoinerForm Component
 
 ```tsx
 interface BitcoinerFormProps {
-  bitcoiner?: Bitcoiner;
-  onSubmit: (data: BitcoinerFormData) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
+	bitcoiner?: Bitcoiner
+	onSubmit: (data: BitcoinerFormData) => void
+	onCancel: () => void
+	isLoading?: boolean
 }
 
-const BitcoinerForm: React.FC<BitcoinerFormProps> = ({ 
-  bitcoiner, 
-  onSubmit, 
-  onCancel, 
-  isLoading 
+const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
+	bitcoiner,
+	onSubmit,
+	onCancel,
+	isLoading,
 }) => {
-  const [formData, setFormData] = useState<BitcoinerFormData>({
-    name: bitcoiner?.name || '',
-    bio: bitcoiner?.bio || '',
-    avatar: bitcoiner?.avatar || '',
-    expertise: bitcoiner?.expertise || [],
-    location: bitcoiner?.location || '',
-    website: bitcoiner?.website || '',
-    socialMedia: bitcoiner?.socialMedia || [],
-    isActive: bitcoiner?.isActive ?? true
-  });
+	const [formData, setFormData] = useState<BitcoinerFormData>({
+		name: bitcoiner?.name || '',
+		bio: bitcoiner?.bio || '',
+		avatar: bitcoiner?.avatar || '',
+		expertise: bitcoiner?.expertise || [],
+		location: bitcoiner?.location || '',
+		website: bitcoiner?.website || '',
+		socialMedia: bitcoiner?.socialMedia || [],
+		isActive: bitcoiner?.isActive ?? true,
+	})
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="name">Name *</Label>
-          <Input
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({...formData, name: e.target.value})}
-            required
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="location">Location</Label>
-          <Input
-            id="location"
-            value={formData.location}
-            onChange={(e) => setFormData({...formData, location: e.target.value})}
-          />
-        </div>
-      </div>
-      
-      <div>
-        <Label htmlFor="bio">Biography</Label>
-        <Textarea
-          id="bio"
-          value={formData.bio}
-          onChange={(e) => setFormData({...formData, bio: e.target.value})}
-          rows={4}
-        />
-      </div>
-      
-      <div>
-        <Label htmlFor="expertise">Expertise</Label>
-        <Select
-          value={formData.expertise}
-          onChange={(value) => setFormData({...formData, expertise: value})}
-          isMulti
-          options={EXPERTISE_OPTIONS}
-        />
-      </div>
-      
-      <div>
-        <Label>Social Media</Label>
-        <div className="space-y-4">
-          {formData.socialMedia.map((social, index) => (
-            <div key={social.id || index} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg">
-              <div>
-                <Label htmlFor={`social-platform-${index}`}>Platform</Label>
-                <Select
-                  value={social.platform}
-                  onChange={(value) => updateSocialMedia(index, 'platform', value)}
-                  options={[
-                    { value: 'facebook', label: 'Facebook' },
-                    { value: 'youtube', label: 'YouTube' },
-                    { value: 'twitter', label: 'Twitter' },
-                    { value: 'linkedin', label: 'LinkedIn' },
-                    { value: 'instagram', label: 'Instagram' },
-                  ]}
-                />
-              </div>
-              <div>
-                <Label htmlFor={`social-displayText-${index}`}>Display Text</Label>
-                <Input
-                  id={`social-displayText-${index}`}
-                  value={social.displayText}
-                  onChange={(e) => updateSocialMedia(index, 'displayText', e.target.value)}
-                  placeholder="e.g., เพจ BLC Chiang Mai"
-                />
-              </div>
-              <div>
-                <Label htmlFor={`social-username-${index}`}>Username</Label>
-                <Input
-                  id={`social-username-${index}`}
-                  value={social.username}
-                  onChange={(e) => updateSocialMedia(index, 'username', e.target.value)}
-                  placeholder="e.g., BLC Chiang Mai"
-                />
-              </div>
-              <div className="flex items-end space-x-2">
-                <div className="flex-1">
-                  <Label htmlFor={`social-urlLink-${index}`}>URL</Label>
-                  <Input
-                    id={`social-urlLink-${index}`}
-                    value={social.urlLink}
-                    onChange={(e) => updateSocialMedia(index, 'urlLink', e.target.value)}
-                    placeholder="https://..."
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => removeSocialMedia(index)}
-                >
-                  Remove
-                </Button>
-              </div>
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addSocialMedia}
-            className="w-full"
-          >
-            Add Social Media
-          </Button>
-        </div>
-      </div>
-      
-      <div className="flex justify-end space-x-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : bitcoiner ? 'Update' : 'Create'}
-        </Button>
-      </div>
-    </form>
-  );
-};
+	return (
+		<form onSubmit={handleSubmit} className="space-y-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div>
+					<Label htmlFor="name">Name *</Label>
+					<Input
+						id="name"
+						value={formData.name}
+						onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+						required
+					/>
+				</div>
+
+				<div>
+					<Label htmlFor="location">Location</Label>
+					<Input
+						id="location"
+						value={formData.location}
+						onChange={(e) =>
+							setFormData({ ...formData, location: e.target.value })
+						}
+					/>
+				</div>
+			</div>
+
+			<div>
+				<Label htmlFor="bio">Biography</Label>
+				<Textarea
+					id="bio"
+					value={formData.bio}
+					onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+					rows={4}
+				/>
+			</div>
+
+			<div>
+				<Label htmlFor="expertise">Expertise</Label>
+				<Select
+					value={formData.expertise}
+					onChange={(value) => setFormData({ ...formData, expertise: value })}
+					isMulti
+					options={EXPERTISE_OPTIONS}
+				/>
+			</div>
+
+			<div>
+				<Label>Social Media</Label>
+				<div className="space-y-4">
+					{formData.socialMedia.map((social, index) => (
+						<div
+							key={social.id || index}
+							className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg"
+						>
+							<div>
+								<Label htmlFor={`social-platform-${index}`}>Platform</Label>
+								<Select
+									value={social.platform}
+									onChange={(value) =>
+										updateSocialMedia(index, 'platform', value)
+									}
+									options={[
+										{ value: 'facebook', label: 'Facebook' },
+										{ value: 'youtube', label: 'YouTube' },
+										{ value: 'twitter', label: 'Twitter' },
+										{ value: 'linkedin', label: 'LinkedIn' },
+										{ value: 'instagram', label: 'Instagram' },
+									]}
+								/>
+							</div>
+							<div>
+								<Label htmlFor={`social-displayText-${index}`}>
+									Display Text
+								</Label>
+								<Input
+									id={`social-displayText-${index}`}
+									value={social.displayText}
+									onChange={(e) =>
+										updateSocialMedia(index, 'displayText', e.target.value)
+									}
+									placeholder="e.g., เพจ BLC Chiang Mai"
+								/>
+							</div>
+							<div>
+								<Label htmlFor={`social-username-${index}`}>Username</Label>
+								<Input
+									id={`social-username-${index}`}
+									value={social.username}
+									onChange={(e) =>
+										updateSocialMedia(index, 'username', e.target.value)
+									}
+									placeholder="e.g., BLC Chiang Mai"
+								/>
+							</div>
+							<div className="flex items-end space-x-2">
+								<div className="flex-1">
+									<Label htmlFor={`social-urlLink-${index}`}>URL</Label>
+									<Input
+										id={`social-urlLink-${index}`}
+										value={social.urlLink}
+										onChange={(e) =>
+											updateSocialMedia(index, 'urlLink', e.target.value)
+										}
+										placeholder="https://..."
+									/>
+								</div>
+								<Button
+									type="button"
+									variant="destructive"
+									size="sm"
+									onClick={() => removeSocialMedia(index)}
+								>
+									Remove
+								</Button>
+							</div>
+						</div>
+					))}
+					<Button
+						type="button"
+						variant="outline"
+						onClick={addSocialMedia}
+						className="w-full"
+					>
+						Add Social Media
+					</Button>
+				</div>
+			</div>
+
+			<div className="flex justify-end space-x-4">
+				<Button type="button" variant="outline" onClick={onCancel}>
+					Cancel
+				</Button>
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? 'Saving...' : bitcoiner ? 'Update' : 'Create'}
+				</Button>
+			</div>
+		</form>
+	)
+}
 ```
 
 ## Data Validation
-
 
 ## State Management
 
@@ -500,61 +541,64 @@ const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 ```typescript
 // hooks/useBitcoiner.ts
 export const useBitcoiner = (id?: string) => {
-  const [bitcoiner, setBitcoiner] = useState<Bitcoiner | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+	const [bitcoiner, setBitcoiner] = useState<Bitcoiner | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
-  const fetchBitcoiner = useCallback(async () => {
-    if (!id) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`/api/bitcoiner/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch bitcoiner');
-      
-      const data = await response.json();
-      setBitcoiner(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+	const fetchBitcoiner = useCallback(async () => {
+		if (!id) return
 
-  const updateBitcoiner = useCallback(async (data: BitcoinerFormData) => {
-    if (!id) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`/api/bitcoiner/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      
-      if (!response.ok) throw new Error('Failed to update bitcoiner');
-      
-      const updated = await response.json();
-      setBitcoiner(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+		setLoading(true)
+		setError(null)
 
-  useEffect(() => {
-    fetchBitcoiner();
-  }, [fetchBitcoiner]);
+		try {
+			const response = await fetch(`/api/bitcoiner/${id}`)
+			if (!response.ok) throw new Error('Failed to fetch bitcoiner')
 
-  return { bitcoiner, loading, error, updateBitcoiner, refetch: fetchBitcoiner };
-};
+			const data = await response.json()
+			setBitcoiner(data)
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Unknown error')
+		} finally {
+			setLoading(false)
+		}
+	}, [id])
+
+	const updateBitcoiner = useCallback(
+		async (data: BitcoinerFormData) => {
+			if (!id) return
+
+			setLoading(true)
+			setError(null)
+
+			try {
+				const response = await fetch(`/api/bitcoiner/${id}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				})
+
+				if (!response.ok) throw new Error('Failed to update bitcoiner')
+
+				const updated = await response.json()
+				setBitcoiner(updated)
+				return updated
+			} catch (err) {
+				setError(err instanceof Error ? err.message : 'Unknown error')
+				throw err
+			} finally {
+				setLoading(false)
+			}
+		},
+		[id]
+	)
+
+	useEffect(() => {
+		fetchBitcoiner()
+	}, [fetchBitcoiner])
+
+	return { bitcoiner, loading, error, updateBitcoiner, refetch: fetchBitcoiner }
+}
 ```
 
 ## Error Handling
@@ -564,48 +608,48 @@ export const useBitcoiner = (id?: string) => {
 ```tsx
 // components/ErrorBoundary.tsx
 interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
+	hasError: boolean
+	error?: Error
 }
 
 export class ErrorBoundary extends React.Component<
-  React.PropsWithChildren<{}>,
-  ErrorBoundaryState
+	React.PropsWithChildren<{}>,
+	ErrorBoundaryState
 > {
-  constructor(props: React.PropsWithChildren<{}>) {
-    super(props);
-    this.state = { hasError: false };
-  }
+	constructor(props: React.PropsWithChildren<{}>) {
+		super(props)
+		this.state = { hasError: false }
+	}
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
+	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+		return { hasError: true, error }
+	}
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-  }
+	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+		console.error('Error caught by boundary:', error, errorInfo)
+	}
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">
-              Something went wrong
-            </h2>
-            <p className="text-gray-600 mb-4">
-              {this.state.error?.message || 'An unexpected error occurred'}
-            </p>
-            <Button onClick={() => this.setState({ hasError: false })}>
-              Try again
-            </Button>
-          </div>
-        </div>
-      );
-    }
+	render() {
+		if (this.state.hasError) {
+			return (
+				<div className="flex items-center justify-center min-h-[400px]">
+					<div className="text-center">
+						<h2 className="text-2xl font-bold text-red-600 mb-4">
+							Something went wrong
+						</h2>
+						<p className="text-gray-600 mb-4">
+							{this.state.error?.message || 'An unexpected error occurred'}
+						</p>
+						<Button onClick={() => this.setState({ hasError: false })}>
+							Try again
+						</Button>
+					</div>
+				</div>
+			)
+		}
 
-    return this.props.children;
-  }
+		return this.props.children
+	}
 }
 ```
 
@@ -623,15 +667,15 @@ export class ErrorBoundary extends React.Component<
 
 ```typescript
 // lib/cache.ts
-import { unstable_cache } from 'next/cache';
+import { unstable_cache } from 'next/cache'
 
 export const getCachedBitcoiners = unstable_cache(
-  async (page: number = 1, limit: number = 10) => {
-    // Database query logic
-  },
-  ['bitcoiners'],
-  { revalidate: 300 } // 5 minutes
-);
+	async (page: number = 1, limit: number = 10) => {
+		// Database query logic
+	},
+	['bitcoiners'],
+	{ revalidate: 300 } // 5 minutes
+)
 ```
 
 ## Security Considerations
@@ -734,37 +778,37 @@ CMD ["npm", "start"]
 
 ```typescript
 // scripts/migrate-speakers.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function migrateSpeakers() {
-  const speakersData = require('../src/data/event/speakers.json');
-  
-  for (const speaker of speakersData.speakers) {
-    await prisma.bitcoiner.create({
-      data: {
-        id: speaker.id.replace('speaker-', 'bitcoiner-'),
-        name: speaker.name,
-        socialMedia: {
-          create: speaker.socialMedia.map(sm => ({
-            displayText: sm.displayText || `${sm.platform} ${sm.username}`,
-            username: sm.username || '',
-            platform: sm.platform || 'unknown',
-            urlLink: sm.urlLink || '',
-          }))
-        },
-        isActive: true,
-      },
-    });
-  }
-  
-  console.log('Migration completed successfully');
+	const speakersData = require('../src/data/event/speakers.json')
+
+	for (const speaker of speakersData.speakers) {
+		await prisma.bitcoiner.create({
+			data: {
+				id: speaker.id.replace('speaker-', 'bitcoiner-'),
+				name: speaker.name,
+				socialMedia: {
+					create: speaker.socialMedia.map((sm) => ({
+						displayText: sm.displayText || `${sm.platform} ${sm.username}`,
+						username: sm.username || '',
+						platform: sm.platform || 'unknown',
+						urlLink: sm.urlLink || '',
+					})),
+				},
+				isActive: true,
+			},
+		})
+	}
+
+	console.log('Migration completed successfully')
 }
 
 migrateSpeakers()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect());
+	.catch(console.error)
+	.finally(() => prisma.$disconnect())
 ```
 
 ## Future Enhancements

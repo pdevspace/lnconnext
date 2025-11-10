@@ -1,67 +1,19 @@
-/**
- * Get Organizer API Endpoint
- * POST /api/organizer/get
- */
+import { createSuccessResponse, handleError } from '@/api'
 
-import { NextRequest, NextResponse } from 'next/server';
-import { OrganizerService } from '@/services/OrganizerService';
-import { validateApiRequest } from '@/utils/backendValidators';
+import { NextRequest } from 'next/server'
+
+import { GetOrganizer } from './service'
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    
-    // Validate request
-    const validation = validateApiRequest(body);
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid request',
-          errors: validation.errors
-        },
-        { status: 400 }
-      );
-    }
+	// GetOrganizer
+	console.log('/api/organizer/get')
+	try {
+		const handler = await GetOrganizer.fromRequest(request)
 
-    const { organizerId } = body;
+		const result = await handler.toResult()
 
-    if (!organizerId || typeof organizerId !== 'string') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Organizer ID is required'
-        },
-        { status: 400 }
-      );
-    }
-
-    // Get organizer
-    const organizer = await OrganizerService.getOrganizerById(organizerId);
-
-    if (!organizer) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Organizer not found'
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: organizer
-    });
-
-  } catch (error) {
-    console.error('Error in get organizer API:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error'
-      },
-      { status: 500 }
-    );
-  }
+		return createSuccessResponse(result)
+	} catch (error) {
+		return handleError(error)
+	}
 }

@@ -26,6 +26,7 @@ When you start a prompt with any of these keywords, the AI will follow the workf
 The Implementation Phase (`*code`) has special requirements:
 
 ### 1. Requirements and Design Review
+
 - **MANDATORY**: Before implementing any feature, AI must:
   - Read and analyze relevant files in `ai/01-requirements/`
   - Read and analyze relevant files in `ai/02-design/features/`
@@ -34,6 +35,7 @@ The Implementation Phase (`*code`) has special requirements:
   - Document any changes made to requirements or design
 
 ### 2. Implementation Documentation
+
 - **MANDATORY**: Create corresponding `.md` files in `ai/03-implementation/features/` that:
   - Duplicate the structure from `ai/02-design/features/` for the same feature
   - Document the actual implementation status and progress
@@ -42,6 +44,7 @@ The Implementation Phase (`*code`) has special requirements:
   - Maintain traceability to requirements and design
 
 ### 3. Status Tracking
+
 - **Implementation Status**: Each implementation file must track:
   - **Completed**: What has been fully implemented and tested
   - **In Progress**: What is currently being worked on
@@ -52,6 +55,7 @@ The Implementation Phase (`*code`) has special requirements:
 ## Folder Organization
 
 All phases are organized in numbered folders:
+
 - `ai/00-flow/` - AI Workflow Management (workflow system files)
 - `ai/01-requirements/` - Requirements documents (SDLC Phase 1)
 - `ai/02-design/` - Design documents (SDLC Phase 2)
@@ -61,4 +65,4 @@ All phases are organized in numbered folders:
 
 ---
 
-*This workflow system ensures systematic, documented, and traceable development processes.*
+_This workflow system ensures systematic, documented, and traceable development processes._

@@ -1,11 +1,13 @@
 # Event Management Implementation
 
 ## Overview
+
 Complete implementation of the Event Management feature including database models, API endpoints, frontend components, and calendar integration.
 
 ## Database Implementation
 
 ### Prisma Schema
+
 ```prisma
 model Event {
   id               String         @id @default(auto()) @map("_id") @db.ObjectId
@@ -18,17 +20,17 @@ model Event {
   images           String[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
-  
+
   organizerId      String         @db.ObjectId
   organizer        Organizer      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
-  
+
   locationId       String?        @db.ObjectId
   location         Location?      @relation(fields: [locationId], references: [id], onDelete: Restrict)
-  
+
   sections         EventSection[]
   eventBitcoiners  EventBitcoiner[]
   websites         Website[]      @relation("EventWebsites")
-  
+
   @@map("events")
 }
 
@@ -41,11 +43,11 @@ model EventSection {
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  
+
   eventId     String    @db.ObjectId
   event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
   sectionBitcoiners SectionBitcoiner[]
-  
+
   @@map("event_sections")
 }
 ```
@@ -53,6 +55,7 @@ model EventSection {
 ## Backend Implementation
 
 ### Service Layer (`src/services/EventService.ts`)
+
 - `getEventById(id: string)` - Fetch single event
 - `getEvents(filters: EventFilters)` - Fetch all with filtering
 - `getUpcomingEvents(limit: number)` - Fetch upcoming events
@@ -60,6 +63,7 @@ model EventSection {
 - `searchEvents(query: string, filters: EventFilters)` - Search events
 
 ### API Routes
+
 - `POST /api/event/get` - Get single event
 - `POST /api/event/list` - List events with filters
 - `POST /api/event/upcoming` - Get upcoming events
@@ -69,57 +73,60 @@ model EventSection {
 ## Frontend Implementation
 
 ### Types (`src/types/event.ts`)
+
 ```typescript
 export interface Event {
-  id: string;
-  name: string;
-  description: string;
-  organizerId: string;
-  eventSeriesName?: string;
-  location?: Location;
-  sections: EventSection[];
-  startDate: Date;
-  endDate?: Date;
-  bitcoiners: Bitcoiner[];
-  images: string[];
-  websites: Website[];
-  price: number;
-  register?: Website;
-  createdAt: Date;
-  updatedAt: Date;
+	id: string
+	name: string
+	description: string
+	organizerId: string
+	eventSeriesName?: string
+	location?: Location
+	sections: EventSection[]
+	startDate: Date
+	endDate?: Date
+	bitcoiners: Bitcoiner[]
+	images: string[]
+	websites: Website[]
+	price: number
+	register?: Website
+	createdAt: Date
+	updatedAt: Date
 }
 
 export interface EventSection {
-  id: string;
-  sectionName: string;
-  startTime: Date;
-  endTime: Date;
-  spot: string;
-  description?: string;
-  bitcoiners: Bitcoiner[];
+	id: string
+	sectionName: string
+	startTime: Date
+	endTime: Date
+	spot: string
+	description?: string
+	bitcoiners: Bitcoiner[]
 }
 
 export interface Location {
-  id: string;
-  buildingName: string;
-  address: string;
-  city: string;
-  country: string;
-  googleMapsUrl: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+	id: string
+	buildingName: string
+	address: string
+	city: string
+	country: string
+	googleMapsUrl: string
+	coordinates?: {
+		lat: number
+		lng: number
+	}
 }
 ```
 
 ### Custom Hooks (`src/hooks/useEvent.ts`)
+
 - `useEvents(filters)` - Fetch all events with filtering
 - `useEvent(id)` - Fetch single event
 - `useUpcomingEvents(limit)` - Fetch upcoming events
 - `usePastEvents(limit)` - Fetch past events
 
 ### UI Components
+
 - `EventCard` - Reusable card component
 - `EventDetailPage` - Individual event page
 - `EventListPage` - Main listing page
@@ -131,6 +138,7 @@ export interface Location {
 ## Key Features
 
 ### Event Display
+
 - Event cards with images
 - Date and time information
 - Location details
@@ -138,6 +146,7 @@ export interface Location {
 - Price display
 
 ### Calendar Integration
+
 - Monthly calendar view
 - Daily calendar view
 - Event indicators on dates
@@ -145,6 +154,7 @@ export interface Location {
 - Navigation between months
 
 ### Search and Filtering
+
 - Search by event name
 - Search by speaker names
 - Filter by date range
@@ -152,12 +162,14 @@ export interface Location {
 - Filter by location
 
 ### Date Handling
+
 - Proper date conversion from API
 - Timezone handling
 - Date formatting utilities
 - Calendar navigation
 
 ## Implementation Status
+
 ✅ Database schema defined
 ✅ Backend service layer implemented
 ✅ API routes created

@@ -1,173 +1,181 @@
 # Frontend Architecture Design
 
 ## Overview
+
 The frontend is built with Next.js 14, React 18, TypeScript, and Tailwind CSS. It follows a component-based architecture with custom hooks for data management and a consistent design system.
 
 ## Architecture Layers
 
 ### 1. Type System (`src/types/`)
+
 TypeScript interfaces defining data contracts between frontend and backend.
 
 #### Core Types
+
 ```typescript
 // Event Types
 export interface Event {
-  id: string;
-  name: string;
-  description: string;
-  organizerId: string;
-  eventSeriesName?: string;
-  location?: Location;
-  sections: EventSection[];
-  startDate: Date;
-  endDate?: Date;
-  bitcoiners: Bitcoiner[];
-  images: string[];
-  websites: Website[];
-  price: number;
-  register?: Website;
-  createdAt: Date;
-  updatedAt: Date;
+	id: string
+	name: string
+	description: string
+	organizerId: string
+	eventSeriesName?: string
+	location?: Location
+	sections: EventSection[]
+	startDate: Date
+	endDate?: Date
+	bitcoiners: Bitcoiner[]
+	images: string[]
+	websites: Website[]
+	price: number
+	register?: Website
+	createdAt: Date
+	updatedAt: Date
 }
 
 // Bitcoiner Types
 export interface Bitcoiner {
-  id: string;
-  name: string;
-  bio?: string;
-  avatar?: string;
-  expertise: string[];
-  isActive: boolean;
-  socialMedia: SocialMedia[];
+	id: string
+	name: string
+	bio?: string
+	avatar?: string
+	expertise: string[]
+	isActive: boolean
+	socialMedia: SocialMedia[]
 }
 
 // Organizer Types
 export interface Organizer {
-  id: string;
-  name: string;
-  bio?: string;
-  avatar?: string;
-  website?: string;
-  isActive: boolean;
-  socialMedia: SocialMedia[];
-  events: Event[];
-  createdAt: Date;
-  updatedAt: Date;
+	id: string
+	name: string
+	bio?: string
+	avatar?: string
+	website?: string
+	isActive: boolean
+	socialMedia: SocialMedia[]
+	events: Event[]
+	createdAt: Date
+	updatedAt: Date
 }
 ```
 
 #### Form Data Types
+
 ```typescript
 // Bitcoiner Form
 export interface BitcoinerFormData {
-  name: string;
-  socialMedia: SocialMediaData[];
+	name: string
+	socialMedia: SocialMediaData[]
 }
 
 // Organizer Form
 export interface OrganizerFormData {
-  name: string;
-  bio?: string;
-  avatar?: string;
-  website?: string;
-  isActive: boolean;
-  socialMediaIds: string[];
+	name: string
+	bio?: string
+	avatar?: string
+	website?: string
+	isActive: boolean
+	socialMediaIds: string[]
 }
 ```
 
 #### Filter Types
+
 ```typescript
 // Bitcoiner Filters
 export interface BitcoinerFilters {
-  searchTerm: string;
-  selectedPlatform: string;
+	searchTerm: string
+	selectedPlatform: string
 }
 
 // Event Filters
 export interface EventFilters {
-  search?: string;
-  organizerId?: string;
-  speakerId?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-  limit?: number;
-  offset?: number;
+	search?: string
+	organizerId?: string
+	speakerId?: string
+	dateFrom?: Date
+	dateTo?: Date
+	limit?: number
+	offset?: number
 }
 
 // Organizer Filters
 export interface OrganizerFilters {
-  search?: string;
-  isActive?: boolean;
-  hasEvents?: boolean;
-  limit?: number;
-  offset?: number;
+	search?: string
+	isActive?: boolean
+	hasEvents?: boolean
+	limit?: number
+	offset?: number
 }
 ```
 
 ### 2. Custom Hooks (`src/hooks/`)
+
 React hooks for data fetching, state management, and business logic.
 
 #### Data Fetching Hooks
+
 ```typescript
 // Event Hooks
 export function useEvents(filters?: EventFilters): {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	events: Event[]
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 export function useEvent(eventId: string): {
-  event: Event | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	event: Event | null
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 export function useUpcomingEvents(limit?: number): {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
+	events: Event[]
+	loading: boolean
+	error: string | null
 }
 
 export function usePastEvents(limit?: number): {
-  events: Event[];
-  loading: boolean;
-  error: string | null;
+	events: Event[]
+	loading: boolean
+	error: string | null
 }
 
 // Bitcoiner Hooks
 export function useBitcoiners(filters?: BitcoinerFilters): {
-  bitcoiners: Bitcoiner[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	bitcoiners: Bitcoiner[]
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 export function useBitcoiner(bitcoinerId: string): {
-  bitcoiner: Bitcoiner | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	bitcoiner: Bitcoiner | null
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 // Organizer Hooks
 export function useOrganizers(filters?: OrganizerFilters): {
-  organizers: Organizer[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	organizers: Organizer[]
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 
 export function useOrganizer(organizerId: string): {
-  organizer: Organizer | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+	organizer: Organizer | null
+	loading: boolean
+	error: string | null
+	refetch: () => void
 }
 ```
 
 #### CRUD Operation Hooks
+
 ```typescript
 // Bitcoiner CRUD
 export function useBitcoinerActions() {
@@ -187,9 +195,11 @@ export function useOrganizerActions() {
 ```
 
 ### 3. Page Components (`src/components/pages/`)
+
 Main page-level components organized by feature.
 
 #### Bitcoiner Pages
+
 ```
 bitcoiner/
 ├── BitcoinerCard.tsx           # Card component for bitcoiner display
@@ -203,6 +213,7 @@ bitcoiner/
 ```
 
 #### Event Pages
+
 ```
 event/
 ├── EventComponent.tsx          # Reusable event display component
@@ -211,6 +222,7 @@ event/
 ```
 
 #### Organizer Pages
+
 ```
 organizer/
 ├── CreateOrganizerPage.tsx     # Create organizer page
@@ -222,6 +234,7 @@ organizer/
 ```
 
 #### Calendar Pages
+
 ```
 calendar/
 ├── CalendarPage.tsx            # Main calendar view
@@ -233,90 +246,70 @@ calendar/
 ```
 
 ### 4. UI Components (`src/components/ui/`)
+
 Reusable UI components following a design system.
 
 #### Core UI Components
+
 ```typescript
 // Button Component
-export function Button({ 
-  variant, 
-  size, 
-  children, 
-  ...props 
-}: ButtonProps)
+export function Button({ variant, size, children, ...props }: ButtonProps)
 
 // Card Component
-export function Card({ 
-  children, 
-  className, 
-  ...props 
-}: CardProps)
+export function Card({ children, className, ...props }: CardProps)
 
 // Input Component
-export function Input({ 
-  type, 
-  placeholder, 
-  value, 
-  onChange, 
-  ...props 
+export function Input({
+	type,
+	placeholder,
+	value,
+	onChange,
+	...props
 }: InputProps)
 
 // Select Component
-export function Select({ 
-  options, 
-  value, 
-  onChange, 
-  placeholder, 
-  ...props 
+export function Select({
+	options,
+	value,
+	onChange,
+	placeholder,
+	...props
 }: SelectProps)
 
 // Badge Component
-export function Badge({ 
-  variant, 
-  children, 
-  ...props 
-}: BadgeProps)
+export function Badge({ variant, children, ...props }: BadgeProps)
 
 // Tabs Component
-export function Tabs({ 
-  tabs, 
-  activeTab, 
-  onTabChange, 
-  children 
-}: TabsProps)
+export function Tabs({ tabs, activeTab, onTabChange, children }: TabsProps)
 ```
 
 #### Specialized Components
+
 ```typescript
 // Social Icon Component
-export function SocialIcon({ 
-  platform, 
-  url, 
-  username, 
-  displayText 
+export function SocialIcon({
+	platform,
+	url,
+	username,
+	displayText,
 }: SocialIconProps)
 
 // Social Media Box
-export function SocialMediaBox({ 
-  socialMedia, 
-  ownerType 
-}: SocialMediaBoxProps)
+export function SocialMediaBox({ socialMedia, ownerType }: SocialMediaBoxProps)
 
 // Speaker Box
-export function SpeakerBox({ 
-  bitcoiners, 
-  title 
-}: SpeakerBoxProps)
+export function SpeakerBox({ bitcoiners, title }: SpeakerBoxProps)
 ```
 
 ## Design System
 
 ### Color Palette
+
 ```css
 /* Primary Colors */
---primary: #f7931a;        /* Bitcoin Orange */
---primary-dark: #e6850e;   /* Darker Orange */
---primary-light: #ffa726;  /* Lighter Orange */
+--primary: #f7931a; /* Bitcoin Orange */
+--primary-dark: #e6850e; /* Darker Orange */
+--primary-light: #ffa726; /* Lighter Orange */
 
 /* Neutral Colors */
 --gray-50: #f9fafb;
@@ -338,38 +331,46 @@ export function SpeakerBox({
 ```
 
 ### Typography
+
 ```css
 /* Font Families */
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+font-family:
+	'Inter',
+	-apple-system,
+	BlinkMacSystemFont,
+	'Segoe UI',
+	sans-serif;
 
 /* Font Sizes */
-text-xs: 0.75rem;      /* 12px */
-text-sm: 0.875rem;     /* 14px */
-text-base: 1rem;       /* 16px */
-text-lg: 1.125rem;     /* 18px */
-text-xl: 1.25rem;      /* 20px */
-text-2xl: 1.5rem;      /* 24px */
-text-3xl: 1.875rem;    /* 30px */
-text-4xl: 2.25rem;     /* 36px */
+text-xs: 0.75rem; /* 12px */
+text-sm: 0.875rem; /* 14px */
+text-base: 1rem; /* 16px */
+text-lg: 1.125rem; /* 18px */
+text-xl: 1.25rem; /* 20px */
+text-2xl: 1.5rem; /* 24px */
+text-3xl: 1.875rem; /* 30px */
+text-4xl: 2.25rem; /* 36px */
 ```
 
 ### Spacing System
+
 ```css
 /* Spacing Scale */
-space-1: 0.25rem;      /* 4px */
-space-2: 0.5rem;       /* 8px */
-space-3: 0.75rem;      /* 12px */
-space-4: 1rem;         /* 16px */
-space-6: 1.5rem;       /* 24px */
-space-8: 2rem;         /* 32px */
-space-12: 3rem;        /* 48px */
-space-16: 4rem;        /* 64px */
-space-24: 6rem;        /* 96px */
+space-1: 0.25rem; /* 4px */
+space-2: 0.5rem; /* 8px */
+space-3: 0.75rem; /* 12px */
+space-4: 1rem; /* 16px */
+space-6: 1.5rem; /* 24px */
+space-8: 2rem; /* 32px */
+space-12: 3rem; /* 48px */
+space-16: 4rem; /* 64px */
+space-24: 6rem; /* 96px */
 ```
 
 ## Component Patterns
 
 ### 1. Card Pattern
+
 Consistent card-based layout for displaying entities.
 
 ```typescript
@@ -387,6 +388,7 @@ Consistent card-based layout for displaying entities.
 ```
 
 ### 2. List Pattern
+
 Consistent list layouts with filtering and pagination.
 
 ```typescript
@@ -396,12 +398,12 @@ Consistent list layouts with filtering and pagination.
     <h1 className="text-3xl font-bold">Bitcoiners</h1>
     <Button onClick={handleCreate}>Add New Bitcoiner</Button>
   </div>
-  
-  <BitcoinerFilters 
-    filters={filters} 
-    onFiltersChange={setFilters} 
+
+  <BitcoinerFilters
+    filters={filters}
+    onFiltersChange={setFilters}
   />
-  
+
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {bitcoiners.map(bitcoiner => (
       <BitcoinerCard key={bitcoiner.id} bitcoiner={bitcoiner} />
@@ -411,6 +413,7 @@ Consistent list layouts with filtering and pagination.
 ```
 
 ### 3. Detail Pattern
+
 Consistent detail page layouts with actions.
 
 ```typescript
@@ -430,13 +433,14 @@ Consistent detail page layouts with actions.
         <Button variant="destructive" onClick={handleDelete}>Delete</Button>
       </div>
     </div>
-    
+
     <SocialMediaBox socialMedia={bitcoiner.socialMedia} />
   </div>
 </div>
 ```
 
 ### 4. Form Pattern
+
 Consistent form layouts with validation.
 
 ```typescript
@@ -452,7 +456,7 @@ Consistent form layouts with validation.
     />
     {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
   </div>
-  
+
   <div>
     <Label>Social Media</Label>
     <SocialMediaForm
@@ -460,7 +464,7 @@ Consistent form layouts with validation.
       onChange={(socialMedia) => handleInputChange('socialMedia', socialMedia)}
     />
   </div>
-  
+
   <div className="flex justify-end space-x-2">
     <Button type="button" variant="outline" onClick={onCancel}>
       Cancel
@@ -475,16 +479,19 @@ Consistent form layouts with validation.
 ## State Management
 
 ### Local State
+
 - React `useState` for component-level state
 - Form state management with controlled components
 - Loading and error states for async operations
 
 ### Global State
+
 - Custom hooks for data fetching and caching
 - Context API for theme and user preferences
 - URL state for filters and pagination
 
 ### Data Flow
+
 ```
 API Request → Custom Hook → Component State → UI Update
      ↓
@@ -496,16 +503,18 @@ Loading State → Loading UI
 ## Responsive Design
 
 ### Breakpoints
+
 ```css
 /* Mobile First Approach */
-sm: 640px;    /* Small devices */
-md: 768px;    /* Medium devices */
-lg: 1024px;   /* Large devices */
-xl: 1280px;   /* Extra large devices */
-2xl: 1536px;  /* 2X large devices */
+sm: 640px; /* Small devices */
+md: 768px; /* Medium devices */
+lg: 1024px; /* Large devices */
+xl: 1280px; /* Extra large devices */
+2xl: 1536px; /* 2X large devices */
 ```
 
 ### Grid System
+
 ```typescript
 // Responsive Grid
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -526,16 +535,19 @@ xl: 1280px;   /* Extra large devices */
 ## Performance Optimizations
 
 ### Code Splitting
+
 - Dynamic imports for route-based code splitting
 - Lazy loading for heavy components
 - Bundle optimization with Next.js
 
 ### Image Optimization
+
 - Next.js Image component for automatic optimization
 - Lazy loading for images
 - Responsive image sizing
 
 ### Caching
+
 - Static generation for public pages
 - ISR for dynamic content
 - Client-side caching with custom hooks
@@ -543,16 +555,19 @@ xl: 1280px;   /* Extra large devices */
 ## Accessibility
 
 ### ARIA Labels
+
 - Proper labeling for form inputs
 - Screen reader support for interactive elements
 - Keyboard navigation support
 
 ### Color Contrast
+
 - WCAG AA compliant color combinations
 - High contrast mode support
 - Color-blind friendly palette
 
 ### Focus Management
+
 - Visible focus indicators
 - Logical tab order
 - Skip links for navigation
@@ -560,16 +575,19 @@ xl: 1280px;   /* Extra large devices */
 ## Testing Strategy
 
 ### Unit Testing
+
 - Component testing with React Testing Library
 - Hook testing with custom test utilities
 - Utility function testing
 
 ### Integration Testing
+
 - API integration testing
 - User flow testing
 - Cross-browser compatibility
 
 ### E2E Testing
+
 - Critical user journey testing
 - Performance testing
 - Accessibility testing
