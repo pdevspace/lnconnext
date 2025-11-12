@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -12,6 +12,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useOrganizers } from '@/hooks/useOrganizer'
 import {
 	Bitcoiner,
 	CreateBitcoinerSocialMediaItem,
@@ -20,7 +21,9 @@ import {
 
 import { useState } from 'react'
 
-import { Loader2, Plus, Share2, Trash2 } from 'lucide-react'
+import Link from 'next/link'
+
+import { ExternalLink, Loader2, Plus, Share2, Trash2 } from 'lucide-react'
 
 interface BitcoinerFormProps {
 	bitcoiner?: Bitcoiner
@@ -31,6 +34,7 @@ interface BitcoinerFormProps {
 					name: string
 					bio: string
 					socialMedia: CreateBitcoinerSocialMediaItem[]
+					organizerId?: string
 			  }
 	) => void
 	onCancel: () => void
@@ -48,6 +52,7 @@ type FormData = {
 	name: string
 	bio: string
 	socialMedia: FormSocialMedia[]
+	organizerId: string | null
 }
 
 export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
@@ -56,6 +61,8 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 	onCancel,
 	isLoading,
 }) => {
+	const { organizers, loading: organizersLoading } = useOrganizers()
+
 	const [formData, setFormData] = useState<FormData>({
 		name: bitcoiner?.name || '',
 		bio: bitcoiner?.bio || '',
@@ -66,9 +73,14 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 				platform: sm.platform,
 				urlLink: sm.urlLink,
 			})) || [],
+		organizerId: bitcoiner?.organizerId || null,
 	})
 
 	const [errors, setErrors] = useState<Record<string, string>>({})
+
+	const selectedOrganizer = organizers.find(
+		(org) => org.id === formData.organizerId
+	)
 
 	const addSocialMedia = () => {
 		setFormData((prev) => ({
@@ -153,6 +165,7 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 				platform: social.platform,
 				urlLink: social.urlLink.trim(),
 			})),
+			...(formData.organizerId && { organizerId: formData.organizerId }),
 		}
 
 		onSubmit(submitData)
@@ -194,6 +207,60 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 				/>
 				{errors.bio && (
 					<p className="text-sm text-destructive mt-1">{errors.bio}</p>
+				)}
+			</div>
+
+			{/* Organizer Section */}
+			<div>
+				<Label htmlFor="organizer" className="text-sm font-medium">
+					Organizer
+				</Label>
+				<Select
+					value={formData.organizerId || ''}
+					onValueChange={(value) =>
+						setFormData({
+							...formData,
+							organizerId: value === '' ? null : value,
+						})
+					}
+					disabled={organizersLoading}
+				>
+					<SelectTrigger className="mt-1">
+						<SelectValue placeholder="Select an organizer (optional)" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="">None</SelectItem>
+						{organizers.map((organizer) => (
+							<SelectItem key={organizer.id} value={organizer.id}>
+								{organizer.name}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+				{selectedOrganizer && (
+					<Link
+						href={`/organizer/${selectedOrganizer.id}`}
+						target="_blank"
+						rel="noopener noreferrer"
+						onClick={(e) => e.stopPropagation()}
+						className="mt-3 block"
+					>
+						<Card className="hover:bg-muted/50 transition-colors cursor-pointer group">
+							<CardContent className="p-4">
+								<div className="flex items-center justify-between">
+									<div className="flex-1 min-w-0">
+										<h4 className="font-medium text-foreground truncate group-hover:text-primary transition-colors">
+											{selectedOrganizer.name}
+										</h4>
+										<p className="text-sm text-muted-foreground mt-1">
+											Click to view organizer details
+										</p>
+									</div>
+									<ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
+								</div>
+							</CardContent>
+						</Card>
+					</Link>
 				)}
 			</div>
 
@@ -250,7 +317,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 										onChange={(e) =>
 											updateSocialMedia(index, 'displayText', e.target.value)
 										}
-										placeholder="e.g., เพจ BLC Chiang Mai"
 										className="mt-1"
 									/>
 									{errors[`social-${index}-displayText`] && (

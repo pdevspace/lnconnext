@@ -11,7 +11,7 @@ function initializeFirebaseAdmin(): ReturnType<typeof initializeApp> | null {
 	try {
 		// Method 1: Use base64 encoded service account key
 		if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-			console.log('Initializing Firebase Admin with service account key...')
+			// console.log('Initializing Firebase Admin with service account key...')
 			const serviceAccount = JSON.parse(
 				Buffer.from(
 					process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
@@ -19,10 +19,10 @@ function initializeFirebaseAdmin(): ReturnType<typeof initializeApp> | null {
 				).toString('utf-8')
 			)
 
-			console.log(
-				'Service account parsed successfully, project ID:',
-				serviceAccount.project_id
-			)
+			// console.log(
+			// 	'Service account parsed successfully, project ID:',
+			// 	serviceAccount.project_id
+			// )
 			return initializeApp({
 				credential: cert(serviceAccount),
 			})
@@ -66,11 +66,11 @@ let adminAuth: ReturnType<typeof getAuth> | null = null
 app = initializeFirebaseAdmin()
 if (app) {
 	adminAuth = getAuth(app)
-	console.log('✅ Firebase Admin SDK initialized successfully')
+	// console.log('✅ Firebase Admin SDK initialized successfully')
 } else {
-	console.warn(
-		'⚠️  Firebase Admin SDK not initialized - authentication will not work'
-	)
+	// console.warn(
+	// 	'⚠️  Firebase Admin SDK not initialized - authentication will not work'
+	// )
 	adminAuth = null
 }
 

@@ -44,7 +44,7 @@ export class CreateBitcoiner extends ApiController<
 		try {
 			payload = await request.json()
 			user = await getCurrentUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 
@@ -150,11 +150,14 @@ export class CreateBitcoiner extends ApiController<
 			const organizer = await prisma.organizer.findUnique({
 				where: {
 					id: payload.organizerId.trim(),
-					activeFlag: 'A',
 				},
 			})
 
 			if (!organizer) {
+				throw new ValidationError('Organizer not found or inactive')
+			}
+
+			if (organizer.activeFlag !== 'A') {
 				throw new ValidationError('Organizer not found or inactive')
 			}
 
@@ -200,8 +203,8 @@ export class CreateBitcoiner extends ApiController<
 			})
 
 			return {}
-		} catch (error) {
-			throw error
+		} catch {
+			throw new ValidationError('Failed to create bitcoiner')
 		}
 	}
 }

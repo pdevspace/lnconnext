@@ -3,6 +3,8 @@
 import { SocialIcon } from '@/components/ui/social-icon'
 import { BitcoinerSocialMedia } from '@/types/bitcoiner'
 
+import Link from 'next/link'
+
 import { ExternalLink } from 'lucide-react'
 
 interface SocialMediaCardProps {
@@ -11,7 +13,8 @@ interface SocialMediaCardProps {
 
 export const SocialMediaCard: React.FC<SocialMediaCardProps> = ({ social }) => {
 	return (
-		<a
+		<Link
+			key={social.id}
 			href={social.urlLink}
 			target="_blank"
 			rel="noopener noreferrer"
@@ -34,6 +37,6 @@ export const SocialMediaCard: React.FC<SocialMediaCardProps> = ({ social }) => {
 				</div>
 				<ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
 			</div>
-		</a>
+		</Link>
 	)
 }

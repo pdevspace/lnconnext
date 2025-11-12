@@ -1,5 +1,4 @@
 // Event Types
-
 export interface EventWebsite {
 	id: string
 	url: string
@@ -10,13 +9,20 @@ export interface EventWebsite {
 export interface EventSectionParticipant {
 	id: string
 	bitcoinerId: string
+	bitcoinerName: string
+}
+
+export interface EventParticipant {
+	id: string
+	bitcoinerId: string
+	bitcoinerName: string
 }
 
 export interface EventSection {
 	id: string
 	sectionName: string
-	startTime: string | Date
-	endTime: string | Date
+	startTime: string | Date | null
+	endTime: string | Date | null
 	spot: string
 	description: string
 	participants: EventSectionParticipant[]
@@ -35,7 +41,7 @@ export interface Event {
 	name: string
 	description: string
 	startDate: string | Date
-	endDate: string | Date
+	endDate: string | Date | null
 	price: number
 	currency: string
 	images: string[]
@@ -44,81 +50,59 @@ export interface Event {
 	location: EventLocation | null
 	websites: EventWebsite[]
 	sections: EventSection[]
+	eventParticipants: EventParticipant[]
 	updatedAt: string | Date
 }
 
 // Request Types
-export interface CreateEventLocationItem {
+export interface EventFormLocationItem {
 	buildingName: string
 	address: string
 	city: string
 	googleMapsUrl: string
 }
 
-export interface CreateEventRequest {
-	name: string
-	description: string
-	startDate: Date | string
-	endDate: Date | string
-	price: number
-	currency: string
-	images: string[]
-	organizerId: string
-	location?: CreateEventLocationItem
-	websites: CreateEventWebsiteItem[]
-	sections: CreateEventSectionItem[]
-}
-
-export interface CreateEventWebsiteItem {
+export interface EventFormWebsiteItem {
 	url: string
 	displayText: string
 	type: string
 }
 
-export interface CreateEventSectionItem {
+export interface EventFormSectionItem {
 	sectionName: string
-	startTime: Date | string
-	endTime: Date | string
+	startTime: Date | string | null
+	endTime: Date | string | null
 	spot: string
 	description: string
-	speakerIds: string[]
+	participantIds: string[]
 }
 
-export interface UpdateEventLocationItem {
-	buildingName: string
-	address: string
-	city: string
-	googleMapsUrl: string
-}
-
-export interface UpdateEventRequest {
-	id: string
+export interface EventFormRequest {
+	id?: string // Optional for create, required for update
 	name: string
 	description: string
 	startDate: Date | string
-	endDate: Date | string
-	price: number
-	currency: string
+	endDate: Date | string | null
+	price: number | null
+	currency: string | null
 	images: string[]
 	organizerId: string
-	location?: UpdateEventLocationItem
-	websites: UpdateEventWebsiteItem[]
-	sections: UpdateEventSectionItem[]
+	location?: EventFormLocationItem
+	websites: EventFormWebsiteItem[]
+	sections: EventFormSectionItem[]
 }
 
-export interface UpdateEventWebsiteItem {
-	url: string
-	displayText: string
-	type: string
-}
+// Legacy types for backward compatibility (deprecated - use EventForm* types instead)
+export interface CreateEventLocationItem extends EventFormLocationItem {}
+export interface CreateEventWebsiteItem extends EventFormWebsiteItem {}
+export interface CreateEventSectionItem extends EventFormSectionItem {}
+export interface CreateEventRequest extends Omit<EventFormRequest, 'id'> {}
 
-export interface UpdateEventSectionItem {
-	sectionName: string
-	startTime: Date | string
-	endTime: Date | string
-	spot: string
-	description: string
-	speakerIds: string[]
+export interface UpdateEventLocationItem extends EventFormLocationItem {}
+export interface UpdateEventWebsiteItem extends EventFormWebsiteItem {}
+export interface UpdateEventSectionItem extends EventFormSectionItem {}
+export interface UpdateEventRequest extends EventFormRequest {
+	id: string // Required for update
 }
 
 export interface GetEventRequest {

@@ -4,10 +4,19 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useBitcoiner } from '@/hooks/useBitcoiner'
+import { useIsEditor } from '@/hooks/useUser'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-import { ArrowLeft, Edit, Share2, Trash2, User } from 'lucide-react'
+import {
+	ArrowLeft,
+	Edit,
+	ExternalLink,
+	Share2,
+	Trash2,
+	User,
+} from 'lucide-react'
 
 import { SocialMediaCard } from './SocialMediaCard'
 
@@ -19,6 +28,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 	bitcoinerId,
 }) => {
 	const router = useRouter()
+	const { isEditor } = useIsEditor()
 	const { bitcoiner, loading, error, deleteBitcoiner } =
 		useBitcoiner(bitcoinerId)
 
@@ -40,7 +50,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 
 	if (loading) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-4xl mx-auto">
 						<div className="animate-pulse">
@@ -62,7 +72,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 
 	if (error) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-4xl mx-auto">
 						<div className="flex items-center justify-center min-h-[400px]">
@@ -84,7 +94,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 
 	if (!bitcoiner) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-4xl mx-auto">
 						<div className="flex items-center justify-center min-h-[400px]">
@@ -93,8 +103,8 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 									Bitcoiner not found
 								</h2>
 								<p className="text-muted-foreground mb-4">
-									The bitcoiner you're looking for doesn't exist or has been
-									removed.
+									The bitcoiner you&apos;re looking for doesn&apos;t exist or
+									has been removed.
 								</p>
 								<Button onClick={() => router.push('/bitcoiner')}>
 									Back to Bitcoiners
@@ -123,19 +133,21 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 						</Button>
 
 						{/* Action Buttons */}
-						<div className="flex gap-2">
-							<Button
-								onClick={() => router.push(`/bitcoiner/edit/${bitcoiner.id}`)}
-								variant="outline"
-							>
-								<Edit className="w-4 h-4 mr-2" />
-								Edit
-							</Button>
-							<Button variant="destructive" onClick={handleDelete}>
-								<Trash2 className="w-4 h-4 mr-2" />
-								Delete
-							</Button>
-						</div>
+						{isEditor && (
+							<div className="flex gap-2">
+								<Button
+									onClick={() => router.push(`/bitcoiner/edit/${bitcoiner.id}`)}
+									variant="outline"
+								>
+									<Edit className="w-4 h-4 mr-2" />
+									Edit
+								</Button>
+								<Button variant="destructive" onClick={handleDelete}>
+									<Trash2 className="w-4 h-4 mr-2" />
+									Delete
+								</Button>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
@@ -167,6 +179,37 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 								)}
 							</div>
 						</div>
+
+						{/* Organizer Section */}
+						{bitcoiner.organizerId && bitcoiner.organizerName && (
+							<Card className="mb-8">
+								<CardHeader>
+									<CardTitle>Organizer</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<Link
+										href={`/organizer/${bitcoiner.organizerId}`}
+										className="block"
+									>
+										<Card className="hover:bg-muted/50 transition-colors cursor-pointer group">
+											<CardContent className="p-4">
+												<div className="flex items-center justify-between">
+													<div className="flex-1 min-w-0">
+														<h4 className="font-medium text-foreground truncate group-hover:text-primary transition-colors">
+															{bitcoiner.organizerName}
+														</h4>
+														<p className="text-sm text-muted-foreground mt-1">
+															Click to view organizer details
+														</p>
+													</div>
+													<ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
+												</div>
+											</CardContent>
+										</Card>
+									</Link>
+								</CardContent>
+							</Card>
+						)}
 
 						{/* Social Media Section */}
 						<Card className="mb-8">

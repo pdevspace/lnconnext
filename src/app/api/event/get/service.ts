@@ -28,13 +28,20 @@ export interface GetEventWebsiteItem {
 export interface GetEventSectionParticipant {
 	id: string
 	bitcoinerId: string
+	bitcoinerName: string
+}
+
+export interface GetEventParticipant {
+	id: string
+	bitcoinerId: string
+	bitcoinerName: string
 }
 
 export interface GetEventSectionItem {
 	id: string
 	sectionName: string
-	startTime: Date
-	endTime: Date
+	startTime: Date | null
+	endTime: Date | null
 	spot: string
 	description: string
 	participants: GetEventSectionParticipant[]
@@ -53,7 +60,7 @@ export interface GetEventResponse {
 	name: string
 	description: string
 	startDate: Date
-	endDate: Date
+	endDate: Date | null
 	price: number
 	currency: string
 	images: string[]
@@ -62,6 +69,7 @@ export interface GetEventResponse {
 	location: GetEventLocationItem | null
 	websites: GetEventWebsiteItem[]
 	sections: GetEventSectionItem[]
+	eventParticipants: GetEventParticipant[]
 	updatedAt: Date
 }
 
@@ -78,7 +86,7 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 		try {
 			payload = await request.json()
 			user = await getOptionalUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 
@@ -95,7 +103,6 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 			const event = await prisma.event.findUnique({
 				where: {
 					id: this.payload.id,
-					activeFlag: 'A',
 				},
 				include: {
 					organizer: true,
@@ -103,7 +110,11 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 					websites: true,
 					sections: {
 						include: {
-							participants: true,
+							participants: {
+								include: {
+									bitcoiner: true,
+								},
+							},
 						},
 					},
 				},
@@ -113,9 +124,43 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 				throw new NotFoundError('Event not found')
 			}
 
+			if (event.activeFlag !== 'A') {
+				throw new NotFoundError('Event not found')
+			}
+
 			if (!event.organizer) {
 				throw new NotFoundError('Event organizer not found')
 			}
+
+			// Map sections and collect all participants
+			const sections = event.sections.map((section) => ({
+				id: section.id,
+				sectionName: section.sectionName,
+				startTime: section.startTime,
+				endTime: section.endTime,
+				spot: section.spot,
+				description: section.description,
+				participants: section.participants.map((participant) => ({
+					id: participant.id,
+					bitcoinerId: participant.bitcoinerId,
+					bitcoinerName: participant.bitcoiner.name,
+				})),
+			}))
+
+			// Create union of all participants from all sections (unique by bitcoinerId)
+			const participantMap = new Map<string, GetEventParticipant>()
+			for (const section of event.sections) {
+				for (const participant of section.participants) {
+					if (!participantMap.has(participant.bitcoinerId)) {
+						participantMap.set(participant.bitcoinerId, {
+							id: participant.id,
+							bitcoinerId: participant.bitcoinerId,
+							bitcoinerName: participant.bitcoiner.name,
+						})
+					}
+				}
+			}
+			const eventParticipants = Array.from(participantMap.values())
 
 			return {
 				id: event.id,
@@ -143,18 +188,8 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 					displayText: website.displayText,
 					type: website.type,
 				})),
-				sections: event.sections.map((section) => ({
-					id: section.id,
-					sectionName: section.sectionName,
-					startTime: section.startTime,
-					endTime: section.endTime,
-					spot: section.spot,
-					description: section.description,
-					participants: section.participants.map((participant) => ({
-						id: participant.id,
-						bitcoinerId: participant.bitcoinerId,
-					})),
-				})),
+				sections,
+				eventParticipants,
 				updatedAt: event.updatedAt,
 			}
 		} catch (error) {

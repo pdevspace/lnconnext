@@ -9,9 +9,7 @@ import {
 	CardTitle,
 } from '@/components/ui/card'
 import { useOrganizers } from '@/hooks/useOrganizer'
-import { OrganizerFormData } from '@/types-old/organizer'
-
-import { useState } from 'react'
+import { CreateOrganizerRequest } from '@/types/organizer'
 
 import { useRouter } from 'next/navigation'
 
@@ -21,20 +19,16 @@ import { OrganizerForm } from './OrganizerForm'
 
 export const CreateOrganizerPage: React.FC = () => {
 	const router = useRouter()
-	const { createOrganizer } = useOrganizers()
-	const [isLoading, setIsLoading] = useState(false)
+	const { createOrganizer, loading } = useOrganizers()
 
-	const handleSubmit = async (data: OrganizerFormData) => {
-		setIsLoading(true)
-
+	const handleSubmit = async (data: CreateOrganizerRequest) => {
 		try {
-			const createdOrganizer = await createOrganizer(data)
-			router.push(`/organizer/${createdOrganizer.id}`)
+			await createOrganizer(data)
+			// After creation, the list will refresh and we can navigate
+			router.push('/organizer')
 		} catch (error) {
 			console.error('Error creating organizer:', error)
 			alert('Failed to create organizer')
-		} finally {
-			setIsLoading(false)
 		}
 	}
 
@@ -56,32 +50,36 @@ export const CreateOrganizerPage: React.FC = () => {
 							<ArrowLeft className="w-4 h-4 mr-2" />
 							Back to Organizers
 						</Button>
+
 						<div>
-							<h1 className="text-xl font-semibold">Create New Organizer</h1>
+							<h1 className="text-2xl font-bold text-foreground">
+								Add New Organizer
+							</h1>
+							<p className="text-sm text-muted-foreground">
+								Create a new organizer profile
+							</p>
 						</div>
-						<div className="w-20"></div> {/* Spacer for centering */}
 					</div>
 				</div>
 			</div>
 
-			{/* Main Content - with proper navbar clearance and scrollable content */}
+			{/* Main Content - with proper navbar clearance */}
 			<div className="px-0 py-6 mt-[130px] w-full">
 				<div className="container mx-auto px-4">
 					<div className="max-w-2xl mx-auto">
+						{/* Form */}
 						<Card>
 							<CardHeader>
-								<CardTitle>Add New Organizer</CardTitle>
+								<CardTitle>Organizer Information</CardTitle>
 								<CardDescription>
-									Create a new event organizer profile for the Bitcoin
-									community.
+									Fill in the details for the new organizer
 								</CardDescription>
 							</CardHeader>
-							<CardContent className="p-6">
+							<CardContent>
 								<OrganizerForm
 									onSubmit={handleSubmit}
 									onCancel={handleCancel}
-									isSubmitting={isLoading}
-									submitLabel="Create Organizer"
+									isLoading={loading}
 								/>
 							</CardContent>
 						</Card>

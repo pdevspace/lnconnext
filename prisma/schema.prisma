@@ -102,7 +102,7 @@ model Event {
 	name String
 	description String
 	startDate DateTime
-	endDate DateTime
+	endDate DateTime?
 	price Float @default(0)
 	currency String
 	images String[]
@@ -144,8 +144,8 @@ model Location {
 model EventSection {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
 	sectionName String
-	startTime DateTime
-	endTime DateTime
+	startTime DateTime?
+	endTime DateTime?
 	spot String
 	description String
 

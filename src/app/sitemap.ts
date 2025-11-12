@@ -1,19 +1,28 @@
-import { BitcoinerService } from '@/app/api/services/BitcoinerService'
-import { EventService } from '@/app/api/services/EventService'
-// TODO remove: create frontend part seperate from backend
-import { OrganizerService } from '@/app/api/services/OrganizerService'
+import { prisma } from '@/api/prisma'
 
 import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://your-domain.com'
+	const baseUrl =
+		process.env.NEXT_PUBLIC_URL ||
+		process.env.NEXT_PUBLIC_BASE_URL ||
+		'https://your-domain.com'
 
 	try {
 		// Fetch all data in parallel
 		const [organizers, events, bitcoiners] = await Promise.all([
-			OrganizerService.getAllOrganizers(),
-			EventService.getEvents(),
-			BitcoinerService.getAllBitcoiners(),
+			prisma.organizer.findMany({
+				where: { activeFlag: 'A' },
+				select: { id: true, updatedAt: true },
+			}),
+			prisma.event.findMany({
+				where: { activeFlag: 'A' },
+				select: { id: true, updatedAt: true },
+			}),
+			prisma.bitcoiner.findMany({
+				where: { activeFlag: 'A' },
+				select: { id: true, updatedAt: true },
+			}),
 		])
 
 		// Static pages

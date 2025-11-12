@@ -6,11 +6,11 @@ import { ListEvent } from './service'
 
 export async function POST(request: NextRequest) {
 	// ListEvent
-	console.log('/api/event/list')
+	// console.log('/api/event/list')
 	try {
-		const handler = await ListEvent.fromRequest(request)
+		const controller = await ListEvent.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

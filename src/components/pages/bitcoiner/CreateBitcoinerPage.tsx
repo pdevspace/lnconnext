@@ -11,8 +11,6 @@ import {
 import { useBitcoiners } from '@/hooks/useBitcoiner'
 import { CreateBitcoinerRequest } from '@/types/bitcoiner'
 
-import { useState } from 'react'
-
 import { useRouter } from 'next/navigation'
 
 import { ArrowLeft } from 'lucide-react'
@@ -65,8 +63,8 @@ export const CreateBitcoinerPage: React.FC = () => {
 				</div>
 			</div>
 
-			{/* Main Content - with proper navbar clearance and scrollable content */}
-			<div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
+			{/* Main Content - with proper navbar clearance */}
+			<div className="px-0 py-6 mt-[130px] w-full">
 				<div className="container mx-auto px-4">
 					<div className="max-w-2xl mx-auto">
 						{/* Form */}

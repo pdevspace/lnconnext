@@ -9,7 +9,6 @@ import Link from 'next/link'
 
 import {
 	Building2,
-	Calendar,
 	Info,
 	LogIn,
 	LogOut,
@@ -18,7 +17,6 @@ import {
 	Sun,
 	User,
 	Users,
-	Video,
 } from 'lucide-react'
 
 export default function Navbar() {
@@ -72,10 +70,10 @@ export default function Navbar() {
 								<span>Event</span>
 							</button>
 						</Link>
-						<Link href="/event">
+						<Link href="/organizer">
 							<button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300">
-								<Video className="h-4 w-4" />
-								<span>Content</span>
+								<Building2 className="h-4 w-4" />
+								<span>Organizers</span>
 							</button>
 						</Link>
 						<Link href="/bitcoiner">
@@ -84,30 +82,25 @@ export default function Navbar() {
 								<span>Bitcoiners</span>
 							</button>
 						</Link>
-						<Link href="/organizer">
-							<button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300">
-								<Building2 className="h-4 w-4" />
-								<span>Organizers</span>
-							</button>
-						</Link>
-						<Link href="/calendar">
-							<button className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300">
-								<Calendar className="h-4 w-4" />
-								<span>Calendar</span>
-							</button>
-						</Link>
 					</div>
 					<div className="flex-1" />
 					<div className="flex items-center gap-2">
 						{user ? (
-							<button
-								onClick={logout}
-								className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300"
-								title="Logout"
-							>
-								<LogOut className="h-4 w-4" />
-								<span className="hidden sm:inline">Logout</span>
-							</button>
+							<>
+								{user.email && (
+									<span className="text-sm text-gray-700 dark:text-gray-300 px-2">
+										{user.email.split('@')[0]}
+									</span>
+								)}
+								<button
+									onClick={logout}
+									className="flex items-center gap-1 px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300"
+									title="Logout"
+								>
+									<LogOut className="h-4 w-4" />
+									<span className="hidden sm:inline">Logout</span>
+								</button>
+							</>
 						) : (
 							<div className="flex flex-col items-end">
 								<button

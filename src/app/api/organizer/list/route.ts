@@ -6,11 +6,11 @@ import { ListOrganizer } from './service'
 
 export async function POST(request: NextRequest) {
 	// ListOrganizer
-	console.log('/api/organizer/list')
+	// console.log('/api/organizer/list')
 	try {
-		const handler = await ListOrganizer.fromRequest(request)
+		const controller = await ListOrganizer.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

@@ -38,7 +38,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 
 	if (loading) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-2xl mx-auto">
 						<div className="animate-pulse">
@@ -55,7 +55,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 
 	if (error) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-2xl mx-auto">
 						<div className="flex items-center justify-center min-h-[400px]">
@@ -77,7 +77,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 
 	if (!bitcoiner) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-2xl mx-auto">
 						<div className="flex items-center justify-center min-h-[400px]">
@@ -86,8 +86,8 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 									Bitcoiner not found
 								</h2>
 								<p className="text-muted-foreground mb-4">
-									The bitcoiner you're trying to edit doesn't exist or has been
-									removed.
+									The bitcoiner you&apos;re trying to edit doesn&apos;t exist or
+									has been removed.
 								</p>
 								<Button onClick={() => router.push('/bitcoiner')}>
 									Back to Bitcoiners
@@ -120,7 +120,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 								Edit Bitcoiner
 							</h1>
 							<p className="text-sm text-muted-foreground">
-								Update {bitcoiner.name}'s information
+								Update {bitcoiner.name}&apos;s information
 							</p>
 						</div>
 					</div>

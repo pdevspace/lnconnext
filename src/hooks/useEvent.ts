@@ -19,12 +19,12 @@ function parseEventDates(event: Event): Event {
 	return {
 		...event,
 		startDate: new Date(event.startDate),
-		endDate: new Date(event.endDate),
+		endDate: event.endDate ? new Date(event.endDate) : null,
 		updatedAt: new Date(event.updatedAt),
 		sections: event.sections.map((section) => ({
 			...section,
-			startTime: new Date(section.startTime),
-			endTime: new Date(section.endTime),
+			startTime: section.startTime ? new Date(section.startTime) : null,
+			endTime: section.endTime ? new Date(section.endTime) : null,
 		})),
 	}
 }

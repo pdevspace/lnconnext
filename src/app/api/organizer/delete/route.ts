@@ -6,11 +6,11 @@ import { DeleteOrganizer } from './service'
 
 export async function POST(request: NextRequest) {
 	// DeleteOrganizer
-	console.log('/api/organizer/delete')
+	// console.log('/api/organizer/delete')
 	try {
-		const handler = await DeleteOrganizer.fromRequest(request)
+		const controller = await DeleteOrganizer.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

@@ -79,14 +79,7 @@ export async function getOptionalUser(
 	}
 }
 
-/**
- * Creates a standardized success response
- * @param data - Response data
- * @param message - Optional success message
- * @returns NextResponse with success
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createSuccessResponse(data: any) {
+export function createSuccessResponse(data: unknown) {
 	return Response.json({
 		success: true,
 		data,

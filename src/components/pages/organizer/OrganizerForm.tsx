@@ -13,203 +13,231 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import {
+	CreateOrganizerSocialMediaItem,
 	Organizer,
-	OrganizerFormData,
-	SocialMedia,
-} from '@/types-old/organizer'
-import {
-	sanitizeText,
-	sanitizeUrl,
-	validateOrganizerForm,
-} from '@/utils/frontendValidators'
+	UpdateOrganizerRequest,
+} from '@/types/organizer'
 
 import { useState } from 'react'
 
 import { Loader2, Plus, Share2, Trash2 } from 'lucide-react'
 
 interface OrganizerFormProps {
-	initialData?: OrganizerFormData
-	onSubmit: (data: OrganizerFormData) => void
+	organizer?: Organizer
+	onSubmit: (
+		data:
+			| Omit<UpdateOrganizerRequest, 'id'>
+			| {
+					name: string
+					bio: string
+					website: string
+					socialMedia: CreateOrganizerSocialMediaItem[]
+			  }
+	) => void
 	onCancel: () => void
-	isSubmitting?: boolean
-	submitLabel?: string
+	isLoading?: boolean
+}
+
+type FormSocialMedia = {
+	id?: string
+	displayText: string
+	platform: string
+	urlLink: string
+}
+
+type FormData = {
+	name: string
+	bio: string
+	website: string
+	socialMedia: FormSocialMedia[]
 }
 
 export const OrganizerForm: React.FC<OrganizerFormProps> = ({
-	initialData,
+	organizer,
 	onSubmit,
 	onCancel,
-	isSubmitting = false,
-	submitLabel = 'Create Organizer',
+	isLoading,
 }) => {
-	const [formData, setFormData] = useState<OrganizerFormData>({
-		name: initialData?.name || '',
-		bio: initialData?.bio || '',
-		avatar: initialData?.avatar || '',
-		website: initialData?.website || '',
-		isActive: initialData?.isActive ?? true,
-		socialMediaIds: initialData?.socialMediaIds || [],
+	const [formData, setFormData] = useState<FormData>({
+		name: organizer?.name || '',
+		bio: organizer?.bio || '',
+		website: organizer?.website || '',
+		socialMedia:
+			organizer?.socialMedia.map((sm) => ({
+				id: sm.id,
+				displayText: sm.displayText,
+				platform: sm.platform,
+				urlLink: sm.urlLink,
+			})) || [],
 	})
 
-	const [socialMedia, setSocialMedia] = useState<SocialMedia[]>([])
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const addSocialMedia = () => {
-		setSocialMedia((prev) => [
+		setFormData((prev) => ({
 			...prev,
-			{
-				id: `temp-${Date.now()}`,
-				displayText: '',
-				username: '',
-				platform: 'facebook',
-				urlLink: '',
-				ownerId: '',
-				ownerType: 'organizer' as const,
-			},
-		])
+			socialMedia: [
+				...prev.socialMedia,
+				{
+					displayText: '',
+					platform: 'facebook',
+					urlLink: '',
+				},
+			],
+		}))
 	}
 
 	const updateSocialMedia = (
 		index: number,
-		field: keyof SocialMedia,
+		field: keyof FormSocialMedia,
 		value: string
 	) => {
-		setSocialMedia((prev) =>
-			prev.map((social, i) =>
+		setFormData((prev) => ({
+			...prev,
+			socialMedia: prev.socialMedia.map((social, i) =>
 				i === index ? { ...social, [field]: value } : social
-			)
-		)
+			),
+		}))
 	}
 
 	const removeSocialMedia = (index: number) => {
-		setSocialMedia((prev) => prev.filter((_, i) => i !== index))
+		setFormData((prev) => ({
+			...prev,
+			socialMedia: prev.socialMedia.filter((_, i) => i !== index),
+		}))
 	}
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 
-		// Validate form
-		const validationErrors = validateOrganizerForm(formData)
-		if (Object.keys(validationErrors).length > 0) {
-			setErrors(validationErrors)
+		// Clear previous errors
+		setErrors({})
+
+		// Basic validation
+		if (!formData.name.trim()) {
+			setErrors({ name: 'Name is required' })
 			return
 		}
 
-		// Clear errors
-		setErrors({})
-
-		// Submit form
-		onSubmit({
-			...formData,
-			socialMediaIds: socialMedia.map((sm) => sm.id),
-		})
-	}
-
-	const handleInputChange = (
-		field: keyof OrganizerFormData,
-		value: string | boolean
-	) => {
-		setFormData((prev: OrganizerFormData) => ({
-			...prev,
-			[field]: value,
-		}))
-
-		// Clear error when user starts typing
-		if (errors[field as string]) {
-			setErrors((prev: Record<string, string>) => ({
-				...prev,
-				[field as string]: '',
-			}))
+		if (!formData.bio.trim()) {
+			setErrors({ bio: 'Bio is required' })
+			return
 		}
+
+		if (!formData.website.trim()) {
+			setErrors({ website: 'Website is required' })
+			return
+		}
+
+		// Validate website URL
+		try {
+			new URL(formData.website)
+		} catch {
+			setErrors({ website: 'Invalid URL format' })
+			return
+		}
+
+		// Validate social media
+		const socialMediaErrors: Record<string, string> = {}
+		formData.socialMedia.forEach((social, index) => {
+			if (!social.displayText.trim()) {
+				socialMediaErrors[`social-${index}-displayText`] =
+					'Display text is required'
+			}
+			if (!social.urlLink.trim()) {
+				socialMediaErrors[`social-${index}-urlLink`] = 'URL is required'
+			} else {
+				try {
+					new URL(social.urlLink)
+				} catch {
+					socialMediaErrors[`social-${index}-urlLink`] = 'Invalid URL format'
+				}
+			}
+		})
+
+		if (Object.keys(socialMediaErrors).length > 0) {
+			setErrors(socialMediaErrors)
+			return
+		}
+
+		// Format data for API
+		const submitData = {
+			name: formData.name.trim(),
+			bio: formData.bio.trim(),
+			website: formData.website.trim(),
+			socialMedia: formData.socialMedia.map((social) => ({
+				displayText: social.displayText.trim(),
+				platform: social.platform,
+				urlLink: social.urlLink.trim(),
+			})),
+		}
+
+		onSubmit(submitData)
 	}
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-6">
-			{/* Basic Information */}
-			<div className="space-y-4">
-				<h3 className="text-lg font-semibold">Basic Information</h3>
-
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div className="space-y-2">
-						<Label htmlFor="name">Name *</Label>
-						<Input
-							id="name"
-							value={formData.name}
-							onChange={(e) =>
-								handleInputChange('name', sanitizeText(e.target.value))
-							}
-							placeholder="Enter organizer name"
-							className={errors.name ? 'border-red-500' : ''}
-						/>
-						{errors.name && (
-							<p className="text-sm text-red-500">{errors.name}</p>
-						)}
-					</div>
-
-					<div className="space-y-2">
-						<Label htmlFor="website">Website</Label>
-						<Input
-							id="website"
-							value={formData.website}
-							onChange={(e) =>
-								handleInputChange('website', sanitizeUrl(e.target.value))
-							}
-							placeholder="https://example.com"
-							className={errors.website ? 'border-red-500' : ''}
-						/>
-						{errors.website && (
-							<p className="text-sm text-red-500">{errors.website}</p>
-						)}
-					</div>
-				</div>
-
-				<div className="space-y-2">
-					<Label htmlFor="bio">Bio</Label>
-					<Textarea
-						id="bio"
-						value={formData.bio}
-						onChange={(e) =>
-							handleInputChange('bio', sanitizeText(e.target.value))
-						}
-						placeholder="Tell us about this organizer..."
-						rows={3}
-						className={errors.bio ? 'border-red-500' : ''}
-					/>
-					{errors.bio && <p className="text-sm text-red-500">{errors.bio}</p>}
-				</div>
-
-				<div className="space-y-2">
-					<Label htmlFor="avatar">Avatar URL</Label>
-					<Input
-						id="avatar"
-						value={formData.avatar}
-						onChange={(e) =>
-							handleInputChange('avatar', sanitizeUrl(e.target.value))
-						}
-						placeholder="https://example.com/avatar.jpg"
-						className={errors.avatar ? 'border-red-500' : ''}
-					/>
-					{errors.avatar && (
-						<p className="text-sm text-red-500">{errors.avatar}</p>
-					)}
-				</div>
-
-				<div className="flex items-center space-x-2">
-					<input
-						type="checkbox"
-						id="isActive"
-						checked={formData.isActive}
-						onChange={(e) => handleInputChange('isActive', e.target.checked)}
-						className="rounded"
-					/>
-					<Label htmlFor="isActive">Active organizer</Label>
-				</div>
+			{/* Name Field */}
+			<div>
+				<Label htmlFor="name" className="text-sm font-medium">
+					Name *
+				</Label>
+				<Input
+					id="name"
+					value={formData.name}
+					onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+					placeholder="Enter organizer name"
+					required
+					className="mt-1"
+				/>
+				{errors.name && (
+					<p className="text-sm text-destructive mt-1">{errors.name}</p>
+				)}
 			</div>
 
-			{/* Social Media */}
-			<div className="space-y-4">
-				<div className="flex items-center justify-between">
-					<h3 className="text-lg font-semibold">Social Media</h3>
+			{/* Bio Field */}
+			<div>
+				<Label htmlFor="bio" className="text-sm font-medium">
+					Bio *
+				</Label>
+				<Textarea
+					id="bio"
+					value={formData.bio}
+					onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+					placeholder="Enter organizer bio"
+					required
+					className="mt-1 min-h-[100px]"
+					rows={4}
+				/>
+				{errors.bio && (
+					<p className="text-sm text-destructive mt-1">{errors.bio}</p>
+				)}
+			</div>
+
+			{/* Website Field */}
+			<div>
+				<Label htmlFor="website" className="text-sm font-medium">
+					Website *
+				</Label>
+				<Input
+					id="website"
+					value={formData.website}
+					onChange={(e) =>
+						setFormData({ ...formData, website: e.target.value })
+					}
+					placeholder="https://example.com"
+					required
+					className="mt-1"
+				/>
+				{errors.website && (
+					<p className="text-sm text-destructive mt-1">{errors.website}</p>
+				)}
+			</div>
+
+			{/* Social Media Section */}
+			<div>
+				<div className="flex items-center justify-between mb-4">
+					<Label className="text-sm font-medium">Social Media Links</Label>
 					<Button
 						type="button"
 						variant="outline"
@@ -217,105 +245,106 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 						onClick={addSocialMedia}
 					>
 						<Plus className="w-4 h-4 mr-2" />
-						Add Social Media
+						Add Link
 					</Button>
 				</div>
 
-				{socialMedia.length === 0 ? (
-					<Card className="p-6 text-center">
-						<Share2 className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-						<p className="text-muted-foreground">
-							No social media links added yet
-						</p>
-					</Card>
-				) : (
-					<div className="space-y-4">
-						{socialMedia.map((social, index) => (
-							<Card key={social.id} className="p-4">
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="space-y-2">
-										<Label>Platform</Label>
-										<Select
-											value={social.platform}
-											onValueChange={(value) =>
-												updateSocialMedia(index, 'platform', value)
-											}
-										>
-											<SelectTrigger>
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="facebook">Facebook</SelectItem>
-												<SelectItem value="twitter">Twitter</SelectItem>
-												<SelectItem value="linkedin">LinkedIn</SelectItem>
-												<SelectItem value="instagram">Instagram</SelectItem>
-												<SelectItem value="youtube">YouTube</SelectItem>
-												<SelectItem value="other">Other</SelectItem>
-											</SelectContent>
-										</Select>
-									</div>
-
-									<div className="space-y-2">
-										<Label>Username</Label>
-										<Input
-											value={social.username}
-											onChange={(e) =>
-												updateSocialMedia(
-													index,
-													'username',
-													sanitizeText(e.target.value)
-												)
-											}
-											placeholder="@username"
-										/>
-									</div>
-
-									<div className="space-y-2">
-										<Label>Display Text</Label>
-										<Input
-											value={social.displayText}
-											onChange={(e) =>
-												updateSocialMedia(
-													index,
-													'displayText',
-													sanitizeText(e.target.value)
-												)
-											}
-											placeholder="Display name"
-										/>
-									</div>
-
-									<div className="space-y-2">
-										<Label>URL</Label>
-										<Input
-											value={social.urlLink}
-											onChange={(e) =>
-												updateSocialMedia(
-													index,
-													'urlLink',
-													sanitizeUrl(e.target.value)
-												)
-											}
-											placeholder="https://..."
-										/>
-									</div>
+				<div className="space-y-4">
+					{formData.socialMedia.map((social, index) => (
+						<Card key={social.id || `temp-${index}`} className="p-4">
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<Label htmlFor={`platform-${index}`} className="text-xs">
+										Platform *
+									</Label>
+									<Select
+										value={social.platform}
+										onValueChange={(value) =>
+											updateSocialMedia(index, 'platform', value)
+										}
+									>
+										<SelectTrigger className="mt-1">
+											<SelectValue placeholder="Select platform" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="facebook">Facebook</SelectItem>
+											<SelectItem value="youtube">YouTube</SelectItem>
+											<SelectItem value="twitter">Twitter</SelectItem>
+											<SelectItem value="linkedin">LinkedIn</SelectItem>
+											<SelectItem value="instagram">Instagram</SelectItem>
+											<SelectItem value="other">Other</SelectItem>
+										</SelectContent>
+									</Select>
 								</div>
 
-								<div className="flex justify-end mt-4">
+								<div>
+									<Label htmlFor={`displayText-${index}`} className="text-xs">
+										Display Text *
+									</Label>
+									<Input
+										id={`displayText-${index}`}
+										value={social.displayText}
+										onChange={(e) =>
+											updateSocialMedia(index, 'displayText', e.target.value)
+										}
+										className="mt-1"
+									/>
+									{errors[`social-${index}-displayText`] && (
+										<p className="text-xs text-destructive mt-1">
+											{errors[`social-${index}-displayText`]}
+										</p>
+									)}
+								</div>
+
+								<div className="md:col-span-2 flex items-end gap-2">
+									<div className="flex-1">
+										<Label htmlFor={`urlLink-${index}`} className="text-xs">
+											URL *
+										</Label>
+										<Input
+											id={`urlLink-${index}`}
+											value={social.urlLink}
+											onChange={(e) =>
+												updateSocialMedia(index, 'urlLink', e.target.value)
+											}
+											placeholder="https://..."
+											className="mt-1"
+										/>
+										{errors[`social-${index}-urlLink`] && (
+											<p className="text-xs text-destructive mt-1">
+												{errors[`social-${index}-urlLink`]}
+											</p>
+										)}
+									</div>
 									<Button
 										type="button"
-										variant="outline"
+										variant="destructive"
 										size="sm"
 										onClick={() => removeSocialMedia(index)}
 									>
-										<Trash2 className="w-4 h-4 mr-2" />
-										Remove
+										<Trash2 className="w-4 h-4" />
 									</Button>
 								</div>
-							</Card>
-						))}
-					</div>
-				)}
+							</div>
+						</Card>
+					))}
+
+					{formData.socialMedia.length === 0 && (
+						<div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+							<Share2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
+							<p className="text-sm">No social media links added yet</p>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={addSocialMedia}
+								className="mt-2"
+							>
+								Add First Link
+							</Button>
+						</div>
+					)}
+				</div>
 			</div>
 
 			{/* Form Actions */}
@@ -324,18 +353,28 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 					type="button"
 					variant="outline"
 					onClick={onCancel}
-					disabled={isSubmitting}
+					disabled={isLoading}
 				>
 					Cancel
 				</Button>
-				<Button type="submit" disabled={isSubmitting}>
-					{isSubmitting ? (
+				<Button
+					type="submit"
+					disabled={
+						isLoading ||
+						!formData.name.trim() ||
+						!formData.bio.trim() ||
+						!formData.website.trim()
+					}
+				>
+					{isLoading ? (
 						<>
 							<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-							Processing...
+							{organizer ? 'Updating...' : 'Creating...'}
 						</>
+					) : organizer ? (
+						'Update Organizer'
 					) : (
-						submitLabel
+						'Create Organizer'
 					)}
 				</Button>
 			</div>

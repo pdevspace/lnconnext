@@ -14,9 +14,13 @@ import {
 
 import { NextRequest } from 'next/server'
 
-export interface CreateUserRequest {}
+export interface CreateUserRequest {
+	// Empty request
+}
 
-export interface CreateUserResponse {}
+export interface CreateUserResponse {
+	// Empty response
+}
 
 export class CreateUser extends ApiController<
 	CreateUserRequest,
@@ -34,7 +38,7 @@ export class CreateUser extends ApiController<
 		try {
 			payload = await request.json().catch(() => ({}))
 			user = await getCurrentUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid request or authentication failed')
 		}
 
@@ -65,7 +69,7 @@ export class CreateUser extends ApiController<
 
 			if (existingUser) {
 				// User already exists, update lastLoginAt
-				const updatedUser = await prisma.user.update({
+				await prisma.user.update({
 					where: {
 						uid: this.user.uid,
 					},

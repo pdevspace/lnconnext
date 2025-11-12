@@ -56,7 +56,7 @@ export class ListOrganizer extends ApiController<
 		try {
 			payload = await request.json()
 			user = await getOptionalUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 
@@ -69,7 +69,11 @@ export class ListOrganizer extends ApiController<
 			const { searchTerm, selectedPlatform, limit = 100, offset = 0 } = filters
 
 			// Build where clause
-			const where: any = {
+			const where: {
+				activeFlag: string
+				name?: { contains: string }
+				socialMedia?: { some: { platform: string } }
+			} = {
 				activeFlag: 'A',
 			}
 

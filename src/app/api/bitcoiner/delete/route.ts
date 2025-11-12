@@ -6,11 +6,11 @@ import { DeleteBitcoiner } from './service'
 
 export async function POST(request: NextRequest) {
 	// DeleteBitcoiner
-	console.log('/api/bitcoiner/delete')
+	// console.log('/api/bitcoiner/delete')
 	try {
-		const handler = await DeleteBitcoiner.fromRequest(request)
+		const controller = await DeleteBitcoiner.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

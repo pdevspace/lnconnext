@@ -2,20 +2,20 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { SocialIcon } from '@/components/ui/social-icon'
-import { Organizer } from '@/types-old/organizer'
+import { ListOrganizerItem } from '@/types/organizer'
 
 import Link from 'next/link'
 
-import { Building2, Share2 } from 'lucide-react'
+import { Building2 } from 'lucide-react'
 
 interface OrganizerCardProps {
-	organizer: Organizer
+	organizer: ListOrganizerItem
 }
 
 export const OrganizerCard: React.FC<OrganizerCardProps> = ({ organizer }) => {
 	return (
 		<Link href={`/organizer/${organizer.id}`} className="block">
-			<Card className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] group cursor-pointer">
+			<Card className="hover:shadow-lg transition-all duration-200 group cursor-pointer">
 				<CardContent className="p-6">
 					{/* Profile Header */}
 					<div className="flex items-start justify-between mb-4">
@@ -27,11 +27,6 @@ export const OrganizerCard: React.FC<OrganizerCardProps> = ({ organizer }) => {
 								<h3 className="font-semibold text-lg text-foreground truncate">
 									{organizer.name}
 								</h3>
-								{organizer.bio && (
-									<p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-										{organizer.bio}
-									</p>
-								)}
 							</div>
 						</div>
 					</div>
@@ -41,9 +36,13 @@ export const OrganizerCard: React.FC<OrganizerCardProps> = ({ organizer }) => {
 						{organizer.socialMedia.length > 0 ? (
 							<div className="flex gap-2 overflow-x-auto scrollbar-hide">
 								{organizer.socialMedia.map((social) => (
-									<div
+									<Link
 										key={social.id}
-										className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground whitespace-nowrap flex-shrink-0"
+										href={social.urlLink}
+										target="_blank"
+										rel="noopener noreferrer"
+										onClick={(e) => e.stopPropagation()}
+										className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground whitespace-nowrap flex-shrink-0 hover:bg-primary/10 hover:text-primary transition-colors"
 										title={social.displayText}
 									>
 										<SocialIcon
@@ -51,9 +50,9 @@ export const OrganizerCard: React.FC<OrganizerCardProps> = ({ organizer }) => {
 											className="w-3 h-3"
 										/>
 										<span className="truncate max-w-[100px]">
-											{social.username}
+											{social.displayText}
 										</span>
-									</div>
+									</Link>
 								))}
 							</div>
 						) : (

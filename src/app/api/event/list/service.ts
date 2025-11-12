@@ -72,7 +72,7 @@ export class ListEvent extends ApiController<
 		try {
 			payload = await request.json()
 			user = await getOptionalUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 
@@ -93,7 +93,13 @@ export class ListEvent extends ApiController<
 			} = filters
 
 			// Build where clause
-			const where: any = {
+			const where: {
+				activeFlag: string
+				name?: { contains: string }
+				organizerId?: string
+				locationId?: string
+				startDate?: { gte?: Date; lte?: Date }
+			} = {
 				activeFlag: 'A',
 			}
 

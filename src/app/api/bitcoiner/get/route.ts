@@ -6,11 +6,11 @@ import { GetBitcoiner } from './service'
 
 export async function POST(request: NextRequest) {
 	// GetBitcoiner
-	console.log('/api/bitcoiner/get')
+	// console.log('/api/bitcoiner/get')
 	try {
-		const handler = await GetBitcoiner.fromRequest(request)
+		const controller = await GetBitcoiner.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

@@ -1,5 +1,4 @@
 // Organizer Types
-
 export interface OrganizerSocialMedia {
 	id: string
 	displayText: string

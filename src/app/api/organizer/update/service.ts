@@ -28,7 +28,9 @@ export interface UpdateOrganizerRequest {
 	socialMedia: UpdateOrganizerSocialMediaItem[]
 }
 
-export interface UpdateOrganizerResponse {}
+export interface UpdateOrganizerResponse {
+	// Empty response
+}
 
 export class UpdateOrganizer extends ApiController<
 	UpdateOrganizerRequest,
@@ -46,7 +48,7 @@ export class UpdateOrganizer extends ApiController<
 		try {
 			payload = await request.json()
 			user = await getCurrentUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 
@@ -183,7 +185,6 @@ export class UpdateOrganizer extends ApiController<
 			const existingOrganizer = await prisma.organizer.findUnique({
 				where: {
 					id: this.payload.id,
-					activeFlag: 'A',
 				},
 				include: {
 					socialMedia: true,
@@ -191,6 +192,10 @@ export class UpdateOrganizer extends ApiController<
 			})
 
 			if (!existingOrganizer) {
+				throw new NotFoundError('Organizer not found')
+			}
+
+			if (existingOrganizer.activeFlag !== 'A') {
 				throw new NotFoundError('Organizer not found')
 			}
 

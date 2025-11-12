@@ -6,11 +6,11 @@ import { ListBitcoiner } from './service'
 
 export async function POST(request: NextRequest) {
 	// ListBitcoiner
-	console.log('/api/bitcoiner/list')
+	// console.log('/api/bitcoiner/list')
 	try {
-		const handler = await ListBitcoiner.fromRequest(request)
+		const controller = await ListBitcoiner.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

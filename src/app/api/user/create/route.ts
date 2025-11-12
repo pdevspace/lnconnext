@@ -6,11 +6,11 @@ import { CreateUser } from './service'
 
 export async function POST(request: NextRequest) {
 	// CreateUser
-	console.log('/api/user/create')
+	// console.log('/api/user/create')
 	try {
-		const handler = await CreateUser.fromRequest(request)
+		const controller = await CreateUser.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

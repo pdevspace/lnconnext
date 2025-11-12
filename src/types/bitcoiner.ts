@@ -1,5 +1,4 @@
 // Bitcoiner Types
-
 export interface BitcoinerSocialMedia {
 	id: string
 	displayText: string
@@ -99,4 +98,3 @@ export const PLATFORM_OPTIONS: Array<{ value: Platform; label: string }> = [
 	{ value: 'instagram', label: 'Instagram' },
 	{ value: 'other', label: 'Other' },
 ]
-

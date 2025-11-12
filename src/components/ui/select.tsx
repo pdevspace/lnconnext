@@ -99,10 +99,7 @@ const SelectValue = ({ placeholder, children }: SelectValueProps) => {
 }
 
 // SelectContent - container for options (not rendered in native select)
-const SelectContent = ({
-	children,
-	...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+const SelectContent = ({ children }: React.HTMLAttributes<HTMLDivElement>) => {
 	return <>{children}</>
 }
 
@@ -141,12 +138,9 @@ const SelectSeparator = ({
 	<div className={cn('-mx-1 my-1 h-px bg-muted', className)} {...props} />
 )
 
-const SelectScrollUpButton = ({
-	...props
-}: React.HTMLAttributes<HTMLButtonElement>) => null
-const SelectScrollDownButton = ({
-	...props
-}: React.HTMLAttributes<HTMLButtonElement>) => null
+const SelectScrollUpButton = ({}: React.HTMLAttributes<HTMLButtonElement>) =>
+	null
+const SelectScrollDownButton = () => null
 
 export {
 	Select,

@@ -22,11 +22,11 @@ export interface UpdateEventWebsiteItem {
 
 export interface UpdateEventSectionItem {
 	sectionName: string
-	startTime: Date
-	endTime: Date
+	startTime: Date | null
+	endTime: Date | null
 	spot: string
 	description: string
-	speakerIds: string[]
+	participantIds: string[]
 }
 
 export interface UpdateEventLocationItem {
@@ -41,7 +41,7 @@ export interface UpdateEventRequest {
 	name: string
 	description: string
 	startDate: Date
-	endDate: Date
+	endDate: Date | null
 	price: number
 	currency: string
 	images: string[]
@@ -69,7 +69,7 @@ export class UpdateEvent extends ApiController<
 		try {
 			payload = await request.json()
 			user = await getCurrentUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 
@@ -109,34 +109,36 @@ export class UpdateEvent extends ApiController<
 			)
 		}
 
-		if (
-			!payload.endDate ||
-			!(payload.endDate instanceof Date || typeof payload.endDate === 'string')
-		) {
-			throw new ValidationError('End date is required and must be a valid date')
-		}
-
 		const startDate = new Date(payload.startDate)
-		const endDate = new Date(payload.endDate)
 
 		if (isNaN(startDate.getTime())) {
 			throw new ValidationError('Start date must be a valid date')
 		}
 
-		if (isNaN(endDate.getTime())) {
-			throw new ValidationError('End date must be a valid date')
-		}
-
-		if (endDate <= startDate) {
-			throw new ValidationError('End date must be after start date')
+		let endDate: Date | null = null
+		if (payload.endDate !== null && payload.endDate !== undefined) {
+			if (
+				!(
+					payload.endDate instanceof Date || typeof payload.endDate === 'string'
+				)
+			) {
+				throw new ValidationError('End date must be a valid date or null')
+			}
+			endDate = new Date(payload.endDate)
+			if (isNaN(endDate.getTime())) {
+				throw new ValidationError('End date must be a valid date')
+			}
+			if (endDate <= startDate) {
+				throw new ValidationError('End date must be after start date')
+			}
 		}
 
 		if (typeof payload.price !== 'number' || payload.price < 0) {
 			throw new ValidationError('Price must be a non-negative number')
 		}
 
-		if (!payload.currency || typeof payload.currency !== 'string') {
-			throw new ValidationError('Currency is required and must be a string')
+		if (typeof payload.currency !== 'string') {
+			throw new ValidationError('Currency must be a string')
 		}
 
 		if (payload.currency.length > 10) {
@@ -340,45 +342,51 @@ export class UpdateEvent extends ApiController<
 				)
 			}
 
-			if (
-				!section.startTime ||
-				!(
-					section.startTime instanceof Date ||
-					typeof section.startTime === 'string'
-				)
-			) {
-				throw new ValidationError(
-					`Section ${i + 1}: startTime is required and must be a valid date`
-				)
+			let sectionStartTime: Date | null = null
+			if (section.startTime !== null && section.startTime !== undefined) {
+				if (
+					!(
+						section.startTime instanceof Date ||
+						typeof section.startTime === 'string'
+					)
+				) {
+					throw new ValidationError(
+						`Section ${i + 1}: startTime must be a valid date or null`
+					)
+				}
+				sectionStartTime = new Date(section.startTime)
+				if (isNaN(sectionStartTime.getTime())) {
+					throw new ValidationError(
+						`Section ${i + 1}: startTime must be a valid date`
+					)
+				}
+			}
+
+			let sectionEndTime: Date | null = null
+			if (section.endTime !== null && section.endTime !== undefined) {
+				if (
+					!(
+						section.endTime instanceof Date ||
+						typeof section.endTime === 'string'
+					)
+				) {
+					throw new ValidationError(
+						`Section ${i + 1}: endTime must be a valid date or null`
+					)
+				}
+				sectionEndTime = new Date(section.endTime)
+				if (isNaN(sectionEndTime.getTime())) {
+					throw new ValidationError(
+						`Section ${i + 1}: endTime must be a valid date`
+					)
+				}
 			}
 
 			if (
-				!section.endTime ||
-				!(
-					section.endTime instanceof Date || typeof section.endTime === 'string'
-				)
+				sectionStartTime !== null &&
+				sectionEndTime !== null &&
+				sectionEndTime <= sectionStartTime
 			) {
-				throw new ValidationError(
-					`Section ${i + 1}: endTime is required and must be a valid date`
-				)
-			}
-
-			const sectionStartTime = new Date(section.startTime)
-			const sectionEndTime = new Date(section.endTime)
-
-			if (isNaN(sectionStartTime.getTime())) {
-				throw new ValidationError(
-					`Section ${i + 1}: startTime must be a valid date`
-				)
-			}
-
-			if (isNaN(sectionEndTime.getTime())) {
-				throw new ValidationError(
-					`Section ${i + 1}: endTime must be a valid date`
-				)
-			}
-
-			if (sectionEndTime <= sectionStartTime) {
 				throw new ValidationError(
 					`Section ${i + 1}: endTime must be after startTime`
 				)
@@ -412,16 +420,16 @@ export class UpdateEvent extends ApiController<
 				)
 			}
 
-			if (!Array.isArray(section.speakerIds)) {
+			if (!Array.isArray(section.participantIds)) {
 				throw new ValidationError(
-					`Section ${i + 1}: speakerIds must be an array`
+					`Section ${i + 1}: participantIds must be an array`
 				)
 			}
 
-			for (let j = 0; j < section.speakerIds.length; j++) {
-				if (typeof section.speakerIds[j] !== 'string') {
+			for (let j = 0; j < section.participantIds.length; j++) {
+				if (typeof section.participantIds[j] !== 'string') {
 					throw new ValidationError(
-						`Section ${i + 1}, speaker ${j + 1}: speakerId must be a string`
+						`Section ${i + 1}, participant ${j + 1}: participantId must be a string`
 					)
 				}
 			}
@@ -440,11 +448,17 @@ export class UpdateEvent extends ApiController<
 		}))
 		payload.sections = payload.sections.map((section) => ({
 			sectionName: section.sectionName.trim(),
-			startTime: new Date(section.startTime),
-			endTime: new Date(section.endTime),
+			startTime:
+				section.startTime !== null && section.startTime !== undefined
+					? new Date(section.startTime)
+					: null,
+			endTime:
+				section.endTime !== null && section.endTime !== undefined
+					? new Date(section.endTime)
+					: null,
 			spot: section.spot.trim(),
 			description: section.description.trim(),
-			speakerIds: section.speakerIds,
+			participantIds: section.participantIds,
 		}))
 
 		return new UpdateEvent(payload, user)
@@ -460,7 +474,6 @@ export class UpdateEvent extends ApiController<
 			const existingEvent = await prisma.event.findUnique({
 				where: {
 					id: this.payload.id,
-					activeFlag: 'A',
 				},
 				include: {
 					websites: true,
@@ -473,6 +486,10 @@ export class UpdateEvent extends ApiController<
 			})
 
 			if (!existingEvent) {
+				throw new NotFoundError('Event not found')
+			}
+
+			if (existingEvent.activeFlag !== 'A') {
 				throw new NotFoundError('Event not found')
 			}
 
@@ -540,7 +557,7 @@ export class UpdateEvent extends ApiController<
 					name: this.payload.name,
 					description: this.payload.description,
 					startDate: this.payload.startDate,
-					endDate: this.payload.endDate,
+					endDate: this.payload.endDate ?? null,
 					price: this.payload.price,
 					currency: this.payload.currency,
 					images: this.payload.images,
@@ -560,12 +577,12 @@ export class UpdateEvent extends ApiController<
 						deleteMany: {},
 						create: this.payload.sections.map((section) => ({
 							sectionName: section.sectionName,
-							startTime: section.startTime,
-							endTime: section.endTime,
+							startTime: section.startTime ?? null,
+							endTime: section.endTime ?? null,
 							spot: section.spot,
 							description: section.description,
 							participants: {
-								create: section.speakerIds.map((bitcoinerId) => ({
+								create: section.participantIds.map((bitcoinerId) => ({
 									bitcoinerId,
 								})),
 							},

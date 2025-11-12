@@ -6,11 +6,11 @@ import { UpdateBitcoiner } from './service'
 
 export async function POST(request: NextRequest) {
 	// UpdateBitcoiner
-	console.log('/api/bitcoiner/update')
+	// console.log('/api/bitcoiner/update')
 	try {
-		const handler = await UpdateBitcoiner.fromRequest(request)
+		const controller = await UpdateBitcoiner.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

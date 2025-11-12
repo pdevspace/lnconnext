@@ -6,11 +6,11 @@ import { CreateOrganizer } from './service'
 
 export async function POST(request: NextRequest) {
 	// CreateOrganizer
-	console.log('/api/organizer/create')
+	// console.log('/api/organizer/create')
 	try {
-		const handler = await CreateOrganizer.fromRequest(request)
+		const controller = await CreateOrganizer.fromRequest(request)
 
-		const result = await handler.toResult()
+		const result = await controller.toResult()
 
 		return createSuccessResponse(result)
 	} catch (error) {

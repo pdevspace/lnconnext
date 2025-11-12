@@ -1,94 +1,39 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { useEvents } from '@/hooks/useEvent'
-import { formatDate, formatTime, isEventUpcoming } from '@/utils/utils'
+import { useIsEditor } from '@/hooks/useUser'
+import { ListEventRequest } from '@/types/event'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
-import Image from 'next/image'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-import {
-	ArrowRight,
-	Calendar,
-	Clock,
-	ExternalLink,
-	Filter,
-	MapPin,
-	Users,
-} from 'lucide-react'
+import { Calendar, Plus } from 'lucide-react'
+
+import { EventCard } from './EventCard'
 
 export default function EventListPage() {
-	const [searchQuery, setSearchQuery] = useState('')
-	const [hasScrolledToUpcoming, setHasScrolledToUpcoming] = useState(false)
-	const upcomingEventRef = useRef<HTMLDivElement>(null)
-
-	const { events: allEvents, loading, error } = useEvents()
-	const upcomingEvents = allEvents.filter((event) =>
-		isEventUpcoming(event.startDate)
-	)
-	const firstUpcomingEvent = upcomingEvents[0]
-
-	const filteredEvents = allEvents.filter((event) => {
-		const matchesSearch =
-			event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			(event.bitcoiners &&
-				event.bitcoiners.some((bitcoiner: any) =>
-					bitcoiner.name.toLowerCase().includes(searchQuery.toLowerCase())
-				))
-
-		return matchesSearch
+	const router = useRouter()
+	const { isEditor } = useIsEditor()
+	const [filters, setFilters] = useState<ListEventRequest['filters']>({
+		searchTerm: '',
 	})
 
-	// Scroll to first upcoming event on page load
-	useEffect(() => {
-		if (
-			!hasScrolledToUpcoming &&
-			firstUpcomingEvent &&
-			upcomingEventRef.current
-		) {
-			const timer = setTimeout(() => {
-				upcomingEventRef.current?.scrollIntoView({
-					behavior: 'instant',
-					block: 'start',
-				})
-
-				// Scroll 130px more up after the initial scroll
-				setTimeout(() => {
-					window.scrollBy({
-						top: -130,
-						behavior: 'instant',
-					})
-				}, 10)
-
-				setHasScrolledToUpcoming(true)
-			}, 0)
-
-			return () => clearTimeout(timer)
-		}
-	}, [hasScrolledToUpcoming, firstUpcomingEvent])
-
-	if (loading) {
-		return (
-			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="text-center">Loading events...</div>
-				</div>
-			</div>
-		)
-	}
+	const { events, loading, error, fetchEvents } = useEvents(filters)
 
 	if (error) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
-					<div className="text-center text-red-500">
-						Error loading events: {error}
+					<div className="flex items-center justify-center min-h-[400px]">
+						<div className="text-center">
+							<h2 className="text-2xl font-bold text-destructive mb-4">
+								Something went wrong
+							</h2>
+							<p className="text-muted-foreground mb-4">{error}</p>
+							<Button onClick={() => fetchEvents()}>Try again</Button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -96,162 +41,92 @@ export default function EventListPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-background">
-			{/* Fixed Header Bar */}
-			<div className="border-b bg-card fixed top-[70px] left-0 w-full z-40">
-				<div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-					<h1 className="text-xl font-bold">Events</h1>
-					<div className="flex gap-2">
-						<Input
-							placeholder="Search events, speakers, or locations..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-64"
+		<div className="h-screen overflow-y-auto bg-background">
+			{/* Fixed Header - follows established pattern */}
+			<div className="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border">
+				<div className="container mx-auto px-4 py-4">
+					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+						<div>
+							<h1 className="text-3xl font-bold text-foreground mb-2">
+								Events
+							</h1>
+							<p className="text-muted-foreground">
+								Discover and explore Bitcoin community events
+							</p>
+						</div>
+						{isEditor && (
+							<Button
+								onClick={() => router.push('/event/create')}
+								className="mt-4 sm:mt-0"
+								size="lg"
+							>
+								<Plus className="w-4 h-4 mr-2" />
+								Add New Event
+							</Button>
+						)}
+					</div>
+
+					{/* Search Section */}
+					<div className="mt-6">
+						<input
+							type="text"
+							placeholder="Search events..."
+							value={filters?.searchTerm || ''}
+							onChange={(e) =>
+								setFilters((prev) => ({
+									...prev,
+									searchTerm: e.target.value,
+								}))
+							}
+							className="w-full px-4 py-2 border border-border rounded-md bg-background text-foreground"
 						/>
-						<Button variant="outline" className="flex items-center gap-2">
-							<Filter className="h-4 w-4" />
-							Filter
-						</Button>
 					</div>
 				</div>
 			</div>
 
-			{/* Main Content */}
-			<div className="h-screen overflow-y-auto px-0 py-6 mt-[130px] w-full">
-				{/* Events List */}
-				<div className="space-y-4 max-w-none mx-0 px-4 mb-[800px]">
-					{filteredEvents.map((event) => (
-						<div
-							key={event.id}
-							ref={
-								event.id === firstUpcomingEvent?.id ? upcomingEventRef : null
-							}
-						>
-							<div className="mb-2">
-								<div className="flex items-center gap-2 text-sm text-muted-foreground">
-									<Calendar className="h-4 w-4" />
-									<span className="font-medium">
-										{formatDate(event.startDate)}
-									</span>
+			{/* Main Content - with proper navbar clearance and scrollable content */}
+			<div className="px-0 py-6 mt-[264px] w-full">
+				<div className="container mx-auto px-4">
+					{/* Loading State */}
+					{loading && (
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{Array.from({ length: 6 }).map((_, index) => (
+								<div key={index} className="animate-pulse">
+									<div className="bg-muted rounded-lg h-48"></div>
 								</div>
-							</div>
-							<Link href={`/event/${event.id}`}>
-								<Card className="hover:shadow-md transition-shadow cursor-pointer">
-									<CardContent className="p-6">
-										<div className="flex items-start gap-4">
-											{/* Event Image */}
-											<div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-												<Image
-													src={event.images[0] || '/images/placeholder.jpg'}
-													alt={event.name}
-													fill
-													className="object-cover"
-													sizes="96px"
-												/>
-											</div>
+							))}
+						</div>
+					)}
 
-											{/* Event Details */}
-											<div className="flex-1 min-w-0">
-												<div className="flex items-start justify-between mb-2">
-													<h3 className="text-lg font-semibold truncate">
-														{event.name}
-													</h3>
-													<Badge
-														variant={
-															isEventUpcoming(event.startDate)
-																? 'default'
-																: 'secondary'
-														}
-													>
-														{isEventUpcoming(event.startDate)
-															? 'Upcoming'
-															: 'Past'}
-													</Badge>
-												</div>
+					{/* Events Grid */}
+					{!loading && (
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{events.map((event) => (
+								<EventCard key={event.id} event={event} />
+							))}
+						</div>
+					)}
 
-												<p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-													{event.description}
-												</p>
-
-												<div className="flex items-center gap-4 text-sm text-muted-foreground">
-													{event.location && (
-														<span className="flex items-center gap-1">
-															<MapPin className="h-4 w-4" />
-															{event.location.buildingName}
-														</span>
-													)}
-													{event.bitcoiners.length > 0 && (
-														<span className="flex items-center gap-1">
-															<Users className="h-4 w-4" />
-															{event.bitcoiners.length} speakers
-														</span>
-													)}
-												</div>
-
-												{/* Speaker Badges */}
-												{event.bitcoiners && event.bitcoiners.length > 0 && (
-													<div className="flex gap-1 mt-3">
-														{event.bitcoiners
-															.slice(0, 3)
-															.map((bitcoiner: any, index: number) => (
-																<Badge
-																	key={bitcoiner.id || index}
-																	variant="secondary"
-																	className="text-xs"
-																>
-																	{bitcoiner.name}
-																</Badge>
-															))}
-														{event.bitcoiners.length > 3 && (
-															<Badge variant="outline" className="text-xs">
-																+{event.bitcoiners.length - 3}
-															</Badge>
-														)}
-													</div>
-												)}
-											</div>
-										</div>
-									</CardContent>
-								</Card>
-							</Link>
-
-							{/* Website Links - Outside the main card link */}
-							{event.websites.length > 0 && (
-								<div className="flex gap-2 mt-2 ml-6">
-									{event.websites.map((website: any, index: number) => (
-										<a
-											key={index}
-											href={website.url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="text-primary hover:underline text-sm flex items-center gap-1"
-										>
-											<ExternalLink className="h-3 w-3" />
-											{website.displayText || website.url}
-										</a>
-									))}
-								</div>
+					{/* Empty State */}
+					{!loading && events.length === 0 && (
+						<div className="text-center py-16">
+							<Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+							<h3 className="text-xl font-semibold text-foreground mb-2">
+								No events found
+							</h3>
+							<p className="text-muted-foreground mb-6">
+								Try adjusting your search criteria, or get started by adding
+								your first event.
+							</p>
+							{isEditor && (
+								<Button onClick={() => router.push('/event/create')}>
+									<Plus className="w-4 h-4 mr-2" />
+									Add First Event
+								</Button>
 							)}
 						</div>
-					))}
+					)}
 				</div>
-
-				{filteredEvents.length === 0 && (
-					<div className="text-center py-12">
-						<p className="text-gray-500 text-lg">
-							No events found matching your criteria.
-						</p>
-						<Button
-							variant="outline"
-							className="mt-4"
-							onClick={() => {
-								setSearchQuery('')
-							}}
-						>
-							Clear filters
-						</Button>
-					</div>
-				)}
 			</div>
 		</div>
 	)

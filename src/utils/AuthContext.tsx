@@ -1,6 +1,6 @@
 'use client'
 
-import { useCreateUser } from '@/hooks/useUser'
+import { useUser } from '@/hooks/useUser'
 import { auth, provider } from '@/utils/firebaseConfig'
 
 import {
@@ -30,7 +30,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [user, setUser] = useState<FirebaseUser | null>(null)
 	const [loading, setLoading] = useState(true)
-	const { createUser } = useCreateUser()
+	const { createUser } = useUser({ firebaseUser: user })
 
 	// Listen to auth state changes
 	useEffect(() => {
@@ -47,12 +47,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const login = useCallback(async () => {
 		try {
 			setLoading(true)
-			const credential = await signInWithPopup(auth, provider)
-			const token = await credential.user.getIdToken()
+			await signInWithPopup(auth, provider)
 
 			// Create user immediately after login
 			try {
-				await createUser(token)
+				await createUser()
 			} catch (createError) {
 				// If createUser fails, log out the user to prevent inconsistent state
 				console.error('Failed to create user, logging out:', createError)

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { useBitcoiners } from '@/hooks/useBitcoiner'
+import { useIsEditor } from '@/hooks/useUser'
 import { BitcoinerFilters } from '@/types/bitcoiner'
 
 import { useState } from 'react'
@@ -15,6 +16,7 @@ import { BitcoinerFilters as BitcoinerFiltersComponent } from './BitcoinerFilter
 
 export const BitcoinerListPage: React.FC = () => {
 	const router = useRouter()
+	const { isEditor } = useIsEditor()
 	const [filters, setFilters] = useState<BitcoinerFilters>({
 		searchTerm: '',
 		selectedPlatform: '',
@@ -24,7 +26,7 @@ export const BitcoinerListPage: React.FC = () => {
 
 	if (error) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="flex items-center justify-center min-h-[400px]">
 						<div className="text-center">
@@ -54,24 +56,26 @@ export const BitcoinerListPage: React.FC = () => {
 								Discover and connect with Bitcoin community members
 							</p>
 						</div>
-						<Button
-							onClick={() => router.push('/bitcoiner/create')}
-							className="mt-4 sm:mt-0"
-							size="lg"
-						>
-							<Plus className="w-4 h-4 mr-2" />
-							Add New Bitcoiner
-						</Button>
+						{isEditor && (
+							<Button
+								onClick={() => router.push('/bitcoiner/create')}
+								className="mt-4 sm:mt-0"
+								size="lg"
+							>
+								<Plus className="w-4 h-4 mr-2" />
+								Add New Bitcoiner
+							</Button>
+						)}
 					</div>
 
 					{/* Search and Filter Section */}
 					<div className="mt-6">
 						<BitcoinerFiltersComponent
-							searchTerm={filters.searchTerm || ''}
+							searchTerm={filters?.searchTerm || ''}
 							onSearchChange={(searchTerm) =>
 								setFilters((prev) => ({ ...prev, searchTerm }))
 							}
-							selectedPlatform={filters.selectedPlatform || ''}
+							selectedPlatform={filters?.selectedPlatform || ''}
 							onPlatformChange={(selectedPlatform) =>
 								setFilters((prev) => ({ ...prev, selectedPlatform }))
 							}
@@ -117,10 +121,12 @@ export const BitcoinerListPage: React.FC = () => {
 								Try adjusting your search or filter criteria, or get started by
 								adding your first bitcoiner to the community.
 							</p>
-							<Button onClick={() => router.push('/bitcoiner/create')}>
-								<Plus className="w-4 h-4 mr-2" />
-								Add First Bitcoiner
-							</Button>
+							{isEditor && (
+								<Button onClick={() => router.push('/bitcoiner/create')}>
+									<Plus className="w-4 h-4 mr-2" />
+									Add First Bitcoiner
+								</Button>
+							)}
 						</div>
 					)}
 				</div>

@@ -3,9 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useOrganizer } from '@/hooks/useOrganizer'
-import { OrganizerFormData } from '@/types-old/organizer'
-
-import { useState } from 'react'
+import { UpdateOrganizerRequest } from '@/types/organizer'
 
 import { useRouter } from 'next/navigation'
 
@@ -23,19 +21,14 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 	const router = useRouter()
 	const { organizer, loading, error, updateOrganizer } =
 		useOrganizer(organizerId)
-	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	const handleSubmit = async (data: OrganizerFormData) => {
-		setIsSubmitting(true)
-
+	const handleSubmit = async (data: Omit<UpdateOrganizerRequest, 'id'>) => {
 		try {
 			await updateOrganizer(data)
 			router.push(`/organizer/${organizerId}`)
 		} catch (error) {
 			console.error('Error updating organizer:', error)
 			alert('Failed to update organizer')
-		} finally {
-			setIsSubmitting(false)
 		}
 	}
 
@@ -45,7 +38,7 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 
 	if (loading) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-2xl mx-auto">
 						<div className="animate-pulse">
@@ -62,17 +55,19 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 
 	if (error) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-2xl mx-auto">
-						<div className="text-center">
-							<h2 className="text-2xl font-bold text-destructive mb-4">
-								Something went wrong
-							</h2>
-							<p className="text-muted-foreground mb-4">{error}</p>
-							<Button onClick={() => router.push('/organizer')}>
-								Back to Organizers
-							</Button>
+						<div className="flex items-center justify-center min-h-[400px]">
+							<div className="text-center">
+								<h2 className="text-2xl font-bold text-destructive mb-4">
+									Something went wrong
+								</h2>
+								<p className="text-muted-foreground mb-4">{error}</p>
+								<Button onClick={() => router.push('/organizer')}>
+									Back to Organizers
+								</Button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -82,20 +77,22 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 
 	if (!organizer) {
 		return (
-			<div className="h-screen overflow-y-auto bg-background">
+			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-2xl mx-auto">
-						<div className="text-center">
-							<h2 className="text-2xl font-bold text-foreground mb-4">
-								Organizer not found
-							</h2>
-							<p className="text-muted-foreground mb-4">
-								The organizer you're trying to edit doesn't exist or has been
-								removed.
-							</p>
-							<Button onClick={() => router.push('/organizer')}>
-								Back to Organizers
-							</Button>
+						<div className="flex items-center justify-center min-h-[400px]">
+							<div className="text-center">
+								<h2 className="text-2xl font-bold text-foreground mb-4">
+									Organizer not found
+								</h2>
+								<p className="text-muted-foreground mb-4">
+									The organizer you&apos;re trying to edit doesn&apos;t exist or
+									has been removed.
+								</p>
+								<Button onClick={() => router.push('/organizer')}>
+									Back to Organizers
+								</Button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -111,14 +108,21 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 					<div className="flex items-center justify-between">
 						<Button
 							variant="ghost"
-							onClick={() => router.push(`/organizer/${organizerId}`)}
+							onClick={handleCancel}
 							className="text-muted-foreground hover:text-foreground"
 						>
 							<ArrowLeft className="w-4 h-4 mr-2" />
-							Back to Organizer
+							Back to Profile
 						</Button>
-						<h1 className="text-xl font-semibold">Edit Organizer</h1>
-						<div className="w-20"></div> {/* Spacer for centering */}
+
+						<div>
+							<h1 className="text-2xl font-bold text-foreground">
+								Edit Organizer
+							</h1>
+							<p className="text-sm text-muted-foreground">
+								Update {organizer.name}&apos;s information
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -127,21 +131,14 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 			<div className="px-0 py-6 mt-[130px] w-full">
 				<div className="container mx-auto px-4">
 					<div className="max-w-2xl mx-auto">
+						{/* Form */}
 						<Card>
 							<CardContent className="p-6">
 								<OrganizerForm
-									initialData={{
-										name: organizer.name,
-										bio: organizer.bio || '',
-										avatar: organizer.avatar || '',
-										website: organizer.website || '',
-										isActive: organizer.isActive,
-										socialMediaIds: organizer.socialMedia.map((sm) => sm.id),
-									}}
+									organizer={organizer}
 									onSubmit={handleSubmit}
 									onCancel={handleCancel}
-									isSubmitting={isSubmitting}
-									submitLabel="Update Organizer"
+									isLoading={loading}
 								/>
 							</CardContent>
 						</Card>

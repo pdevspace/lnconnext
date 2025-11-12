@@ -44,7 +44,7 @@ export class CreateOrganizer extends ApiController<
 		try {
 			payload = await request.json()
 			user = await getCurrentUser(request)
-		} catch (error) {
+		} catch {
 			throw new ValidationError('Invalid JSON format')
 		}
 

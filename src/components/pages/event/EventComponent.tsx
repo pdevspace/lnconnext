@@ -1,21 +1,22 @@
 'use client'
 
-import { BitcoinerBox } from '@/components/pages/public/BitcoinerBox'
-import { SocialMediaBox } from '@/components/pages/public/SocialMediaBox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Bitcoiner, Event, EventSection, Location } from '@/types-old/event'
+import { useIsEditor } from '@/hooks/useUser'
+import { Event } from '@/types/event'
 
 import { useState } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import {
 	ArrowLeft,
 	Calendar,
 	Clock,
+	Edit,
 	ExternalLink,
 	Globe,
 	MapPin,
@@ -54,6 +55,8 @@ const formatDateTime = (date: string | Date) => {
 }
 
 export function EventComponent({ event }: EventComponentProps) {
+	const router = useRouter()
+	const { isEditor } = useIsEditor()
 	const [activeImageIndex, setActiveImageIndex] = useState(0)
 
 	const generateCalendarUrl = (event: Event) => {
@@ -85,8 +88,13 @@ export function EventComponent({ event }: EventComponentProps) {
 	}
 
 	const handleRegister = () => {
-		if (event.register) {
-			window.open(event.register.url, '_blank')
+		// Register functionality can be added via websites
+		const registerWebsite = event.websites?.find(
+			(w) =>
+				w.type === 'other' || w.displayText.toLowerCase().includes('register')
+		)
+		if (registerWebsite) {
+			window.open(registerWebsite.url, '_blank')
 		}
 	}
 
@@ -99,7 +107,7 @@ export function EventComponent({ event }: EventComponentProps) {
 					url: window.location.href,
 				})
 			} catch (err) {
-				console.log('Error sharing:', err)
+				console.error('Error sharing:', err)
 			}
 		} else {
 			// Fallback to clipboard
@@ -111,7 +119,10 @@ export function EventComponent({ event }: EventComponentProps) {
 		return new Date(date) > new Date()
 	}
 
-	const isEventLive = (startDate: string | Date, endDate?: string | Date) => {
+	const isEventLive = (
+		startDate: string | Date,
+		endDate?: string | Date | null
+	) => {
 		const now = new Date()
 		const start = new Date(startDate)
 		const end = endDate
@@ -131,14 +142,23 @@ export function EventComponent({ event }: EventComponentProps) {
 
 	return (
 		<div className="max-w-7xl mx-auto">
-			{/* Back Button */}
-			<div className="mb-6">
+			{/* Back Button and Edit Button */}
+			<div className="mb-6 flex items-center justify-between">
 				<Link href="/event">
 					<Button variant="ghost">
 						<ArrowLeft className="w-4 h-4 mr-2" />
 						Back to Events
 					</Button>
 				</Link>
+				{isEditor && (
+					<Button
+						onClick={() => router.push(`/event/edit/${event.id}`)}
+						variant="outline"
+					>
+						<Edit className="w-4 h-4 mr-2" />
+						Edit Event
+					</Button>
+				)}
 			</div>
 
 			{/* Desktop Layout */}
@@ -157,7 +177,7 @@ export function EventComponent({ event }: EventComponentProps) {
 						onShare={handleShare}
 					/>
 					<EventOriginalLinks event={event} />
-					<EventSpeakers event={event} />
+					<EventParticipants event={event} />
 				</div>
 
 				{/* Right Column (70%) */}
@@ -179,7 +199,6 @@ export function EventComponent({ event }: EventComponentProps) {
 					onImageChange={setActiveImageIndex}
 				/>
 				<EventHeader event={event} status={status} />
-				<EventOrganizer event={event} />
 				<EventActionButtons
 					event={event}
 					onAddToCalendar={handleAddToCalendar}
@@ -189,7 +208,6 @@ export function EventComponent({ event }: EventComponentProps) {
 				<EventLocation event={event} />
 				<EventDescription event={event} />
 				<EventSchedule event={event} />
-				<EventSpeakers event={event} />
 			</div>
 		</div>
 	)
@@ -260,9 +278,14 @@ function EventActionButtons({
 	onRegister,
 	onShare,
 }: EventActionButtonsProps) {
+	const hasRegisterLink = event.websites?.some(
+		(w) =>
+			w.type === 'other' || w.displayText.toLowerCase().includes('register')
+	)
+
 	return (
 		<div className="flex flex-col space-y-3">
-			{event.register && (
+			{hasRegisterLink && (
 				<Button onClick={onRegister} className="w-full">
 					<ExternalLink className="w-4 h-4 mr-2" />
 					Register
@@ -293,7 +316,7 @@ function EventOriginalLinks({ event }: EventOriginalLinksProps) {
 				<h3 className="font-semibold mb-3">Original Links</h3>
 				<div className="space-y-2">
 					{event.websites.map((website) => (
-						<a
+						<Link
 							key={website.id}
 							href={website.url}
 							target="_blank"
@@ -303,7 +326,7 @@ function EventOriginalLinks({ event }: EventOriginalLinksProps) {
 							<Globe className="w-4 h-4" />
 							{website.displayText || website.url}
 							<ExternalLink className="w-3 h-3" />
-						</a>
+						</Link>
 					))}
 				</div>
 			</CardContent>
@@ -311,18 +334,31 @@ function EventOriginalLinks({ event }: EventOriginalLinksProps) {
 	)
 }
 
-interface EventSpeakersProps {
+interface EventParticipantsProps {
 	event: Event
 }
 
-function EventSpeakers({ event }: EventSpeakersProps) {
-	if (!event.bitcoiners || event.bitcoiners.length === 0) return null
+function EventParticipants({ event }: EventParticipantsProps) {
+	if (!event.eventParticipants || event.eventParticipants.length === 0)
+		return null
 
 	return (
 		<Card>
 			<CardContent className="p-4">
-				<h3 className="font-semibold mb-3">Speakers</h3>
-				<BitcoinerBox bitcoiners={event.bitcoiners} />
+				<h3 className="font-semibold mb-3">Event Participants</h3>
+				<div className="space-y-2">
+					{event.eventParticipants.map((participant) => (
+						<Link
+							key={participant.id}
+							href={`/bitcoiner/${participant.bitcoinerId}`}
+							className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm group"
+						>
+							<Users className="w-4 h-4" />
+							<span className="flex-1">{participant.bitcoinerName}</span>
+							<ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+						</Link>
+					))}
+				</div>
 			</CardContent>
 		</Card>
 	)
@@ -345,16 +381,18 @@ function EventHeader({ event, status }: EventHeaderProps) {
 		}
 	}
 
+	const priceDisplay =
+		event.price && event.price > 0 && event.currency
+			? `${event.price} ${event.currency}`
+			: event.price === 0 || !event.price
+				? 'Free'
+				: null
+
 	return (
 		<div className="space-y-4">
 			<div className="flex items-start justify-between">
 				<div className="flex-1">
-					<div className="flex items-center gap-2 mb-2">
-						{getStatusBadge()}
-						{event.eventSeriesName && (
-							<Badge variant="outline">{event.eventSeriesName}</Badge>
-						)}
-					</div>
+					<div className="flex items-center gap-2 mb-2">{getStatusBadge()}</div>
 					<h1 className="text-3xl font-bold mb-2">{event.name}</h1>
 					<div className="flex items-center gap-4 text-muted-foreground">
 						<div className="flex items-center gap-1">
@@ -365,9 +403,9 @@ function EventHeader({ event, status }: EventHeaderProps) {
 							<Clock className="w-4 h-4" />
 							{formatTime(event.startDate)}
 						</div>
-						{event.price > 0 && (
+						{priceDisplay && (
 							<div className="text-lg font-semibold text-green-600">
-								${event.price}
+								{priceDisplay}
 							</div>
 						)}
 					</div>
@@ -382,8 +420,8 @@ interface EventOrganizerProps {
 }
 
 function EventOrganizer({ event }: EventOrganizerProps) {
-	// Note: This would need to be populated from the event data
-	// For now, we'll show a placeholder
+	if (!event.organizerId || !event.organizerName) return null
+
 	return (
 		<Card className="p-4">
 			<div className="flex items-center justify-between">
@@ -392,13 +430,21 @@ function EventOrganizer({ event }: EventOrganizerProps) {
 						<Users className="w-5 h-5 text-gray-400" />
 					</div>
 					<div>
-						<h3 className="font-semibold">Event Organizer</h3>
-						<p className="text-sm text-gray-500">
-							Organizer details will be shown here
-						</p>
+						<Link
+							href={`/organizer/${event.organizerId}`}
+							className="font-semibold hover:text-primary transition-colors"
+						>
+							{event.organizerName}
+						</Link>
+						<p className="text-sm text-gray-500">Event Organizer</p>
 					</div>
 				</div>
-				{/* SocialMediaBox would go here when organizer data is available */}
+				<Link
+					href={`/organizer/${event.organizerId}`}
+					className="text-primary hover:underline"
+				>
+					<ExternalLink className="w-4 h-4" />
+				</Link>
 			</div>
 		</Card>
 	)
@@ -446,13 +492,12 @@ function EventLocation({ event }: EventLocationProps) {
 					<div>
 						<div className="font-medium">{event.location.buildingName}</div>
 						<div className="text-sm text-muted-foreground">
-							{event.location.address}, {event.location.city},{' '}
-							{event.location.country}
+							{event.location.address}, {event.location.city}
 						</div>
 					</div>
 				</div>
 				{event.location.googleMapsUrl && (
-					<a
+					<Link
 						href={event.location.googleMapsUrl}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -461,7 +506,7 @@ function EventLocation({ event }: EventLocationProps) {
 						<MapPin className="w-3 h-3" />
 						View on Google Maps
 						<ExternalLink className="w-3 h-3" />
-					</a>
+					</Link>
 				)}
 			</div>
 		</Card>
@@ -500,9 +545,22 @@ function EventSchedule({ event }: EventScheduleProps) {
 					<div key={section.id} className="border-l-4 border-blue-500 pl-4">
 						<div className="flex items-center justify-between">
 							<h3 className="font-medium">{section.sectionName}</h3>
-							<span className="text-sm text-muted-foreground">
-								{formatTime(section.startTime)} - {formatTime(section.endTime)}
-							</span>
+							{section.startTime && section.endTime && (
+								<span className="text-sm text-muted-foreground">
+									{formatTime(section.startTime)} -{' '}
+									{formatTime(section.endTime)}
+								</span>
+							)}
+							{section.startTime && !section.endTime && (
+								<span className="text-sm text-muted-foreground">
+									{formatTime(section.startTime)}
+								</span>
+							)}
+							{!section.startTime && section.endTime && (
+								<span className="text-sm text-muted-foreground">
+									- {formatTime(section.endTime)}
+								</span>
+							)}
 						</div>
 						{section.spot && (
 							<p className="text-sm text-muted-foreground mt-1">
@@ -514,9 +572,23 @@ function EventSchedule({ event }: EventScheduleProps) {
 								{section.description}
 							</p>
 						)}
-						{section.bitcoiners && section.bitcoiners.length > 0 && (
+						{section.participants && section.participants.length > 0 && (
 							<div className="mt-2">
-								<BitcoinerBox bitcoiners={section.bitcoiners} />
+								<p className="text-xs text-muted-foreground mb-1">
+									Participants:
+								</p>
+								<div className="flex flex-wrap gap-2">
+									{section.participants.map((participant) => (
+										<Link
+											key={participant.id}
+											href={`/bitcoiner/${participant.bitcoinerId}`}
+											className="inline-flex items-center gap-1 px-2 py-1 text-xs border rounded-md hover:bg-muted transition-colors"
+										>
+											{participant.bitcoinerName}
+											<ExternalLink className="w-3 h-3" />
+										</Link>
+									))}
+								</div>
 							</div>
 						)}
 					</div>
