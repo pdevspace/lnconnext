@@ -12,10 +12,11 @@ export abstract class ApiController<TRequest, TResponse> {
 	}
 
 	static async fromRequest(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_request: NextRequest
 	): Promise<ApiController<unknown, unknown>> {
-		throw new Error('fromRequest must be implemented by subclass')
+		throw new Error(
+			`fromRequest must be implemented by subclass. Request URL: ${_request.url}`
+		)
 	}
 
 	abstract toResult(): Promise<TResponse>
