@@ -66,11 +66,7 @@ let adminAuth: ReturnType<typeof getAuth> | null = null
 app = initializeFirebaseAdmin()
 if (app) {
 	adminAuth = getAuth(app)
-	// console.log('✅ Firebase Admin SDK initialized successfully')
 } else {
-	// console.warn(
-	// 	'⚠️  Firebase Admin SDK not initialized - authentication will not work'
-	// )
 	adminAuth = null
 }
 
