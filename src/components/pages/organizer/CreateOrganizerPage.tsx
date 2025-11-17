@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
+import { useToast } from '@/contexts/ToastContext'
 import { useOrganizers } from '@/hooks/useOrganizer'
 import { CreateOrganizerRequest } from '@/types/organizer'
 
@@ -20,6 +21,7 @@ import { OrganizerForm } from './OrganizerForm'
 export const CreateOrganizerPage: React.FC = () => {
 	const router = useRouter()
 	const { createOrganizer, loading } = useOrganizers()
+	const { showError } = useToast()
 
 	const handleSubmit = async (data: CreateOrganizerRequest) => {
 		try {
@@ -27,8 +29,9 @@ export const CreateOrganizerPage: React.FC = () => {
 			// After creation, the list will refresh and we can navigate
 			router.push('/organizer')
 		} catch (error) {
-			console.error('Error creating organizer:', error)
-			alert('Failed to create organizer')
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to create organizer'
+			showError(errorMessage)
 		}
 	}
 

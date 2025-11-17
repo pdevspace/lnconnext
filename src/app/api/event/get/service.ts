@@ -55,18 +55,23 @@ export interface GetEventLocationItem {
 	googleMapsUrl: string
 }
 
+export interface GetEventRegisterItem {
+	price: number | null
+	currency: string
+	registerUrl: string | null
+}
+
 export interface GetEventResponse {
 	id: string
 	name: string
 	description: string
 	startDate: Date
 	endDate: Date | null
-	price: number
-	currency: string
 	images: string[]
 	organizerId: string
 	organizerName: string
 	location: GetEventLocationItem | null
+	register: GetEventRegisterItem | null
 	websites: GetEventWebsiteItem[]
 	sections: GetEventSectionItem[]
 	eventParticipants: GetEventParticipant[]
@@ -107,6 +112,7 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 				include: {
 					organizer: true,
 					location: true,
+					register: true,
 					websites: true,
 					sections: {
 						include: {
@@ -138,8 +144,8 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 				sectionName: section.sectionName,
 				startTime: section.startTime,
 				endTime: section.endTime,
-				spot: section.spot,
-				description: section.description,
+				spot: section.spot || '',
+				description: section.description || '',
 				participants: section.participants.map((participant) => ({
 					id: participant.id,
 					bitcoinerId: participant.bitcoinerId,
@@ -165,11 +171,9 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 			return {
 				id: event.id,
 				name: event.name,
-				description: event.description,
+				description: event.description || '',
 				startDate: event.startDate,
 				endDate: event.endDate,
-				price: event.price,
-				currency: event.currency,
 				images: event.images,
 				organizerId: event.organizerId,
 				organizerName: event.organizer.name,
@@ -177,15 +181,22 @@ export class GetEvent extends ApiController<GetEventRequest, GetEventResponse> {
 					? {
 							id: event.location.id,
 							buildingName: event.location.buildingName,
-							address: event.location.address,
-							city: event.location.city,
+							address: event.location.address || '',
+							city: event.location.city || '',
 							googleMapsUrl: event.location.googleMapsUrl,
+						}
+					: null,
+				register: event.register
+					? {
+							price: event.register.price ?? null,
+							currency: event.register.currency || '',
+							registerUrl: event.register.registerUrl ?? null,
 						}
 					: null,
 				websites: event.websites.map((website) => ({
 					id: website.id,
 					url: website.url,
-					displayText: website.displayText,
+					displayText: website.displayText || '',
 					type: website.type,
 				})),
 				sections,

@@ -3,8 +3,11 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useToast } from '@/contexts/ToastContext'
 import { useBitcoiner } from '@/hooks/useBitcoiner'
 import { useIsEditor } from '@/hooks/useUser'
+
+import { useEffect } from 'react'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -29,8 +32,15 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 }) => {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
+	const { showError } = useToast()
 	const { bitcoiner, loading, error, deleteBitcoiner } =
 		useBitcoiner(bitcoinerId)
+
+	useEffect(() => {
+		if (error) {
+			showError(error)
+		}
+	}, [error, showError])
 
 	const handleDelete = async () => {
 		if (
@@ -70,29 +80,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 		)
 	}
 
-	if (error) {
-		return (
-			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="max-w-4xl mx-auto">
-						<div className="flex items-center justify-center min-h-[400px]">
-							<div className="text-center">
-								<h2 className="text-2xl font-bold text-destructive mb-4">
-									Something went wrong
-								</h2>
-								<p className="text-muted-foreground mb-4">{error}</p>
-								<Button onClick={() => router.push('/bitcoiner')}>
-									Back to Bitcoiners
-								</Button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-	if (!bitcoiner) {
+	if (!bitcoiner && !loading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
@@ -115,6 +103,10 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 				</div>
 			</div>
 		)
+	}
+
+	if (!bitcoiner) {
+		return null
 	}
 
 	return (

@@ -8,22 +8,27 @@ import {
 	CurrentUser,
 	getCurrentUser,
 	prisma,
+	validateOneOfString,
+	validateOptionalString,
+	validateRequiredString,
+	validateUrlString,
 	ValidationError,
+	validPlatforms,
 } from '@/api'
 
 import { NextRequest } from 'next/server'
 
 export interface CreateBitcoinerSocialMediaItem {
-	displayText: string
+	displayText: string | null
 	platform: string
 	urlLink: string
 }
 
 export interface CreateBitcoinerRequest {
 	name: string
-	bio: string
+	bio: string | null
 	socialMedia: CreateBitcoinerSocialMediaItem[]
-	organizerId?: string
+	organizerId: string | null
 }
 
 export interface CreateBitcoinerResponse {}
@@ -49,130 +54,60 @@ export class CreateBitcoiner extends ApiController<
 		}
 
 		// validate payload
-		if (!payload.name || typeof payload.name !== 'string') {
-			throw new ValidationError('Name is required and must be a string')
-		}
 
-		const trimmedName = payload.name.trim()
+		// name
+		const trimmedName = validateRequiredString(payload.name, 'Name', 100)
 
-		if (trimmedName.length > 100) {
-			throw new ValidationError('Name must be less than 200 characters')
-		}
+		// bio
+		const trimmedBio = validateOptionalString(payload.bio, 'Bio', 1000)
 
-		if (!payload.bio || typeof payload.bio !== 'string') {
-			throw new ValidationError('Bio is required and must be a string')
-		}
-
-		const trimmedBio = payload.bio.trim()
-		if (trimmedBio.length > 1000) {
-			throw new ValidationError('Bio must be less than 2000 characters')
-		}
-
+		// socialMedia
 		if (!Array.isArray(payload.socialMedia)) {
 			throw new ValidationError('Social media must be an array')
 		}
-
-		// Validate each social media item
-		const validPlatforms = [
-			'facebook',
-			'youtube',
-			'twitter',
-			'linkedin',
-			'instagram',
-			'other',
-		]
+		const formatSocialMedia: CreateBitcoinerSocialMediaItem[] = new Array(
+			payload.socialMedia.length
+		)
 
 		for (let i = 0; i < payload.socialMedia.length; i++) {
 			const social = payload.socialMedia[i]
 
-			if (!social.displayText || typeof social.displayText !== 'string') {
-				throw new ValidationError(
-					`Social media item ${i + 1}: displayText is required and must be a string`
-				)
-			}
+			const socialMediaDisplayText = validateOptionalString(
+				social.displayText,
+				`Social media item ${i + 1}: displayText`,
+				100
+			)
 
-			if (social.displayText.trim().length === 0) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: displayText cannot be empty`
-				)
-			}
+			const socialMediaPlatform = validateOneOfString(
+				social.platform,
+				validPlatforms,
+				`Social media item ${i + 1}: platform`
+			)
 
-			if (social.displayText.length > 200) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: displayText must be less than 200 characters`
-				)
-			}
+			const socialMediaUrlLink = validateUrlString(
+				social.urlLink,
+				`Social media item ${i + 1}: urlLink`
+			)
 
-			if (!social.platform || typeof social.platform !== 'string') {
-				throw new ValidationError(
-					`Social media item ${i + 1}: platform is required and must be a string`
-				)
-			}
-
-			if (!validPlatforms.includes(social.platform.toLowerCase())) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: platform must be one of: ${validPlatforms.join(', ')}`
-				)
-			}
-
-			if (!social.urlLink || typeof social.urlLink !== 'string') {
-				throw new ValidationError(
-					`Social media item ${i + 1}: urlLink is required and must be a string`
-				)
-			}
-
-			// Validate URL format
-			try {
-				new URL(social.urlLink)
-			} catch {
-				throw new ValidationError(
-					`Social media item ${i + 1}: urlLink must be a valid URL`
-				)
-			}
-
-			if (social.urlLink.length > 1000) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: urlLink must be less than 500 characters`
-				)
+			formatSocialMedia[i] = {
+				displayText: socialMediaDisplayText,
+				platform: socialMediaPlatform,
+				urlLink: socialMediaUrlLink,
 			}
 		}
 
-		// Validate organizerId if provided
-		if (payload.organizerId !== undefined && payload.organizerId !== null) {
-			if (typeof payload.organizerId !== 'string') {
-				throw new ValidationError('Organizer ID must be a string')
-			}
-			if (payload.organizerId.trim().length === 0) {
-				throw new ValidationError('Organizer ID cannot be empty')
-			}
-
-			// Verify organizer exists and is active
-			const organizer = await prisma.organizer.findUnique({
-				where: {
-					id: payload.organizerId.trim(),
-				},
-			})
-
-			if (!organizer) {
-				throw new ValidationError('Organizer not found or inactive')
-			}
-
-			if (organizer.activeFlag !== 'A') {
-				throw new ValidationError('Organizer not found or inactive')
-			}
-
-			payload.organizerId = payload.organizerId.trim()
-		}
+		// organizerId
+		const trimmedOrganizerId = validateOptionalString(
+			payload.organizerId,
+			'Organizer ID',
+			100
+		)
 
 		// Normalize payload
 		payload.name = trimmedName
 		payload.bio = trimmedBio
-		payload.socialMedia = payload.socialMedia.map((social) => ({
-			displayText: social.displayText.trim(),
-			platform: social.platform.toLowerCase(),
-			urlLink: social.urlLink.trim(),
-		}))
-
+		payload.socialMedia = formatSocialMedia
+		payload.organizerId = trimmedOrganizerId
 		return new CreateBitcoiner(payload, user)
 	}
 
@@ -182,16 +117,26 @@ export class CreateBitcoiner extends ApiController<
 		}
 
 		try {
+			if (this.payload.organizerId) {
+				const organizerExists = await prisma.organizer.findUnique({
+					where: { id: this.payload.organizerId, activeFlag: 'A' },
+					select: { id: true },
+				})
+				if (!organizerExists) {
+					throw new ValidationError('Organizer not found')
+				}
+			}
+
 			await prisma.bitcoiner.create({
 				data: {
 					name: this.payload.name,
-					bio: this.payload.bio,
+					bio: this.payload.bio || null,
 					activeFlag: 'A',
 					updatedByUid: this.user.uid,
 					organizerId: this.payload.organizerId || null,
 					socialMedia: {
 						create: this.payload.socialMedia.map((social) => ({
-							displayText: social.displayText,
+							displayText: social.displayText || null,
 							platform: social.platform,
 							urlLink: social.urlLink,
 						})),

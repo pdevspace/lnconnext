@@ -19,13 +19,13 @@ export interface Bitcoiner {
 // Request Types
 export interface CreateBitcoinerRequest {
 	name: string
-	bio: string
+	bio: string | null
 	socialMedia: CreateBitcoinerSocialMediaItem[]
-	organizerId?: string
+	organizerId: string | null
 }
 
 export interface CreateBitcoinerSocialMediaItem {
-	displayText: string
+	displayText: string | null
 	platform: string
 	urlLink: string
 }
@@ -33,13 +33,13 @@ export interface CreateBitcoinerSocialMediaItem {
 export interface UpdateBitcoinerRequest {
 	id: string
 	name: string
-	bio: string
+	bio: string | null
 	socialMedia: UpdateBitcoinerSocialMediaItem[]
-	organizerId?: string
+	organizerId: string | null
 }
 
 export interface UpdateBitcoinerSocialMediaItem {
-	displayText: string
+	displayText: string | null
 	platform: string
 	urlLink: string
 }

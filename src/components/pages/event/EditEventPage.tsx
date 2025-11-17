@@ -1,10 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/contexts/ToastContext'
 import { useEvent } from '@/hooks/useEvent'
 import { UpdateEventRequest } from '@/types/event'
 
 import { useRouter } from 'next/navigation'
+
+import { useEffect } from 'react'
 
 import { ArrowLeft } from 'lucide-react'
 
@@ -17,14 +20,22 @@ interface EditEventPageProps {
 export const EditEventPage: React.FC<EditEventPageProps> = ({ eventId }) => {
 	const router = useRouter()
 	const { event, loading, error, updateEvent } = useEvent(eventId)
+	const { showError } = useToast()
+
+	useEffect(() => {
+		if (error) {
+			showError(error)
+		}
+	}, [error, showError])
 
 	const handleSubmit = async (data: Omit<UpdateEventRequest, 'id'>) => {
 		try {
 			await updateEvent(data)
 			router.push(`/event/${eventId}`)
 		} catch (error) {
-			console.error('Error updating event:', error)
-			alert('Failed to update event')
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to update event'
+			showError(errorMessage)
 		}
 	}
 
@@ -49,29 +60,7 @@ export const EditEventPage: React.FC<EditEventPageProps> = ({ eventId }) => {
 		)
 	}
 
-	if (error) {
-		return (
-			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="max-w-4xl mx-auto">
-						<div className="flex items-center justify-center min-h-[400px]">
-							<div className="text-center">
-								<h2 className="text-2xl font-bold text-destructive mb-4">
-									Something went wrong
-								</h2>
-								<p className="text-muted-foreground mb-4">{error}</p>
-								<Button onClick={() => router.push('/event')}>
-									Back to Events
-								</Button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-	if (!event) {
+	if (!event && !loading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
@@ -94,6 +83,10 @@ export const EditEventPage: React.FC<EditEventPageProps> = ({ eventId }) => {
 				</div>
 			</div>
 		)
+	}
+
+	if (!event) {
+		return null
 	}
 
 	return (

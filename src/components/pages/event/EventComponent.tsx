@@ -88,10 +88,15 @@ export function EventComponent({ event }: EventComponentProps) {
 	}
 
 	const handleRegister = () => {
-		// Register functionality can be added via websites
+		// First check if there's a register URL in the register object
+		if (event.register?.registerUrl) {
+			window.open(event.register.registerUrl, '_blank')
+			return
+		}
+		// Fallback to finding register website
 		const registerWebsite = event.websites?.find(
 			(w) =>
-				w.type === 'other' || w.displayText.toLowerCase().includes('register')
+				w.type === 'other' || w.displayText?.toLowerCase().includes('register')
 		)
 		if (registerWebsite) {
 			window.open(registerWebsite.url, '_blank')
@@ -381,12 +386,13 @@ function EventHeader({ event, status }: EventHeaderProps) {
 		}
 	}
 
-	const priceDisplay =
-		event.price && event.price > 0 && event.currency
-			? `${event.price} ${event.currency}`
-			: event.price === 0 || !event.price
+	const priceDisplay = event.register
+		? event.register.price && event.register.price > 0 && event.register.currency
+			? `${event.register.price} ${event.register.currency}`
+			: event.register.price === 0 || !event.register.price
 				? 'Free'
 				: null
+		: null
 
 	return (
 		<div className="space-y-4">

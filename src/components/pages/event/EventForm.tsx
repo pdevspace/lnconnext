@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useBitcoiners } from '@/hooks/useBitcoiner'
 import { useOrganizers } from '@/hooks/useOrganizer'
 import {
+	CreateEventRequest,
 	CreateEventSectionItem,
 	CreateEventWebsiteItem,
 	Event,
@@ -45,28 +46,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 
 interface EventFormProps {
 	event?: Event
-	onSubmit: (
-		data:
-			| Omit<UpdateEventRequest, 'id'>
-			| {
-					name: string
-					description: string
-					startDate: Date | string
-					endDate: Date | string
-					price: number | null
-					currency: string | null
-					images: string[]
-					organizerId: string
-					location?: {
-						buildingName: string
-						address: string
-						city: string
-						googleMapsUrl: string
-					}
-					websites: CreateEventWebsiteItem[]
-					sections: CreateEventSectionItem[]
-			  }
-	) => void
+	onSubmit: (data: Omit<UpdateEventRequest, 'id'> | CreateEventRequest) => void
 	onCancel: () => void
 	isLoading?: boolean
 }
@@ -95,8 +75,9 @@ type FormData = {
 	startTime: string
 	endDate: string
 	endTime: string
-	price: string
-	currency: string
+	registerPrice: string
+	registerCurrency: string
+	registerUrl: string
 	images: string[]
 	organizerId: string
 	location: {
@@ -173,15 +154,16 @@ export const EventForm: React.FC<EventFormProps> = ({
 		startTime: formatTimeForInput(event?.startDate),
 		endDate: formatDateForInputDate(event?.endDate),
 		endTime: formatTimeForInput(event?.endDate),
-		price: event?.price?.toString() || '0',
-		currency: event?.currency || 'USD',
+		registerPrice: event?.register?.price?.toString() || '',
+		registerCurrency: event?.register?.currency || '',
+		registerUrl: event?.register?.registerUrl || '',
 		images: event?.images || [],
 		organizerId: event?.organizerId || '',
 		location: event?.location
 			? {
 					buildingName: event.location.buildingName,
-					address: event.location.address,
-					city: event.location.city,
+					address: event.location.address || '',
+					city: event.location.city || '',
 					googleMapsUrl: event.location.googleMapsUrl,
 				}
 			: null,
@@ -189,7 +171,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 			event?.websites.map((w) => ({
 				id: w.id,
 				url: w.url,
-				displayText: w.displayText,
+				displayText: w.displayText || '',
 				type: w.type,
 			})) || [],
 		sections:
@@ -198,8 +180,8 @@ export const EventForm: React.FC<EventFormProps> = ({
 				sectionName: s.sectionName,
 				startTime: s.startTime ? formatDateForInput(s.startTime) : '',
 				endTime: s.endTime ? formatDateForInput(s.endTime) : '',
-				spot: s.spot,
-				description: s.description,
+				spot: s.spot || '',
+				description: s.description || '',
 				participantIds: s.participants.map((p) => p.bitcoinerId),
 			})) || [],
 	})
@@ -346,11 +328,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 			return
 		}
 
-		if (!formData.description.trim()) {
-			setErrors({ description: 'Description is required' })
-			return
-		}
-
 		if (!formData.startDate) {
 			setErrors({ startDate: 'Start date is required' })
 			return
@@ -379,27 +356,15 @@ export const EventForm: React.FC<EventFormProps> = ({
 			return
 		}
 
-		const priceStr = formData.price.trim()
-		let price = parseFloat(priceStr)
-
-		if (
-			priceStr === '' ||
-			price === undefined ||
-			price === null ||
-			isNaN(price) ||
-			price <= 0
-		) {
-			price = 0
+		// Validate register price
+		const priceStr = formData.registerPrice.trim()
+		let price: number | null = null
+		if (priceStr !== '') {
+			const parsedPrice = parseFloat(priceStr)
+			if (!isNaN(parsedPrice) && parsedPrice >= 0) {
+				price = parsedPrice
+			}
 		}
-
-		if (
-			priceStr !== '' &&
-			(isNaN(parseFloat(priceStr)) || parseFloat(priceStr) < 0)
-		) {
-			price = 0
-		}
-
-		const isFree = price === 0
 
 		// Validate websites
 		const websiteErrors: Record<string, string> = {}
@@ -412,10 +377,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 				} catch {
 					websiteErrors[`website-${index}-url`] = 'Invalid URL format'
 				}
-			}
-			if (!website.displayText.trim()) {
-				websiteErrors[`website-${index}-displayText`] =
-					'Display text is required'
 			}
 		})
 
@@ -446,7 +407,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 			return
 		}
 
-		// Format data for API
+		// Format data for API - send empty strings as "" not null
 		const submitData = {
 			name: formData.name.trim(),
 			description: formData.description.trim(),
@@ -457,20 +418,27 @@ export const EventForm: React.FC<EventFormProps> = ({
 				formData.endDate && formData.endTime
 					? new Date(`${formData.endDate}T${formData.endTime}`).toISOString()
 					: null,
-			...(isFree
-				? { price: 0, currency: '' }
-				: { price: price!, currency: formData.currency }),
+			register:
+				price !== null ||
+				formData.registerCurrency.trim() ||
+				formData.registerUrl.trim()
+					? {
+							price: price,
+							currency: formData.registerCurrency.trim(),
+							registerUrl: formData.registerUrl.trim(),
+						}
+					: null,
 			images: formData.images.filter((img) => img.trim()),
 			organizerId: formData.organizerId,
-			...(showLocation &&
-				formData.location && {
-					location: {
-						buildingName: formData.location.buildingName.trim(),
-						address: formData.location.address.trim(),
-						city: formData.location.city.trim(),
-						googleMapsUrl: formData.location.googleMapsUrl.trim(),
-					},
-				}),
+			location:
+				showLocation && formData.location
+					? {
+							buildingName: formData.location.buildingName.trim(),
+							address: formData.location.address.trim(),
+							city: formData.location.city.trim(),
+							googleMapsUrl: formData.location.googleMapsUrl.trim(),
+						}
+					: null,
 			websites: formData.websites.map((website) => ({
 				url: website.url.trim(),
 				displayText: website.displayText.trim(),
@@ -677,53 +645,73 @@ export const EventForm: React.FC<EventFormProps> = ({
 							</CardContent>
 						</Card>
 
-						{/* Price and Currency */}
+						{/* Register Information */}
 						<Card>
 							<CardHeader>
-								<CardTitle>Price</CardTitle>
+								<CardTitle>Registration</CardTitle>
 							</CardHeader>
-							<CardContent>
+							<CardContent className="space-y-4">
 								<div>
-									<Label htmlFor="price" className="text-sm font-medium">
+									<Label
+										htmlFor="registerPrice"
+										className="text-sm font-medium"
+									>
 										Price
 									</Label>
-									<div className="flex items-center gap-2 mt-1">
-										<Input
-											id="price"
-											type="number"
-											step="0.01"
-											min="0"
-											value={formData.price}
-											onChange={(e) => {
-												const newPrice = e.target.value
-												setFormData({ ...formData, price: newPrice })
-											}}
-											placeholder="0.00"
-											className="w-[120px]"
-										/>
-										{formData.price !== '' &&
-											parseFloat(formData.price) !== 0 && (
-												<Input
-													id="currency"
-													type="text"
-													value={formData.currency}
-													onChange={(e) =>
-														setFormData({
-															...formData,
-															currency: e.target.value,
-														})
-													}
-													placeholder="USD"
-													required
-													className="w-[80px]"
-												/>
-											)}
-									</div>
-									{errors.price && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.price}
-										</p>
-									)}
+									<Input
+										id="registerPrice"
+										type="number"
+										step="0.01"
+										min="0"
+										value={formData.registerPrice}
+										onChange={(e) => {
+											setFormData({
+												...formData,
+												registerPrice: e.target.value,
+											})
+										}}
+										placeholder="0.00 (optional)"
+										className="mt-1"
+									/>
+								</div>
+								<div>
+									<Label
+										htmlFor="registerCurrency"
+										className="text-sm font-medium"
+									>
+										Currency
+									</Label>
+									<Input
+										id="registerCurrency"
+										type="text"
+										value={formData.registerCurrency}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												registerCurrency: e.target.value,
+											})
+										}
+										placeholder="THB (optional)"
+										className="mt-1"
+									/>
+								</div>
+								<div>
+									<Label htmlFor="registerUrl" className="text-sm font-medium">
+										Registration URL
+									</Label>
+									<Input
+										id="registerUrl"
+										type="url"
+										value={formData.registerUrl}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												registerUrl: e.target.value,
+											})
+										}
+										placeholder="https://... (optional)"
+										className="mt-1"
+									/>
 								</div>
 							</CardContent>
 						</Card>
@@ -785,7 +773,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 														htmlFor={`website-displayText-${index}`}
 														className="text-xs"
 													>
-														Display Text *
+														Display Text
 													</Label>
 													<Input
 														id={`website-displayText-${index}`}
@@ -797,6 +785,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 																e.target.value
 															)
 														}
+														placeholder="Optional display text"
 														className="mt-1"
 													/>
 													{errors[`website-${index}-displayText`] && (
@@ -950,7 +939,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 
 								<div>
 									<Label htmlFor="description" className="text-sm font-medium">
-										Description *
+										Description
 									</Label>
 									<Textarea
 										id="description"
@@ -958,8 +947,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 										onChange={(e) =>
 											setFormData({ ...formData, description: e.target.value })
 										}
-										placeholder="Enter event description"
-										required
+										placeholder="Enter event description (optional)"
 										className="mt-1 min-h-[100px]"
 										rows={4}
 									/>
@@ -1007,7 +995,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 								<CardContent className="space-y-4">
 									<div>
 										<Label htmlFor="buildingName" className="text-xs">
-											Building Name
+											Building Name *
 										</Label>
 										<Input
 											id="buildingName"
@@ -1022,6 +1010,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 												})
 											}
 											placeholder="Building name"
+											required
 											className="mt-1"
 										/>
 									</div>
@@ -1067,7 +1056,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 									</div>
 									<div>
 										<Label htmlFor="googleMapsUrl" className="text-xs">
-											Google Maps URL
+											Google Maps URL *
 										</Label>
 										<div className="flex items-start gap-2 mt-1">
 											<div className="flex-1">
@@ -1084,6 +1073,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 														})
 													}
 													placeholder="https://maps.google.com/..."
+													required
 													className="w-full"
 												/>
 											</div>
@@ -1529,7 +1519,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 									htmlFor="description-mobile"
 									className="text-sm font-medium"
 								>
-									Description *
+									Description
 								</Label>
 								<Textarea
 									id="description-mobile"
@@ -1537,8 +1527,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 									onChange={(e) =>
 										setFormData({ ...formData, description: e.target.value })
 									}
-									placeholder="Enter event description"
-									required
+									placeholder="Enter event description (optional)"
 									className="mt-1 min-h-[100px]"
 									rows={4}
 								/>
@@ -1551,50 +1540,76 @@ export const EventForm: React.FC<EventFormProps> = ({
 						</CardContent>
 					</Card>
 
-					{/* Price and Currency */}
+					{/* Register Information */}
 					<Card>
 						<CardHeader>
-							<CardTitle>Price</CardTitle>
+							<CardTitle>Registration</CardTitle>
 						</CardHeader>
-						<CardContent>
+						<CardContent className="space-y-4">
 							<div>
-								<Label htmlFor="price-mobile" className="text-sm font-medium">
+								<Label
+									htmlFor="registerPrice-mobile"
+									className="text-sm font-medium"
+								>
 									Price
 								</Label>
-								<div className="flex items-center gap-2 mt-1">
-									<Input
-										id="price-mobile"
-										type="number"
-										step="0.01"
-										min="0"
-										value={formData.price}
-										onChange={(e) => {
-											const newPrice = e.target.value
-											setFormData({ ...formData, price: newPrice })
-										}}
-										placeholder="0.00"
-										className="w-[120px]"
-									/>
-									{formData.price !== '' &&
-										parseFloat(formData.price) !== 0 && (
-											<Input
-												id="currency-mobile"
-												type="text"
-												value={formData.currency}
-												onChange={(e) =>
-													setFormData({ ...formData, currency: e.target.value })
-												}
-												placeholder="USD"
-												required
-												className="w-[80px]"
-											/>
-										)}
-								</div>
-								{errors.price && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.price}
-									</p>
-								)}
+								<Input
+									id="registerPrice-mobile"
+									type="number"
+									step="0.01"
+									min="0"
+									value={formData.registerPrice}
+									onChange={(e) => {
+										setFormData({
+											...formData,
+											registerPrice: e.target.value,
+										})
+									}}
+									placeholder="0.00 (optional)"
+									className="mt-1"
+								/>
+							</div>
+							<div>
+								<Label
+									htmlFor="registerCurrency-mobile"
+									className="text-sm font-medium"
+								>
+									Currency
+								</Label>
+								<Input
+									id="registerCurrency-mobile"
+									type="text"
+									value={formData.registerCurrency}
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											registerCurrency: e.target.value,
+										})
+									}
+									placeholder="THB (optional)"
+									className="mt-1"
+								/>
+							</div>
+							<div>
+								<Label
+									htmlFor="registerUrl-mobile"
+									className="text-sm font-medium"
+								>
+									Registration URL
+								</Label>
+								<Input
+									id="registerUrl-mobile"
+									type="url"
+									value={formData.registerUrl}
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											registerUrl: e.target.value,
+										})
+									}
+									placeholder="https://... (optional)"
+									className="mt-1"
+								/>
 							</div>
 						</CardContent>
 					</Card>
@@ -1815,7 +1830,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 													htmlFor={`website-displayText-mobile-${index}`}
 													className="text-xs"
 												>
-													Display Text *
+													Display Text
 												</Label>
 												<Input
 													id={`website-displayText-mobile-${index}`}
@@ -1823,6 +1838,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 													onChange={(e) =>
 														updateWebsite(index, 'displayText', e.target.value)
 													}
+													placeholder="Optional display text"
 													className="mt-1"
 												/>
 												{errors[`website-${index}-displayText`] && (
@@ -1920,7 +1936,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 							<CardContent className="space-y-4">
 								<div>
 									<Label htmlFor="buildingName-mobile" className="text-xs">
-										Building Name
+										Building Name *
 									</Label>
 									<Input
 										id="buildingName-mobile"
@@ -1935,6 +1951,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 											})
 										}
 										placeholder="Building name"
+										required
 										className="mt-1"
 									/>
 								</div>
@@ -1980,7 +1997,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 								</div>
 								<div>
 									<Label htmlFor="googleMapsUrl-mobile" className="text-xs">
-										Google Maps URL
+										Google Maps URL *
 									</Label>
 									<div className="flex items-start gap-2 mt-1">
 										<div className="flex-1">
@@ -1997,6 +2014,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 													})
 												}
 												placeholder="https://maps.google.com/..."
+												required
 												className="w-full"
 											/>
 										</div>

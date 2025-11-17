@@ -88,7 +88,7 @@ export class CreateUser extends ApiController<
 					uid: this.user.uid,
 					email: this.user.email,
 					emailVerified: this.user.emailVerified,
-					role: 'editor',
+					role: 'viewer',
 					lastLoginAt: new Date(),
 				},
 			})

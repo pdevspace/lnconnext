@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/contexts/ToastContext'
 import { useEvents } from '@/hooks/useEvent'
 import { CreateEventRequest } from '@/types/event'
 
@@ -13,6 +14,7 @@ import { EventForm } from './EventForm'
 export const CreateEventPage: React.FC = () => {
 	const router = useRouter()
 	const { createEvent, loading } = useEvents()
+	const { showError } = useToast()
 
 	const handleSubmit = async (data: CreateEventRequest) => {
 		try {
@@ -20,8 +22,9 @@ export const CreateEventPage: React.FC = () => {
 			// After creation, the list will refresh and we can navigate
 			router.push('/event')
 		} catch (error) {
-			console.error('Error creating event:', error)
-			alert('Failed to create event')
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to create event'
+			showError(errorMessage)
 		}
 	}
 

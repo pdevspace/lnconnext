@@ -40,15 +40,20 @@ export interface ListEventLocationItem {
 	googleMapsUrl: string
 }
 
+export interface ListEventRegisterItem {
+	price: number | null
+	currency: string
+	registerUrl: string | null
+}
+
 export interface ListEventItem {
 	id: string
 	name: string
 	startDate: Date
-	price: number
-	currency: string
 	firstImage: string
 	organizerName: string
 	location: ListEventLocationItem | null
+	register: ListEventRegisterItem | null
 }
 
 export interface ListEventResponse {
@@ -135,35 +140,41 @@ export class ListEvent extends ApiController<
 			const total = await prisma.event.count({ where })
 
 			// Get events
-			const events = await prisma.event.findMany({
+			const events = (await prisma.event.findMany({
 				where,
 				include: {
 					organizer: true,
 					location: true,
+					register: true,
 				},
 				take: limit,
 				skip: offset,
 				orderBy: {
 					startDate: 'asc',
 				},
-			})
+			})) as any
 
 			return {
-				events: events.map((event) => ({
+				events: events.map((event: any) => ({
 					id: event.id,
 					name: event.name,
 					startDate: event.startDate,
-					price: event.price,
-					currency: event.currency,
 					firstImage: event.images.length > 0 ? event.images[0] : '',
 					organizerName: event.organizer?.name || '',
 					location: event.location
 						? {
 								id: event.location.id,
 								buildingName: event.location.buildingName,
-								address: event.location.address,
-								city: event.location.city,
+								address: event.location.address || '',
+								city: event.location.city || '',
 								googleMapsUrl: event.location.googleMapsUrl,
+							}
+						: null,
+					register: event.register
+						? {
+								price: event.register.price ?? null,
+								currency: event.register.currency || '',
+								registerUrl: event.register.registerUrl ?? null,
 							}
 						: null,
 				})),

@@ -29,7 +29,7 @@ export const SocialMediaCard: React.FC<SocialMediaCardProps> = ({ social }) => {
 				</div>
 				<div className="flex-1 min-w-0">
 					<h4 className="font-medium text-foreground truncate">
-						{social.displayText}
+						{social.displayText || social.platform}
 					</h4>
 					<p className="text-sm text-muted-foreground truncate">
 						{social.platform}

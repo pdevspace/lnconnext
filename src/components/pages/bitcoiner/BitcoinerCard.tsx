@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { SocialIcon } from '@/components/ui/social-icon'
 import { ListBitcoinerItem } from '@/types/bitcoiner'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import { User } from 'lucide-react'
@@ -45,20 +44,20 @@ export const BitcoinerCard: React.FC<BitcoinerCardProps> = ({ bitcoiner }) => {
 					{bitcoiner.socialMedia.length > 0 ? (
 						<div className="flex gap-2 overflow-x-auto scrollbar-hide">
 							{bitcoiner.socialMedia.map((social) => (
-								<Link
+								<a
 									href={social.urlLink}
 									key={social.id}
 									target="_blank"
 									rel="noopener noreferrer"
 									onClick={(e) => e.stopPropagation()}
 									className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground whitespace-nowrap flex-shrink-0 hover:bg-primary/10 hover:text-primary transition-colors"
-									title={social.displayText}
+									title={social.displayText || social.platform}
 								>
 									<SocialIcon platform={social.platform} className="w-3 h-3" />
 									<span className="truncate max-w-[100px]">
-										{social.displayText}
+										{social.displayText || social.platform}
 									</span>
-								</Link>
+								</a>
 							))}
 						</div>
 					) : (

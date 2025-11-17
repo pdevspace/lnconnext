@@ -9,13 +9,19 @@ import {
 	getCurrentUser,
 	NotFoundError,
 	prisma,
+	validateOneOfString,
+	validateOptionalString,
+	validateOptionalUrlString,
+	validateRequiredString,
+	validateUrlString,
 	ValidationError,
+	validPlatforms,
 } from '@/api'
 
 import { NextRequest } from 'next/server'
 
 export interface UpdateOrganizerSocialMediaItem {
-	displayText: string
+	displayText: string | null
 	platform: string
 	urlLink: string
 }
@@ -23,8 +29,8 @@ export interface UpdateOrganizerSocialMediaItem {
 export interface UpdateOrganizerRequest {
 	id: string
 	name: string
-	bio: string
-	website: string
+	bio: string | null
+	website: string | null
 	socialMedia: UpdateOrganizerSocialMediaItem[]
 }
 
@@ -52,125 +58,66 @@ export class UpdateOrganizer extends ApiController<
 			throw new ValidationError('Invalid JSON format')
 		}
 
-		// validate payload
-		if (!payload.id) {
-			throw new ValidationError('ID is required')
-		}
+		// id
+		const id = validateRequiredString(payload.id, 'ID')
 
-		if (!payload.name || typeof payload.name !== 'string') {
-			throw new ValidationError('Name is required and must be a string')
-		}
+		// name
+		const trimmedName = validateRequiredString(payload.name, 'Name', 100)
 
-		const trimmedName = payload.name.trim()
+		// bio
+		const trimmedBio = validateOptionalString(payload.bio, 'Bio', 1000)
 
-		if (trimmedName.length > 100) {
-			throw new ValidationError('Name must be less than 100 characters')
-		}
-
-		if (!payload.bio || typeof payload.bio !== 'string') {
-			throw new ValidationError('Bio is required and must be a string')
-		}
-
-		const trimmedBio = payload.bio.trim()
-		if (trimmedBio.length > 1000) {
-			throw new ValidationError('Bio must be less than 1000 characters')
-		}
-
-		if (!payload.website || typeof payload.website !== 'string') {
-			throw new ValidationError('Website is required and must be a string')
-		}
-
-		const trimmedWebsite = payload.website.trim()
-
-		// Validate URL format
-		try {
-			new URL(trimmedWebsite)
-		} catch {
-			throw new ValidationError('Website must be a valid URL')
-		}
-
-		if (trimmedWebsite.length > 1000) {
-			throw new ValidationError('Website must be less than 1000 characters')
-		}
+		// website
+		const trimmedWebsite = validateOptionalUrlString(
+			payload.website,
+			'Website',
+			1000
+		)
 
 		if (!Array.isArray(payload.socialMedia)) {
 			throw new ValidationError('Social media must be an array')
 		}
-
-		// Validate each social media item
-		const validPlatforms = [
-			'facebook',
-			'youtube',
-			'twitter',
-			'linkedin',
-			'instagram',
-			'other',
-		]
+		const formatSocialMedia: UpdateOrganizerSocialMediaItem[] = new Array(
+			payload.socialMedia.length
+		)
 
 		for (let i = 0; i < payload.socialMedia.length; i++) {
 			const social = payload.socialMedia[i]
 
-			if (!social.displayText || typeof social.displayText !== 'string') {
-				throw new ValidationError(
-					`Social media item ${i + 1}: displayText is required and must be a string`
-				)
-			}
+			// socialMedia displayText
+			const trimmedSocialMediaDisplayText = validateOptionalString(
+				social.displayText,
+				`Social media item ${i + 1}: displayText`,
+				100
+			)
 
-			if (social.displayText.trim().length === 0) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: displayText cannot be empty`
-				)
-			}
+			// socialMedia platform
+			const socialMediaPlatform = validateOneOfString(
+				social.platform,
+				validPlatforms,
+				`Social media item ${i + 1}: platform`
+			)
 
-			if (social.displayText.length > 200) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: displayText must be less than 200 characters`
-				)
-			}
+			// socialMedia urlLink
+			const socialMediaUrlLink = validateUrlString(
+				social.urlLink,
+				`Social media item ${i + 1}: urlLink`,
+				1000
+			)
 
-			if (!social.platform || typeof social.platform !== 'string') {
-				throw new ValidationError(
-					`Social media item ${i + 1}: platform is required and must be a string`
-				)
-			}
-
-			if (!validPlatforms.includes(social.platform.toLowerCase())) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: platform must be one of: ${validPlatforms.join(', ')}`
-				)
-			}
-
-			if (!social.urlLink || typeof social.urlLink !== 'string') {
-				throw new ValidationError(
-					`Social media item ${i + 1}: urlLink is required and must be a string`
-				)
-			}
-
-			// Validate URL format
-			try {
-				new URL(social.urlLink)
-			} catch {
-				throw new ValidationError(
-					`Social media item ${i + 1}: urlLink must be a valid URL`
-				)
-			}
-
-			if (social.urlLink.length > 1000) {
-				throw new ValidationError(
-					`Social media item ${i + 1}: urlLink must be less than 1000 characters`
-				)
+			formatSocialMedia[i] = {
+				displayText: trimmedSocialMediaDisplayText,
+				platform: socialMediaPlatform,
+				urlLink: socialMediaUrlLink,
 			}
 		}
 
 		// Normalize payload
+		payload.id = id
 		payload.name = trimmedName
 		payload.bio = trimmedBio
 		payload.website = trimmedWebsite
-		payload.socialMedia = payload.socialMedia.map((social) => ({
-			displayText: social.displayText.trim(),
-			platform: social.platform.toLowerCase(),
-			urlLink: social.urlLink.trim(),
-		}))
+		payload.socialMedia = formatSocialMedia
 
 		return new UpdateOrganizer(payload, user)
 	}
@@ -203,13 +150,13 @@ export class UpdateOrganizer extends ApiController<
 			await prisma.organizer.create({
 				data: {
 					name: existingOrganizer.name,
-					bio: existingOrganizer.bio,
-					website: existingOrganizer.website,
+					bio: existingOrganizer.bio || null,
+					website: existingOrganizer.website || null,
 					activeFlag: 'R',
 					updatedByUid: this.user.uid,
 					socialMedia: {
 						create: existingOrganizer.socialMedia.map((social) => ({
-							displayText: social.displayText,
+							displayText: social.displayText || null,
 							platform: social.platform,
 							urlLink: social.urlLink,
 						})),
@@ -225,14 +172,14 @@ export class UpdateOrganizer extends ApiController<
 				},
 				data: {
 					name: this.payload.name,
-					bio: this.payload.bio,
-					website: this.payload.website,
+					bio: this.payload.bio || null,
+					website: this.payload.website || null,
 					activeFlag: 'A',
 					updatedByUid: this.user.uid,
 					socialMedia: {
 						deleteMany: {},
 						create: this.payload.socialMedia.map((social) => ({
-							displayText: social.displayText,
+							displayText: social.displayText || null,
 							platform: social.platform,
 							urlLink: social.urlLink,
 						})),

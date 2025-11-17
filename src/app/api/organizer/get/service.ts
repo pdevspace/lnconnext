@@ -34,7 +34,7 @@ export interface GetOrganizerResponse {
 	id: string
 	name: string
 	bio: string
-	website: string
+	website: string | null
 	socialMedia: GetOrganizerSocialMediaItem[]
 	members: GetOrganizerBitcoinerItem[]
 	updatedAt: Date
@@ -92,11 +92,11 @@ export class GetOrganizer extends ApiController<
 			return {
 				id: organizer.id,
 				name: organizer.name,
-				bio: organizer.bio,
+				bio: organizer.bio || '',
 				website: organizer.website,
 				socialMedia: organizer.socialMedia.map((sm) => ({
 					id: sm.id,
-					displayText: sm.displayText,
+					displayText: sm.displayText || '',
 					platform: sm.platform,
 					urlLink: sm.urlLink,
 				})),

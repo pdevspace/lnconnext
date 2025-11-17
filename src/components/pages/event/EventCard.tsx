@@ -57,9 +57,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
 									</span>
 								</div>
 								{event.location && (
-									<div className="flex items-center gap-1">
-										<MapPin className="w-4 h-4" />
-										<span className="truncate">
+									<div className="flex items-center gap-1 min-w-0">
+										<MapPin className="w-4 h-4 flex-shrink-0" />
+										<span className="truncate max-w-[128px]">
 											{event.location.buildingName}
 										</span>
 									</div>
@@ -71,13 +71,15 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
 								<span className="font-medium">{event.organizerName}</span>
 							</div>
 
-							<div className="mt-2">
-								<span className="text-sm font-medium">
-									{event.price === 0
-										? 'Free'
-										: `${event.price} ${event.currency}`}
-								</span>
-							</div>
+							{event.register && (
+								<div className="mt-2">
+									<span className="text-sm font-medium">
+										{event.register.price === null || event.register.price === 0
+											? 'Free'
+											: `${event.register.price} ${event.register.currency || ''}`}
+									</span>
+								</div>
+							)}
 						</div>
 					</div>
 				</CardContent>

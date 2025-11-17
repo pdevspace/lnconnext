@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar'
+import { ToastProvider } from '@/contexts/ToastContext'
 import { AuthProvider } from '@/utils/AuthContext'
 import { ThemeProvider } from '@/utils/ThemeContext'
 
@@ -24,8 +25,10 @@ export default function RootLayout({
 			<body className={inter.className}>
 				<ThemeProvider>
 					<AuthProvider>
-						<Navbar />
-						{children}
+						<ToastProvider>
+							<Navbar />
+							{children}
+						</ToastProvider>
 					</AuthProvider>
 				</ThemeProvider>
 			</body>

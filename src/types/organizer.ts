@@ -24,13 +24,13 @@ export interface Organizer {
 // Request Types
 export interface CreateOrganizerRequest {
 	name: string
-	bio: string
-	website: string
+	bio: string | null
+	website: string | null
 	socialMedia: CreateOrganizerSocialMediaItem[]
 }
 
 export interface CreateOrganizerSocialMediaItem {
-	displayText: string
+	displayText: string | null
 	platform: string
 	urlLink: string
 }
@@ -38,13 +38,13 @@ export interface CreateOrganizerSocialMediaItem {
 export interface UpdateOrganizerRequest {
 	id: string
 	name: string
-	bio: string
-	website: string
+	bio: string | null
+	website: string | null
 	socialMedia: UpdateOrganizerSocialMediaItem[]
 }
 
 export interface UpdateOrganizerSocialMediaItem {
-	displayText: string
+	displayText: string | null
 	platform: string
 	urlLink: string
 }

@@ -9,14 +9,22 @@ import {
 	getCurrentUser,
 	NotFoundError,
 	prisma,
+	validateOneOfString,
+	validateOptionalString,
+	validateOptionalUrlString,
+	validateRequiredString,
+	validateStartDateEndDate,
+	validateStartTimeEndTime,
+	validateUrlString,
 	ValidationError,
+	validWebsiteTypes,
 } from '@/api'
 
 import { NextRequest } from 'next/server'
 
 export interface UpdateEventWebsiteItem {
 	url: string
-	displayText: string
+	displayText: string | null
 	type: string
 }
 
@@ -24,29 +32,34 @@ export interface UpdateEventSectionItem {
 	sectionName: string
 	startTime: Date | null
 	endTime: Date | null
-	spot: string
-	description: string
+	spot: string | null
+	description: string | null
 	participantIds: string[]
 }
 
 export interface UpdateEventLocationItem {
 	buildingName: string
-	address: string
-	city: string
+	address: string | null
+	city: string | null
 	googleMapsUrl: string
+}
+
+export interface UpdateEventRegisterItem {
+	price: number | null
+	currency: string | null
+	registerUrl: string | null
 }
 
 export interface UpdateEventRequest {
 	id: string
 	name: string
-	description: string
+	description: string | null
 	startDate: Date
 	endDate: Date | null
-	price: number
-	currency: string
 	images: string[]
 	organizerId: string
-	location?: UpdateEventLocationItem
+	location: UpdateEventLocationItem | null
+	register: UpdateEventRegisterItem | null
 	websites: UpdateEventWebsiteItem[]
 	sections: UpdateEventSectionItem[]
 }
@@ -73,393 +86,239 @@ export class UpdateEvent extends ApiController<
 			throw new ValidationError('Invalid JSON format')
 		}
 
-		// validate payload (same as create)
-		if (!payload.id) {
-			throw new ValidationError('ID is required')
-		}
+		// validate payload
 
-		if (!payload.name || typeof payload.name !== 'string') {
-			throw new ValidationError('Name is required and must be a string')
-		}
+		// id
+		const id = validateRequiredString(payload.id, 'ID')
 
-		const trimmedName = payload.name.trim()
+		// name
+		const trimmedName = validateRequiredString(payload.name, 'Name', 200)
 
-		if (trimmedName.length > 200) {
-			throw new ValidationError('Name must be less than 200 characters')
-		}
+		// description
+		const trimmedDescription = validateOptionalString(
+			payload.description,
+			'Description',
+			1000
+		)
 
-		if (!payload.description || typeof payload.description !== 'string') {
-			throw new ValidationError('Description is required and must be a string')
-		}
+		// start date and end date
+		const [startDate, endDate] = validateStartDateEndDate(
+			payload.startDate,
+			payload.endDate
+		)
 
-		const trimmedDescription = payload.description.trim()
-		if (trimmedDescription.length > 5000) {
-			throw new ValidationError('Description must be less than 5000 characters')
-		}
+		// register
+		let formatRegister: UpdateEventRegisterItem | null = null
+		if (payload.register !== undefined && payload.register !== null) {
+			if (typeof payload.register !== 'object') {
+				throw new ValidationError('Register must be an object')
+			}
 
-		if (
-			!payload.startDate ||
-			!(
-				payload.startDate instanceof Date ||
-				typeof payload.startDate === 'string'
-			)
-		) {
-			throw new ValidationError(
-				'Start date is required and must be a valid date'
-			)
-		}
-
-		const startDate = new Date(payload.startDate)
-
-		if (isNaN(startDate.getTime())) {
-			throw new ValidationError('Start date must be a valid date')
-		}
-
-		let endDate: Date | null = null
-		if (payload.endDate !== null && payload.endDate !== undefined) {
-			if (
-				!(
-					payload.endDate instanceof Date || typeof payload.endDate === 'string'
+			// register price
+			const price = payload.register.price ?? 0
+			if (typeof payload.register.price !== 'number' || price < 0) {
+				throw new ValidationError(
+					'Register price must be a non-negative number or null'
 				)
-			) {
-				throw new ValidationError('End date must be a valid date or null')
 			}
-			endDate = new Date(payload.endDate)
-			if (isNaN(endDate.getTime())) {
-				throw new ValidationError('End date must be a valid date')
+
+			// register currency
+			const trimmedCurrency = validateOptionalString(
+				payload.register.currency,
+				'Register currency',
+				10
+			)
+
+			// register urrl
+			const trimmedRegisterUrl = validateOptionalUrlString(
+				payload.register.registerUrl,
+				'Register URL',
+				1000
+			)
+
+			formatRegister = {
+				price: price || null,
+				currency: trimmedCurrency || null,
+				registerUrl: trimmedRegisterUrl || null,
 			}
-			if (endDate <= startDate) {
-				throw new ValidationError('End date must be after start date')
-			}
 		}
 
-		if (typeof payload.price !== 'number' || payload.price < 0) {
-			throw new ValidationError('Price must be a non-negative number')
-		}
-
-		if (typeof payload.currency !== 'string') {
-			throw new ValidationError('Currency must be a string')
-		}
-
-		if (payload.currency.length > 10) {
-			throw new ValidationError('Currency must be less than 10 characters')
-		}
-
+		// image
 		if (!Array.isArray(payload.images)) {
 			throw new ValidationError('Images must be an array')
 		}
-
+		const formatImages: string[] = new Array(payload.images.length)
 		for (let i = 0; i < payload.images.length; i++) {
 			const image = payload.images[i]
-			if (typeof image !== 'string') {
-				throw new ValidationError(`Image ${i + 1} must be a string`)
-			}
-			try {
-				new URL(image)
-			} catch {
-				throw new ValidationError(`Image ${i + 1} must be a valid URL`)
-			}
+			const trimmedImage = validateUrlString(image, `Image ${i + 1}`)
+			formatImages[i] = trimmedImage
 		}
 
-		if (!payload.organizerId || typeof payload.organizerId !== 'string') {
-			throw new ValidationError('Organizer ID is required and must be a string')
-		}
-
-		// Validate location if provided
+		// location
+		let formatLocation: UpdateEventLocationItem | null = null
 		if (payload.location !== undefined && payload.location !== null) {
 			if (typeof payload.location !== 'object') {
 				throw new ValidationError('Location must be an object')
 			}
 
-			if (
-				!payload.location.buildingName ||
-				typeof payload.location.buildingName !== 'string'
-			) {
-				throw new ValidationError(
-					'Location buildingName is required and must be a string'
-				)
-			}
-			if (payload.location.buildingName.trim().length === 0) {
-				throw new ValidationError('Location buildingName cannot be empty')
-			}
-			if (payload.location.buildingName.length > 200) {
-				throw new ValidationError(
-					'Location buildingName must be less than 200 characters'
-				)
-			}
+			// location buildingName
+			const trimmedBuildingName = validateRequiredString(
+				payload.location.buildingName,
+				'Location buildingName',
+				200
+			)
 
-			if (
-				!payload.location.address ||
-				typeof payload.location.address !== 'string'
-			) {
-				throw new ValidationError(
-					'Location address is required and must be a string'
-				)
-			}
-			if (payload.location.address.trim().length === 0) {
-				throw new ValidationError('Location address cannot be empty')
-			}
-			if (payload.location.address.length > 500) {
-				throw new ValidationError(
-					'Location address must be less than 500 characters'
-				)
-			}
+			// location address
+			const trimmedAddress = validateOptionalString(
+				payload.location.address,
+				'Location address',
+				500
+			)
 
-			if (!payload.location.city || typeof payload.location.city !== 'string') {
-				throw new ValidationError(
-					'Location city is required and must be a string'
-				)
-			}
-			if (payload.location.city.trim().length === 0) {
-				throw new ValidationError('Location city cannot be empty')
-			}
-			if (payload.location.city.length > 100) {
-				throw new ValidationError(
-					'Location city must be less than 100 characters'
-				)
-			}
+			// location city
+			const trimmedCity = validateOptionalString(
+				payload.location.city,
+				'Location city',
+				100
+			)
 
-			if (
-				!payload.location.googleMapsUrl ||
-				typeof payload.location.googleMapsUrl !== 'string'
-			) {
-				throw new ValidationError(
-					'Location googleMapsUrl is required and must be a string'
-				)
-			}
-			if (payload.location.googleMapsUrl.trim().length === 0) {
-				throw new ValidationError('Location googleMapsUrl cannot be empty')
-			}
-			try {
-				new URL(payload.location.googleMapsUrl)
-			} catch {
-				throw new ValidationError('Location googleMapsUrl must be a valid URL')
-			}
-			if (payload.location.googleMapsUrl.length > 1000) {
-				throw new ValidationError(
-					'Location googleMapsUrl must be less than 1000 characters'
-				)
-			}
+			// location googleMapsUrl
+			const trimmedGoogleMapsUrl = validateUrlString(
+				payload.location.googleMapsUrl,
+				'Location googleMapsUrl',
+				1000
+			)
 
 			// Normalize location
-			payload.location = {
-				buildingName: payload.location.buildingName.trim(),
-				address: payload.location.address.trim(),
-				city: payload.location.city.trim(),
-				googleMapsUrl: payload.location.googleMapsUrl.trim(),
+			formatLocation = {
+				buildingName: trimmedBuildingName,
+				address: trimmedAddress,
+				city: trimmedCity,
+				googleMapsUrl: trimmedGoogleMapsUrl,
 			}
 		}
 
+		// website
 		if (!Array.isArray(payload.websites)) {
 			throw new ValidationError('Websites must be an array')
 		}
-
-		const validWebsiteTypes = [
-			'facebook',
-			'youtube',
-			'twitter',
-			'linkedin',
-			'instagram',
-			'other',
-		]
+		const formatWebsites: UpdateEventWebsiteItem[] = new Array(
+			payload.websites.length
+		)
 
 		for (let i = 0; i < payload.websites.length; i++) {
 			const website = payload.websites[i]
 
-			if (!website.url || typeof website.url !== 'string') {
-				throw new ValidationError(
-					`Website item ${i + 1}: url is required and must be a string`
-				)
-			}
+			// website url
+			const websiteUrl = validateUrlString(
+				website.url,
+				`Website item ${i + 1}: url`,
+				1000
+			)
 
-			try {
-				new URL(website.url)
-			} catch {
-				throw new ValidationError(
-					`Website item ${i + 1}: url must be a valid URL`
-				)
-			}
+			// website display text
+			const trimmedWebsiteDisplayText = validateOptionalString(
+				website.displayText,
+				`Website item ${i + 1}: displayText`,
+				100
+			)
 
-			if (website.url.length > 1000) {
-				throw new ValidationError(
-					`Website item ${i + 1}: url must be less than 1000 characters`
-				)
-			}
+			// website type
+			const websiteType = validateOneOfString(
+				website.type,
+				validWebsiteTypes,
+				`Website item ${i + 1}: type`
+			)
 
-			if (!website.displayText || typeof website.displayText !== 'string') {
-				throw new ValidationError(
-					`Website item ${i + 1}: displayText is required and must be a string`
-				)
-			}
-
-			if (website.displayText.trim().length === 0) {
-				throw new ValidationError(
-					`Website item ${i + 1}: displayText cannot be empty`
-				)
-			}
-
-			if (website.displayText.length > 200) {
-				throw new ValidationError(
-					`Website item ${i + 1}: displayText must be less than 200 characters`
-				)
-			}
-
-			if (!website.type || typeof website.type !== 'string') {
-				throw new ValidationError(
-					`Website item ${i + 1}: type is required and must be a string`
-				)
-			}
-
-			if (!validWebsiteTypes.includes(website.type.toLowerCase())) {
-				throw new ValidationError(
-					`Website item ${i + 1}: type must be one of: ${validWebsiteTypes.join(', ')}`
-				)
+			formatWebsites[i] = {
+				url: websiteUrl,
+				displayText: trimmedWebsiteDisplayText,
+				type: websiteType,
 			}
 		}
 
+		// section
 		if (!Array.isArray(payload.sections)) {
 			throw new ValidationError('Sections must be an array')
 		}
+		const formatSections: UpdateEventSectionItem[] = new Array(
+			payload.sections.length
+		)
 
 		for (let i = 0; i < payload.sections.length; i++) {
 			const section = payload.sections[i]
 
-			if (!section.sectionName || typeof section.sectionName !== 'string') {
-				throw new ValidationError(
-					`Section ${i + 1}: sectionName is required and must be a string`
-				)
-			}
+			// section sectionName
+			const trimmedSectionName = validateRequiredString(
+				section.sectionName,
+				`Section ${i + 1}: sectionName`,
+				200
+			)
 
-			if (section.sectionName.trim().length === 0) {
-				throw new ValidationError(
-					`Section ${i + 1}: sectionName cannot be empty`
-				)
-			}
+			// section startTime and endTime
+			const [sectionStartTime, sectionEndTime] = validateStartTimeEndTime(
+				section.startTime,
+				section.endTime
+			)
 
-			if (section.sectionName.length > 200) {
-				throw new ValidationError(
-					`Section ${i + 1}: sectionName must be less than 200 characters`
-				)
-			}
+			// section spot
+			const trimmedSectionSpot = validateOptionalString(
+				section.spot,
+				`Section ${i + 1}: spot`,
+				200
+			)
 
-			let sectionStartTime: Date | null = null
-			if (section.startTime !== null && section.startTime !== undefined) {
-				if (
-					!(
-						section.startTime instanceof Date ||
-						typeof section.startTime === 'string'
-					)
-				) {
-					throw new ValidationError(
-						`Section ${i + 1}: startTime must be a valid date or null`
-					)
-				}
-				sectionStartTime = new Date(section.startTime)
-				if (isNaN(sectionStartTime.getTime())) {
-					throw new ValidationError(
-						`Section ${i + 1}: startTime must be a valid date`
-					)
-				}
-			}
+			// section description
+			const trimmedSectionDescription = validateOptionalString(
+				section.description,
+				`Section ${i + 1}: description`,
+				2000
+			)
 
-			let sectionEndTime: Date | null = null
-			if (section.endTime !== null && section.endTime !== undefined) {
-				if (
-					!(
-						section.endTime instanceof Date ||
-						typeof section.endTime === 'string'
-					)
-				) {
-					throw new ValidationError(
-						`Section ${i + 1}: endTime must be a valid date or null`
-					)
-				}
-				sectionEndTime = new Date(section.endTime)
-				if (isNaN(sectionEndTime.getTime())) {
-					throw new ValidationError(
-						`Section ${i + 1}: endTime must be a valid date`
-					)
-				}
-			}
-
-			if (
-				sectionStartTime !== null &&
-				sectionEndTime !== null &&
-				sectionEndTime <= sectionStartTime
-			) {
-				throw new ValidationError(
-					`Section ${i + 1}: endTime must be after startTime`
-				)
-			}
-
-			if (!section.spot || typeof section.spot !== 'string') {
-				throw new ValidationError(
-					`Section ${i + 1}: spot is required and must be a string`
-				)
-			}
-
-			if (section.spot.trim().length === 0) {
-				throw new ValidationError(`Section ${i + 1}: spot cannot be empty`)
-			}
-
-			if (section.spot.length > 200) {
-				throw new ValidationError(
-					`Section ${i + 1}: spot must be less than 200 characters`
-				)
-			}
-
-			if (!section.description || typeof section.description !== 'string') {
-				throw new ValidationError(
-					`Section ${i + 1}: description is required and must be a string`
-				)
-			}
-
-			if (section.description.length > 2000) {
-				throw new ValidationError(
-					`Section ${i + 1}: description must be less than 2000 characters`
-				)
-			}
-
+			// section participants
+			let sectionParticipantIds: string[] = []
 			if (!Array.isArray(section.participantIds)) {
 				throw new ValidationError(
-					`Section ${i + 1}: participantIds must be an array`
+					`Section ${trimmedSectionName}: participantIds must be an array`
 				)
 			}
 
 			for (let j = 0; j < section.participantIds.length; j++) {
-				if (typeof section.participantIds[j] !== 'string') {
-					throw new ValidationError(
-						`Section ${i + 1}, participant ${j + 1}: participantId must be a string`
-					)
-				}
+				sectionParticipantIds[j] = validateRequiredString(
+					section.participantIds[j],
+					`Section ${trimmedSectionName}, participant ${j + 1}`,
+					100
+				)
+			}
+
+			formatSections[i] = {
+				sectionName: trimmedSectionName,
+				startTime: sectionStartTime,
+				endTime: sectionEndTime,
+				spot: trimmedSectionSpot,
+				description: trimmedSectionDescription,
+				participantIds: sectionParticipantIds,
 			}
 		}
+
+		// organizerId
+		const trimmedOrganizerId = validateRequiredString(
+			payload.organizerId,
+			'Organizer ID',
+			100
+		)
 
 		// Normalize payload
 		payload.name = trimmedName
 		payload.description = trimmedDescription
 		payload.startDate = startDate
 		payload.endDate = endDate
-		payload.currency = payload.currency.trim().toUpperCase()
-		payload.websites = payload.websites.map((website) => ({
-			url: website.url.trim(),
-			displayText: website.displayText.trim(),
-			type: website.type.toLowerCase(),
-		}))
-		payload.sections = payload.sections.map((section) => ({
-			sectionName: section.sectionName.trim(),
-			startTime:
-				section.startTime !== null && section.startTime !== undefined
-					? new Date(section.startTime)
-					: null,
-			endTime:
-				section.endTime !== null && section.endTime !== undefined
-					? new Date(section.endTime)
-					: null,
-			spot: section.spot.trim(),
-			description: section.description.trim(),
-			participantIds: section.participantIds,
-		}))
+		payload.images = formatImages
+		payload.organizerId = trimmedOrganizerId
+		payload.register = formatRegister
+		payload.location = formatLocation
+		payload.websites = formatWebsites
+		payload.sections = formatSections
 
 		return new UpdateEvent(payload, user)
 	}
@@ -470,12 +329,35 @@ export class UpdateEvent extends ApiController<
 		}
 
 		try {
+			// Validate ID
+			if (!this.payload.id || typeof this.payload.id !== 'string') {
+				throw new ValidationError('ID is required and must be a string')
+			}
+
+			// Validate organizerId
+			if (
+				!this.payload.organizerId ||
+				typeof this.payload.organizerId !== 'string'
+			) {
+				throw new ValidationError(
+					'Organizer ID is required and must be a string'
+				)
+			}
+			const organizerExists = await prisma.organizer.findUnique({
+				where: { id: this.payload.organizerId, activeFlag: 'A' },
+				select: { id: true },
+			})
+			if (!organizerExists) {
+				throw new ValidationError('Organizer not found')
+			}
+
 			// Get existing event
-			const existingEvent = await prisma.event.findUnique({
+			const existingEvent = (await prisma.event.findUnique({
 				where: {
 					id: this.payload.id,
 				},
 				include: {
+					register: true,
 					websites: true,
 					sections: {
 						include: {
@@ -483,7 +365,7 @@ export class UpdateEvent extends ApiController<
 						},
 					},
 				},
-			})
+			})) as any
 
 			if (!existingEvent) {
 				throw new NotFoundError('Event not found')
@@ -493,14 +375,14 @@ export class UpdateEvent extends ApiController<
 				throw new NotFoundError('Event not found')
 			}
 
-			// Create location first if provided
+			// Update location first if provided
 			let locationId: string | null = existingEvent.locationId
 			if (this.payload.location) {
 				const location = await prisma.location.create({
 					data: {
 						buildingName: this.payload.location.buildingName,
-						address: this.payload.location.address,
-						city: this.payload.location.city,
+						address: this.payload.location.address as any,
+						city: this.payload.location.city as any,
 						googleMapsUrl: this.payload.location.googleMapsUrl,
 						activeFlag: 'A',
 						updatedByUid: this.user.uid,
@@ -516,35 +398,42 @@ export class UpdateEvent extends ApiController<
 					description: existingEvent.description,
 					startDate: existingEvent.startDate,
 					endDate: existingEvent.endDate,
-					price: existingEvent.price,
-					currency: existingEvent.currency,
 					images: existingEvent.images,
 					organizerId: existingEvent.organizerId,
 					locationId: existingEvent.locationId,
 					activeFlag: 'R',
 					updatedByUid: this.user.uid,
+					register: existingEvent.register
+						? {
+								create: {
+									price: existingEvent.register.price,
+									currency: existingEvent.register.currency,
+									registerUrl: existingEvent.register.registerUrl,
+								},
+							}
+						: undefined,
 					websites: {
-						create: existingEvent.websites.map((website) => ({
+						create: existingEvent.websites.map((website: any) => ({
 							url: website.url,
 							displayText: website.displayText,
 							type: website.type,
 						})),
 					},
 					sections: {
-						create: existingEvent.sections.map((section) => ({
+						create: existingEvent.sections.map((section: any) => ({
 							sectionName: section.sectionName,
 							startTime: section.startTime,
 							endTime: section.endTime,
 							spot: section.spot,
 							description: section.description,
 							participants: {
-								create: section.participants.map((participant) => ({
+								create: section.participants.map((participant: any) => ({
 									bitcoinerId: participant.bitcoinerId,
 								})),
 							},
 						})),
 					},
-				},
+				} as any,
 			})
 
 			// Step 2: Edit the original item to be new details
@@ -557,19 +446,26 @@ export class UpdateEvent extends ApiController<
 					name: this.payload.name,
 					description: this.payload.description,
 					startDate: this.payload.startDate,
-					endDate: this.payload.endDate ?? null,
-					price: this.payload.price,
-					currency: this.payload.currency,
+					endDate: this.payload.endDate || null,
 					images: this.payload.images,
 					organizerId: this.payload.organizerId,
 					locationId,
 					activeFlag: 'A',
 					updatedByUid: this.user.uid,
+					register: this.payload.register
+						? {
+								create: {
+									price: this.payload.register.price || null,
+									currency: this.payload.register.currency || null,
+									registerUrl: this.payload.register.registerUrl || null,
+								},
+							}
+						: undefined,
 					websites: {
 						deleteMany: {},
 						create: this.payload.websites.map((website) => ({
 							url: website.url,
-							displayText: website.displayText,
+							displayText: website.displayText || null,
 							type: website.type,
 						})),
 					},
@@ -577,10 +473,10 @@ export class UpdateEvent extends ApiController<
 						deleteMany: {},
 						create: this.payload.sections.map((section) => ({
 							sectionName: section.sectionName,
-							startTime: section.startTime ?? null,
-							endTime: section.endTime ?? null,
-							spot: section.spot,
-							description: section.description,
+							startTime: section.startTime || null,
+							endTime: section.endTime || null,
+							spot: section.spot || null,
+							description: section.description || null,
 							participants: {
 								create: section.participantIds.map((bitcoinerId) => ({
 									bitcoinerId,
@@ -588,7 +484,7 @@ export class UpdateEvent extends ApiController<
 							},
 						})),
 					},
-				},
+				} as any,
 			})
 
 			return {}

@@ -14,7 +14,6 @@
 		"type-check": "tsc --noEmit",
 		"clean": "rm -rf node_modules package-lock.json yarn.lock .next out dist",
 		"export": "next build && next export",
-		"db:backup": "tsx scripts/backup-db.ts",
 		"db:generate": "prisma generate",
 		"db:push": "prisma db push",
 		"db:reset": "prisma db push --force-reset"

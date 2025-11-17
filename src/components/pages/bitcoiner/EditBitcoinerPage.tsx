@@ -2,8 +2,11 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useToast } from '@/contexts/ToastContext'
 import { useBitcoiner } from '@/hooks/useBitcoiner'
 import { UpdateBitcoinerRequest } from '@/types/bitcoiner'
+
+import { useEffect } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -21,14 +24,22 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 	const router = useRouter()
 	const { bitcoiner, loading, error, updateBitcoiner } =
 		useBitcoiner(bitcoinerId)
+	const { showError } = useToast()
+
+	useEffect(() => {
+		if (error) {
+			showError(error)
+		}
+	}, [error, showError])
 
 	const handleSubmit = async (data: Omit<UpdateBitcoinerRequest, 'id'>) => {
 		try {
 			await updateBitcoiner(data)
 			router.push(`/bitcoiner/${bitcoinerId}`)
 		} catch (error) {
-			console.error('Error updating bitcoiner:', error)
-			alert('Failed to update bitcoiner')
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to update bitcoiner'
+			showError(errorMessage)
 		}
 	}
 
@@ -53,29 +64,7 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 		)
 	}
 
-	if (error) {
-		return (
-			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="max-w-2xl mx-auto">
-						<div className="flex items-center justify-center min-h-[400px]">
-							<div className="text-center">
-								<h2 className="text-2xl font-bold text-destructive mb-4">
-									Something went wrong
-								</h2>
-								<p className="text-muted-foreground mb-4">{error}</p>
-								<Button onClick={() => router.push('/bitcoiner')}>
-									Back to Bitcoiners
-								</Button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-	if (!bitcoiner) {
+	if (!bitcoiner && !loading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
@@ -98,6 +87,10 @@ export const EditBitcoinerPage: React.FC<EditBitcoinerPageProps> = ({
 				</div>
 			</div>
 		)
+	}
+
+	if (!bitcoiner) {
+		return null
 	}
 
 	return (

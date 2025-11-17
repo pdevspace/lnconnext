@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
+import { useToast } from '@/contexts/ToastContext'
 import { useBitcoiners } from '@/hooks/useBitcoiner'
 import { CreateBitcoinerRequest } from '@/types/bitcoiner'
 
@@ -20,6 +21,7 @@ import { BitcoinerForm } from './BitcoinerForm'
 export const CreateBitcoinerPage: React.FC = () => {
 	const router = useRouter()
 	const { createBitcoiner, loading } = useBitcoiners()
+	const { showError } = useToast()
 
 	const handleSubmit = async (data: CreateBitcoinerRequest) => {
 		try {
@@ -27,8 +29,9 @@ export const CreateBitcoinerPage: React.FC = () => {
 			// After creation, the list will refresh and we can navigate
 			router.push('/bitcoiner')
 		} catch (error) {
-			console.error('Error creating bitcoiner:', error)
-			alert('Failed to create bitcoiner')
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to create bitcoiner'
+			showError(errorMessage)
 		}
 	}
 

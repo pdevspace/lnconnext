@@ -20,7 +20,7 @@ model User {
 	uid String @unique // Firebase auth uid
 	email String
 	emailVerified Boolean @default(false)
-	role String // 'editor' or ''
+	role String // 'editor' or 'viewer'
 	lastLoginAt DateTime?
 	updatedAt DateTime @updatedAt
 	activeFlag String @default("A") // 'A' or 'R'
@@ -38,7 +38,7 @@ model User {
 model Bitcoiner {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
 	name String
-	bio String
+	bio String?
 	updatedAt DateTime @updatedAt
 	updatedByUid String
 	updatedBy User @relation(fields: [updatedByUid], references: [uid], onDelete: Restrict)
@@ -55,7 +55,7 @@ model Bitcoiner {
 
 model BitcoinerSocialMedia {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
-	displayText String
+	displayText String?
 	platform String
 	urlLink String
 	ownerId String @db.ObjectId
@@ -69,8 +69,8 @@ model BitcoinerSocialMedia {
 model Organizer {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
 	name String
-	bio String
-	website String
+	bio String?
+	website String?
 	updatedAt DateTime @updatedAt
 	updatedByUid String
 	updatedBy User @relation(fields: [updatedByUid], references: [uid], onDelete: Restrict)
@@ -86,7 +86,7 @@ model Organizer {
 
 model OrganizerSocialMedia {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
-	displayText String
+	displayText String?
 	platform String
 	urlLink String
 	ownerId String @db.ObjectId
@@ -100,11 +100,9 @@ model OrganizerSocialMedia {
 model Event {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
 	name String
-	description String
+	description String? // can be null
 	startDate DateTime
 	endDate DateTime?
-	price Float @default(0)
-	currency String
 	images String[]
 	updatedAt DateTime @updatedAt
 	updatedByUid String
@@ -120,6 +118,7 @@ model Event {
 
 	sections EventSection[]
 	websites Website[] @relation("EventWebsites")
+	register EventRegister?
 
 	@@map("events")
 }
@@ -127,8 +126,8 @@ model Event {
 model Location {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
 	buildingName String
-	address String
-	city String
+	address String? // can be null
+	city String? // can be null
 	googleMapsUrl String
 	updatedAt DateTime @updatedAt
 	updatedByUid String
@@ -146,8 +145,8 @@ model EventSection {
 	sectionName String
 	startTime DateTime?
 	endTime DateTime?
-	spot String
-	description String
+	spot String? // can be null
+	description String? // can be null
 
 	// Relations
 	eventId String @db.ObjectId
@@ -170,10 +169,23 @@ model SectionBitcoiner {
 	@@map("section_bitcoiners")
 }
 
+model EventRegister {
+	id String @id @default(auto()) @map("_id") @db.ObjectId
+	price Float?
+	currency String?
+	registerUrl String?
+
+	// Relations
+	eventId String @unique @db.ObjectId
+	event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+	@@map("event_registers")
+}
+
 model Website {
 	id String @id @default(auto()) @map("_id") @db.ObjectId
 	url String
-	displayText String
+	displayText String?
 	type String // 'facebook', 'youtube', 'twitter', 'linkedin', 'instagram', 'other'
 	activeFlag String @default("A") // 'A' or 'R'
 

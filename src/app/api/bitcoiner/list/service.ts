@@ -115,7 +115,7 @@ export class ListBitcoiner extends ApiController<
 					name: bitcoiner.name,
 					socialMedia: bitcoiner.socialMedia.map((sm) => ({
 						id: sm.id,
-						displayText: sm.displayText,
+						displayText: sm.displayText || '',
 						platform: sm.platform,
 						urlLink: sm.urlLink,
 					})),

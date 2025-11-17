@@ -84,10 +84,10 @@ export class GetBitcoiner extends ApiController<
 			return {
 				id: bitcoiner.id,
 				name: bitcoiner.name,
-				bio: bitcoiner.bio,
+				bio: bitcoiner.bio || '',
 				socialMedia: bitcoiner.socialMedia.map((sm) => ({
 					id: sm.id,
-					displayText: sm.displayText,
+					displayText: sm.displayText || '',
 					platform: sm.platform,
 					urlLink: sm.urlLink,
 				})),

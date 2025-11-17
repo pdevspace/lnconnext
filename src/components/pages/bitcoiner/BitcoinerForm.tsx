@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useOrganizers } from '@/hooks/useOrganizer'
 import {
 	Bitcoiner,
+	CreateBitcoinerRequest,
 	CreateBitcoinerSocialMediaItem,
 	UpdateBitcoinerRequest,
 } from '@/types/bitcoiner'
@@ -28,14 +29,7 @@ import { ExternalLink, Loader2, Plus, Share2, Trash2 } from 'lucide-react'
 interface BitcoinerFormProps {
 	bitcoiner?: Bitcoiner
 	onSubmit: (
-		data:
-			| Omit<UpdateBitcoinerRequest, 'id'>
-			| {
-					name: string
-					bio: string
-					socialMedia: CreateBitcoinerSocialMediaItem[]
-					organizerId?: string
-			  }
+		data: Omit<UpdateBitcoinerRequest, 'id'> | CreateBitcoinerRequest
 	) => void
 	onCancel: () => void
 	isLoading?: boolean
@@ -69,7 +63,7 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 		socialMedia:
 			bitcoiner?.socialMedia.map((sm) => ({
 				id: sm.id,
-				displayText: sm.displayText,
+				displayText: sm.displayText || '',
 				platform: sm.platform,
 				urlLink: sm.urlLink,
 			})) || [],
@@ -119,44 +113,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 
-		// Clear previous errors
-		setErrors({})
-
-		// Basic validation
-		if (!formData.name.trim()) {
-			setErrors({ name: 'Name is required' })
-			return
-		}
-
-		if (!formData.bio.trim()) {
-			setErrors({ bio: 'Bio is required' })
-			return
-		}
-
-		// Validate social media
-		const socialMediaErrors: Record<string, string> = {}
-		formData.socialMedia.forEach((social, index) => {
-			if (!social.displayText.trim()) {
-				socialMediaErrors[`social-${index}-displayText`] =
-					'Display text is required'
-			}
-			if (!social.urlLink.trim()) {
-				socialMediaErrors[`social-${index}-urlLink`] = 'URL is required'
-			} else {
-				try {
-					new URL(social.urlLink)
-				} catch {
-					socialMediaErrors[`social-${index}-urlLink`] = 'Invalid URL format'
-				}
-			}
-		})
-
-		if (Object.keys(socialMediaErrors).length > 0) {
-			setErrors(socialMediaErrors)
-			return
-		}
-
-		// Format data for API
 		const submitData = {
 			name: formData.name.trim(),
 			bio: formData.bio.trim(),
@@ -165,7 +121,7 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 				platform: social.platform,
 				urlLink: social.urlLink.trim(),
 			})),
-			...(formData.organizerId && { organizerId: formData.organizerId }),
+			organizerId: formData.organizerId,
 		}
 
 		onSubmit(submitData)
@@ -194,14 +150,13 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 			{/* Bio Field */}
 			<div>
 				<Label htmlFor="bio" className="text-sm font-medium">
-					Bio *
+					Bio
 				</Label>
 				<Textarea
 					id="bio"
 					value={formData.bio}
 					onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-					placeholder="Enter bitcoiner bio"
-					required
+					placeholder="Enter bitcoiner bio (optional)"
 					className="mt-1 min-h-[100px]"
 					rows={4}
 				/>
@@ -309,7 +264,7 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 
 								<div>
 									<Label htmlFor={`displayText-${index}`} className="text-xs">
-										Display Text *
+										Display Text
 									</Label>
 									<Input
 										id={`displayText-${index}`}
@@ -317,6 +272,7 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 										onChange={(e) =>
 											updateSocialMedia(index, 'displayText', e.target.value)
 										}
+										placeholder="Optional display text"
 										className="mt-1"
 									/>
 									{errors[`social-${index}-displayText`] && (
@@ -387,10 +343,7 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 				>
 					Cancel
 				</Button>
-				<Button
-					type="submit"
-					disabled={isLoading || !formData.name.trim() || !formData.bio.trim()}
-				>
+				<Button type="submit" disabled={isLoading || !formData.name.trim()}>
 					{isLoading ? (
 						<>
 							<Loader2 className="w-4 h-4 mr-2 animate-spin" />

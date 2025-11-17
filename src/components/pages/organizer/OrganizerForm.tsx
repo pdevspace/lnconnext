@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import {
+	CreateOrganizerRequest,
 	CreateOrganizerSocialMediaItem,
 	Organizer,
 	UpdateOrganizerRequest,
@@ -25,14 +26,7 @@ import { Loader2, Plus, Share2, Trash2 } from 'lucide-react'
 interface OrganizerFormProps {
 	organizer?: Organizer
 	onSubmit: (
-		data:
-			| Omit<UpdateOrganizerRequest, 'id'>
-			| {
-					name: string
-					bio: string
-					website: string
-					socialMedia: CreateOrganizerSocialMediaItem[]
-			  }
+		data: Omit<UpdateOrganizerRequest, 'id'> | CreateOrganizerRequest
 	) => void
 	onCancel: () => void
 	isLoading?: boolean
@@ -65,7 +59,7 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 		socialMedia:
 			organizer?.socialMedia.map((sm) => ({
 				id: sm.id,
-				displayText: sm.displayText,
+				displayText: sm.displayText || '',
 				platform: sm.platform,
 				urlLink: sm.urlLink,
 			})) || [],
@@ -110,57 +104,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 
-		// Clear previous errors
-		setErrors({})
-
-		// Basic validation
-		if (!formData.name.trim()) {
-			setErrors({ name: 'Name is required' })
-			return
-		}
-
-		if (!formData.bio.trim()) {
-			setErrors({ bio: 'Bio is required' })
-			return
-		}
-
-		if (!formData.website.trim()) {
-			setErrors({ website: 'Website is required' })
-			return
-		}
-
-		// Validate website URL
-		try {
-			new URL(formData.website)
-		} catch {
-			setErrors({ website: 'Invalid URL format' })
-			return
-		}
-
-		// Validate social media
-		const socialMediaErrors: Record<string, string> = {}
-		formData.socialMedia.forEach((social, index) => {
-			if (!social.displayText.trim()) {
-				socialMediaErrors[`social-${index}-displayText`] =
-					'Display text is required'
-			}
-			if (!social.urlLink.trim()) {
-				socialMediaErrors[`social-${index}-urlLink`] = 'URL is required'
-			} else {
-				try {
-					new URL(social.urlLink)
-				} catch {
-					socialMediaErrors[`social-${index}-urlLink`] = 'Invalid URL format'
-				}
-			}
-		})
-
-		if (Object.keys(socialMediaErrors).length > 0) {
-			setErrors(socialMediaErrors)
-			return
-		}
-
-		// Format data for API
 		const submitData = {
 			name: formData.name.trim(),
 			bio: formData.bio.trim(),
@@ -198,14 +141,13 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 			{/* Bio Field */}
 			<div>
 				<Label htmlFor="bio" className="text-sm font-medium">
-					Bio *
+					Bio
 				</Label>
 				<Textarea
 					id="bio"
 					value={formData.bio}
 					onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-					placeholder="Enter organizer bio"
-					required
+					placeholder="Enter organizer bio (optional)"
 					className="mt-1 min-h-[100px]"
 					rows={4}
 				/>
@@ -217,7 +159,7 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 			{/* Website Field */}
 			<div>
 				<Label htmlFor="website" className="text-sm font-medium">
-					Website *
+					Website
 				</Label>
 				<Input
 					id="website"
@@ -225,8 +167,7 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 					onChange={(e) =>
 						setFormData({ ...formData, website: e.target.value })
 					}
-					placeholder="https://example.com"
-					required
+					placeholder="https://example.com (optional)"
 					className="mt-1"
 				/>
 				{errors.website && (
@@ -279,7 +220,7 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 
 								<div>
 									<Label htmlFor={`displayText-${index}`} className="text-xs">
-										Display Text *
+										Display Text
 									</Label>
 									<Input
 										id={`displayText-${index}`}
@@ -287,6 +228,7 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 										onChange={(e) =>
 											updateSocialMedia(index, 'displayText', e.target.value)
 										}
+										placeholder="Optional display text"
 										className="mt-1"
 									/>
 									{errors[`social-${index}-displayText`] && (
@@ -357,15 +299,7 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 				>
 					Cancel
 				</Button>
-				<Button
-					type="submit"
-					disabled={
-						isLoading ||
-						!formData.name.trim() ||
-						!formData.bio.trim() ||
-						!formData.website.trim()
-					}
-				>
+				<Button type="submit" disabled={isLoading || !formData.name.trim()}>
 					{isLoading ? (
 						<>
 							<Loader2 className="w-4 h-4 mr-2 animate-spin" />

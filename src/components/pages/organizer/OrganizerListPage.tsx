@@ -1,11 +1,12 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/contexts/ToastContext'
 import { useOrganizers } from '@/hooks/useOrganizer'
 import { useIsEditor } from '@/hooks/useUser'
 import { ListOrganizerRequest } from '@/types/organizer'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -16,6 +17,7 @@ import { OrganizerCard } from './OrganizerCard'
 export function OrganizerListPage() {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
+	const { showError } = useToast()
 	const [filters, setFilters] = useState<ListOrganizerRequest['filters']>({
 		searchTerm: '',
 		selectedPlatform: '',
@@ -23,23 +25,11 @@ export function OrganizerListPage() {
 
 	const { organizers, loading, error, fetchOrganizers } = useOrganizers(filters)
 
-	if (error) {
-		return (
-			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="flex items-center justify-center min-h-[400px]">
-						<div className="text-center">
-							<h2 className="text-2xl font-bold text-destructive mb-4">
-								Something went wrong
-							</h2>
-							<p className="text-muted-foreground mb-4">{error}</p>
-							<Button onClick={() => fetchOrganizers()}>Try again</Button>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
+	useEffect(() => {
+		if (error) {
+			showError(error)
+		}
+	}, [error, showError])
 
 	return (
 		<div className="h-screen overflow-y-auto bg-background">

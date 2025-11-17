@@ -115,7 +115,7 @@ export class ListOrganizer extends ApiController<
 					name: organizer.name,
 					socialMedia: organizer.socialMedia.map((sm) => ({
 						id: sm.id,
-						displayText: sm.displayText,
+						displayText: sm.displayText || '',
 						platform: sm.platform,
 						urlLink: sm.urlLink,
 					})),

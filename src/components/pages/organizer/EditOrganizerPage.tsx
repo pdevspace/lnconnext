@@ -2,10 +2,13 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useToast } from '@/contexts/ToastContext'
 import { useOrganizer } from '@/hooks/useOrganizer'
 import { UpdateOrganizerRequest } from '@/types/organizer'
 
 import { useRouter } from 'next/navigation'
+
+import { useEffect } from 'react'
 
 import { ArrowLeft } from 'lucide-react'
 
@@ -21,14 +24,22 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 	const router = useRouter()
 	const { organizer, loading, error, updateOrganizer } =
 		useOrganizer(organizerId)
+	const { showError } = useToast()
+
+	useEffect(() => {
+		if (error) {
+			showError(error)
+		}
+	}, [error, showError])
 
 	const handleSubmit = async (data: Omit<UpdateOrganizerRequest, 'id'>) => {
 		try {
 			await updateOrganizer(data)
 			router.push(`/organizer/${organizerId}`)
 		} catch (error) {
-			console.error('Error updating organizer:', error)
-			alert('Failed to update organizer')
+			const errorMessage =
+				error instanceof Error ? error.message : 'Failed to update organizer'
+			showError(errorMessage)
 		}
 	}
 
@@ -53,29 +64,7 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 		)
 	}
 
-	if (error) {
-		return (
-			<div className="min-h-screen bg-background">
-				<div className="container mx-auto px-4 py-8">
-					<div className="max-w-2xl mx-auto">
-						<div className="flex items-center justify-center min-h-[400px]">
-							<div className="text-center">
-								<h2 className="text-2xl font-bold text-destructive mb-4">
-									Something went wrong
-								</h2>
-								<p className="text-muted-foreground mb-4">{error}</p>
-								<Button onClick={() => router.push('/organizer')}>
-									Back to Organizers
-								</Button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-	if (!organizer) {
+	if (!organizer && !loading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
@@ -98,6 +87,10 @@ export const EditOrganizerPage: React.FC<EditOrganizerPageProps> = ({
 				</div>
 			</div>
 		)
+	}
+
+	if (!organizer) {
+		return null
 	}
 
 	return (
