@@ -1,6 +1,10 @@
 import { ApiResponse } from '@/types/api'
 import { auth } from '@/utils/firebaseConfig'
 
+// Helper to get base URL for server-side requests
+export function getBaseUrl(): string {
+	return process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'
+}
 /**
  * Get Firebase auth token for API requests
  */

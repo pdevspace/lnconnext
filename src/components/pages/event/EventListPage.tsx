@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/contexts/ToastContext'
 import { useEvents } from '@/hooks/useEvent'
 import { useIsEditor } from '@/hooks/useUser'
-import { ListEventRequest } from '@/types/event'
+import { ListEventRequest, ListEventResponse } from '@/types/event'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -14,7 +14,11 @@ import { Calendar, Plus } from 'lucide-react'
 
 import { EventCard } from './EventCard'
 
-export default function EventListPage() {
+interface EventListPageProps {
+	initialData?: ListEventResponse
+}
+
+export default function EventListPage({ initialData }: EventListPageProps) {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
 	const { showError } = useToast()
@@ -22,13 +26,49 @@ export default function EventListPage() {
 		searchTerm: '',
 	})
 
-	const { events, loading, error } = useEvents(filters)
+	// Check if initialData is empty or doesn't exist
+	const shouldUseHook = !initialData || initialData.events.length === 0
+
+	// Only call hook when initialData is missing or empty
+	// Pass enabled=false when initialData exists to prevent API calls
+	const {
+		events: hookEvents,
+		loading,
+		error,
+	} = useEvents(filters, shouldUseHook)
 
 	useEffect(() => {
 		if (error) {
 			showError(error)
 		}
 	}, [error, showError])
+
+	// Frontend filtering - filter the initialData on the client side
+	const filteredEvents = useMemo(() => {
+		// If using hook, return hook data directly (hook handles filtering server-side)
+		if (shouldUseHook) {
+			return hookEvents
+		}
+
+		// Otherwise, filter initialData on client side
+		if (!initialData?.events) {
+			return []
+		}
+
+		let filtered = [...initialData.events]
+
+		// Filter by search term (name)
+		if (filters?.searchTerm) {
+			const searchLower = filters.searchTerm.toLowerCase()
+			filtered = filtered.filter((event) =>
+				event.name.toLowerCase().includes(searchLower)
+			)
+		}
+
+		return filtered
+	}, [shouldUseHook, hookEvents, initialData?.events, filters?.searchTerm])
+
+	const events = filteredEvents
 
 	return (
 		<div className="h-screen overflow-y-auto bg-background">
@@ -89,7 +129,7 @@ export default function EventListPage() {
 					)}
 
 					{/* Events Grid */}
-					{!loading && (
+					{!loading && events.length > 0 && (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 							{events.map((event) => (
 								<EventCard key={event.id} event={event} />

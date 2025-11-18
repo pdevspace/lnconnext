@@ -3,10 +3,7 @@ import { prisma } from '@/api/prisma'
 import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const baseUrl =
-		process.env.NEXT_PUBLIC_URL ||
-		process.env.NEXT_PUBLIC_BASE_URL ||
-		'https://your-domain.com'
+	const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://your-domain.com'
 
 	try {
 		// Fetch all data in parallel

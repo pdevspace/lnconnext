@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/contexts/ToastContext'
 import { useBitcoiners } from '@/hooks/useBitcoiner'
 import { useIsEditor } from '@/hooks/useUser'
+import { ListBitcoinerResponse } from '@/types/bitcoiner'
 import { BitcoinerFilters } from '@/types/bitcoiner'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -15,7 +16,13 @@ import { Plus, Share2 } from 'lucide-react'
 import { BitcoinerCard } from './BitcoinerCard'
 import { BitcoinerFilters as BitcoinerFiltersComponent } from './BitcoinerFilters'
 
-export const BitcoinerListPage: React.FC = () => {
+interface BitcoinerListPageProps {
+	initialData?: ListBitcoinerResponse
+}
+
+export const BitcoinerListPage: React.FC<BitcoinerListPageProps> = ({
+	initialData,
+}) => {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
 	const { showError } = useToast()
@@ -24,13 +31,64 @@ export const BitcoinerListPage: React.FC = () => {
 		selectedPlatform: '',
 	})
 
-	const { bitcoiners, loading, error, fetchBitcoiners } = useBitcoiners(filters)
+	// Check if initialData is empty or doesn't exist
+	const shouldUseHook = !initialData || initialData.bitcoiners.length === 0
+
+	// Only call hook when initialData is missing or empty
+	// Pass enabled=false when initialData exists to prevent API calls
+	const {
+		bitcoiners: hookBitcoiners,
+		loading,
+		error,
+	} = useBitcoiners(filters, shouldUseHook)
 
 	useEffect(() => {
 		if (error) {
 			showError(error)
 		}
 	}, [error, showError])
+
+	// Frontend filtering - filter the initialData on the client side
+	const filteredBitcoiners = useMemo(() => {
+		// If using hook, return hook data directly (hook handles filtering server-side)
+		if (shouldUseHook) {
+			return hookBitcoiners
+		}
+
+		// Otherwise, filter initialData on client side
+		if (!initialData?.bitcoiners) {
+			return []
+		}
+
+		let filtered = [...initialData.bitcoiners]
+
+		// Filter by search term (name)
+		if (filters?.searchTerm) {
+			const searchLower = filters.searchTerm.toLowerCase()
+			filtered = filtered.filter((bitcoiner) =>
+				bitcoiner.name.toLowerCase().includes(searchLower)
+			)
+		}
+
+		// Filter by platform
+		if (filters?.selectedPlatform) {
+			filtered = filtered.filter((bitcoiner) =>
+				bitcoiner.socialMedia.some(
+					(sm) => sm.platform === filters.selectedPlatform
+				)
+			)
+		}
+
+		return filtered
+	}, [
+		shouldUseHook,
+		hookBitcoiners,
+		initialData?.bitcoiners,
+		filters?.searchTerm,
+		filters?.selectedPlatform,
+	])
+
+	const bitcoiners = filteredBitcoiners
 
 	return (
 		<div className="h-screen overflow-y-auto bg-background">
@@ -92,7 +150,7 @@ export const BitcoinerListPage: React.FC = () => {
 					)}
 
 					{/* Bitcoiners Grid */}
-					{!loading && (
+					{!loading && bitcoiners.length > 0 && (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 							{bitcoiners.map((bitcoiner) => (
 								<BitcoinerCard key={bitcoiner.id} bitcoiner={bitcoiner} />

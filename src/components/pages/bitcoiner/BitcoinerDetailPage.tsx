@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/contexts/ToastContext'
 import { useBitcoiner } from '@/hooks/useBitcoiner'
 import { useIsEditor } from '@/hooks/useUser'
+import { Bitcoiner } from '@/types/bitcoiner'
 
 import { useEffect } from 'react'
 
@@ -25,16 +26,30 @@ import { SocialMediaCard } from './SocialMediaCard'
 
 interface BitcoinerDetailPageProps {
 	bitcoinerId: string
+	initialData?: Bitcoiner
 }
 
 export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 	bitcoinerId,
+	initialData,
 }) => {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
 	const { showError } = useToast()
-	const { bitcoiner, loading, error, deleteBitcoiner } =
-		useBitcoiner(bitcoinerId)
+
+	// Use hook for mutations and refetching, but use initialData if provided
+	const {
+		bitcoiner: hookBitcoiner,
+		loading,
+		error,
+		deleteBitcoiner,
+	} = useBitcoiner(initialData ? undefined : bitcoinerId)
+
+	// Use initialData if provided, otherwise use hook data
+	const bitcoiner = initialData || hookBitcoiner
+
+	// Only show loading if we don't have initialData and are still loading
+	const isLoading = !initialData && loading
 
 	useEffect(() => {
 		if (error) {
@@ -58,7 +73,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 		}
 	}
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<div className="bg-background">
 				<div className="container mx-auto px-4 py-8">
@@ -80,7 +95,7 @@ export const BitcoinerDetailPage: React.FC<BitcoinerDetailPageProps> = ({
 		)
 	}
 
-	if (!bitcoiner && !loading) {
+	if (!bitcoiner && !isLoading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">

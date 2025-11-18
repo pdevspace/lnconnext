@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/contexts/ToastContext'
 import { useOrganizers } from '@/hooks/useOrganizer'
 import { useIsEditor } from '@/hooks/useUser'
-import { ListOrganizerRequest } from '@/types/organizer'
+import { ListOrganizerRequest, ListOrganizerResponse } from '@/types/organizer'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -14,7 +14,11 @@ import { Building2, Plus } from 'lucide-react'
 
 import { OrganizerCard } from './OrganizerCard'
 
-export function OrganizerListPage() {
+interface OrganizerListPageProps {
+	initialData?: ListOrganizerResponse
+}
+
+export function OrganizerListPage({ initialData }: OrganizerListPageProps) {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
 	const { showError } = useToast()
@@ -23,13 +27,64 @@ export function OrganizerListPage() {
 		selectedPlatform: '',
 	})
 
-	const { organizers, loading, error } = useOrganizers(filters)
+	// Check if initialData is empty or doesn't exist
+	const shouldUseHook = !initialData || initialData.organizers.length === 0
+
+	// Only call hook when initialData is missing or empty
+	// Pass enabled=false when initialData exists to prevent API calls
+	const {
+		organizers: hookOrganizers,
+		loading,
+		error,
+	} = useOrganizers(filters, shouldUseHook)
 
 	useEffect(() => {
 		if (error) {
 			showError(error)
 		}
 	}, [error, showError])
+
+	// Frontend filtering - filter the initialData on the client side
+	const filteredOrganizers = useMemo(() => {
+		// If using hook, return hook data directly (hook handles filtering server-side)
+		if (shouldUseHook) {
+			return hookOrganizers
+		}
+
+		// Otherwise, filter initialData on client side
+		if (!initialData?.organizers) {
+			return []
+		}
+
+		let filtered = [...initialData.organizers]
+
+		// Filter by search term (name)
+		if (filters?.searchTerm) {
+			const searchLower = filters.searchTerm.toLowerCase()
+			filtered = filtered.filter((organizer) =>
+				organizer.name.toLowerCase().includes(searchLower)
+			)
+		}
+
+		// Filter by platform
+		if (filters?.selectedPlatform) {
+			filtered = filtered.filter((organizer) =>
+				organizer.socialMedia.some(
+					(sm) => sm.platform === filters.selectedPlatform
+				)
+			)
+		}
+
+		return filtered
+	}, [
+		shouldUseHook,
+		hookOrganizers,
+		initialData?.organizers,
+		filters?.searchTerm,
+		filters?.selectedPlatform,
+	])
+
+	const organizers = filteredOrganizers
 
 	return (
 		<div className="h-screen overflow-y-auto bg-background">
@@ -111,7 +166,7 @@ export function OrganizerListPage() {
 					)}
 
 					{/* Organizers Grid */}
-					{!loading && (
+					{!loading && organizers.length > 0 && (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 							{organizers.map((organizer) => (
 								<OrganizerCard key={organizer.id} organizer={organizer} />

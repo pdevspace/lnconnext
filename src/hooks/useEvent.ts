@@ -136,13 +136,21 @@ export function useEvent(id?: string) {
 }
 
 // Multiple Events Hook
-export function useEvents(filters?: ListEventRequest['filters']) {
+export function useEvents(
+	filters?: ListEventRequest['filters'],
+	enabled: boolean = true
+) {
 	const [events, setEvents] = useState<ListEventItem[]>([])
 	const [total, setTotal] = useState(0)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	const fetchEvents = useCallback(async () => {
+		// Skip fetching if hook is disabled
+		if (!enabled) {
+			return
+		}
+
 		setLoading(true)
 		setError(null)
 
@@ -163,7 +171,7 @@ export function useEvents(filters?: ListEventRequest['filters']) {
 		} finally {
 			setLoading(false)
 		}
-	}, [filters])
+	}, [filters, enabled])
 
 	const createEvent = useCallback(
 		async (data: CreateEventRequest) => {

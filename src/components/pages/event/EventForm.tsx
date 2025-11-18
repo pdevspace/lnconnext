@@ -1306,15 +1306,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 							>
 								Cancel
 							</Button>
-							<Button
-								type="submit"
-								disabled={
-									isLoading ||
-									!formData.name.trim() ||
-									!formData.description.trim() ||
-									!formData.organizerId
-								}
-							>
+							<Button type="submit" disabled={isLoading}>
 								{isLoading ? (
 									<>
 										<Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -1553,7 +1545,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 								<div className="flex items-start gap-2 mt-1">
 									<div className="flex-1">
 										<Select
-											value={formData.organizerId}
+											value={formData.organizerId || undefined}
 											onValueChange={(value) =>
 												setFormData({ ...formData, organizerId: value })
 											}
@@ -2298,15 +2290,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 						>
 							Cancel
 						</Button>
-						<Button
-							type="submit"
-							disabled={
-								isLoading ||
-								!formData.name.trim() ||
-								!formData.description.trim() ||
-								!formData.organizerId
-							}
-						>
+						<Button type="submit" disabled={isLoading}>
 							{isLoading ? (
 								<>
 									<Loader2 className="w-4 h-4 mr-2 animate-spin" />

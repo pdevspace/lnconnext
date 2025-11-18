@@ -1,17 +1,33 @@
 'use client'
 
 import { useEvent } from '@/hooks/useEvent'
+import { Event } from '@/types/event'
 
 import { EventComponent } from './EventComponent'
 
 interface EventDetailPageProps {
 	eventId: string
+	initialData?: Event
 }
 
-export function EventDetailPage({ eventId }: EventDetailPageProps) {
-	const { event, loading, error } = useEvent(eventId)
+export function EventDetailPage({
+	eventId,
+	initialData,
+}: EventDetailPageProps) {
+	// Use hook for mutations and refetching, but use initialData if provided
+	const {
+		event: hookEvent,
+		loading,
+		error,
+	} = useEvent(initialData ? undefined : eventId)
 
-	if (loading) {
+	// Use initialData if provided, otherwise use hook data
+	const event = initialData || hookEvent
+
+	// Only show loading if we don't have initialData and are still loading
+	const isLoading = !initialData && loading
+
+	if (isLoading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 pt-20 pb-8">

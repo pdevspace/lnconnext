@@ -116,13 +116,21 @@ export function useBitcoiner(id?: string) {
 }
 
 // Multiple Bitcoiners Hook
-export function useBitcoiners(filters?: ListBitcoinerRequest['filters']) {
+export function useBitcoiners(
+	filters?: ListBitcoinerRequest['filters'],
+	enabled: boolean = true
+) {
 	const [bitcoiners, setBitcoiners] = useState<ListBitcoinerItem[]>([])
 	const [total, setTotal] = useState(0)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	const fetchBitcoiners = useCallback(async () => {
+		// Skip fetching if hook is disabled
+		if (!enabled) {
+			return
+		}
+
 		setLoading(true)
 		setError(null)
 
@@ -146,7 +154,7 @@ export function useBitcoiners(filters?: ListBitcoinerRequest['filters']) {
 		} finally {
 			setLoading(false)
 		}
-	}, [filters])
+	}, [filters, enabled])
 
 	const createBitcoiner = useCallback(
 		async (data: CreateBitcoinerRequest) => {

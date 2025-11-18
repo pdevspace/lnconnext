@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/contexts/ToastContext'
 import { useOrganizer } from '@/hooks/useOrganizer'
 import { useIsEditor } from '@/hooks/useUser'
+import { Organizer } from '@/types/organizer'
 
 import { useEffect } from 'react'
 
@@ -28,14 +29,30 @@ import { SocialMediaCard } from '../bitcoiner/SocialMediaCard'
 
 interface OrganizerDetailPageProps {
 	organizerId: string
+	initialData?: Organizer
 }
 
-export function OrganizerDetailPage({ organizerId }: OrganizerDetailPageProps) {
+export function OrganizerDetailPage({
+	organizerId,
+	initialData,
+}: OrganizerDetailPageProps) {
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
 	const { showError } = useToast()
-	const { organizer, loading, error, deleteOrganizer } =
-		useOrganizer(organizerId)
+
+	// Use hook for mutations and refetching, but use initialData if provided
+	const {
+		organizer: hookOrganizer,
+		loading,
+		error,
+		deleteOrganizer,
+	} = useOrganizer(initialData ? undefined : organizerId)
+
+	// Use initialData if provided, otherwise use hook data
+	const organizer = initialData || hookOrganizer
+
+	// Only show loading if we don't have initialData and are still loading
+	const isLoading = !initialData && loading
 
 	useEffect(() => {
 		if (error) {
@@ -59,7 +76,7 @@ export function OrganizerDetailPage({ organizerId }: OrganizerDetailPageProps) {
 		}
 	}
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">
@@ -81,7 +98,7 @@ export function OrganizerDetailPage({ organizerId }: OrganizerDetailPageProps) {
 		)
 	}
 
-	if (!organizer && !loading) {
+	if (!organizer && !isLoading) {
 		return (
 			<div className="min-h-screen bg-background">
 				<div className="container mx-auto px-4 py-8">

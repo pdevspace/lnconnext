@@ -116,13 +116,21 @@ export function useOrganizer(id?: string) {
 }
 
 // Multiple Organizers Hook
-export function useOrganizers(filters?: ListOrganizerRequest['filters']) {
+export function useOrganizers(
+	filters?: ListOrganizerRequest['filters'],
+	enabled: boolean = true
+) {
 	const [organizers, setOrganizers] = useState<ListOrganizerItem[]>([])
 	const [total, setTotal] = useState(0)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	const fetchOrganizers = useCallback(async () => {
+		// Skip fetching if hook is disabled
+		if (!enabled) {
+			return
+		}
+
 		setLoading(true)
 		setError(null)
 
@@ -146,7 +154,7 @@ export function useOrganizers(filters?: ListOrganizerRequest['filters']) {
 		} finally {
 			setLoading(false)
 		}
-	}, [filters])
+	}, [filters, enabled])
 
 	const createOrganizer = useCallback(
 		async (data: CreateOrganizerRequest) => {

@@ -12,7 +12,17 @@ export async function POST(request: NextRequest) {
 
 		const result = await controller.toResult()
 
-		return createSuccessResponse(result)
+		const response = createSuccessResponse(result)
+
+		// Add caching headers for client-side requests
+		// Cache for 30 seconds (shorter for list since it changes more frequently)
+		// Allow stale-while-revalidate for better performance
+		response.headers.set(
+			'Cache-Control',
+			'public, s-maxage=30, stale-while-revalidate=60'
+		)
+
+		return response
 	} catch (error) {
 		return handleError(error)
 	}

@@ -1,3 +1,4 @@
+import { getOrganizerDetail } from '@/cache/organizer'
 import { OrganizerDetailPage } from '@/components/pages/organizer/OrganizerDetailPage'
 
 interface OrganizerDetailPageRouteProps {
@@ -6,9 +7,24 @@ interface OrganizerDetailPageRouteProps {
 	}>
 }
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function OrganizerDetailPageRoute({
 	params,
 }: OrganizerDetailPageRouteProps) {
 	const { organizerId } = await params
-	return <OrganizerDetailPage organizerId={organizerId} />
+
+	try {
+		// Fetch data on the server
+		const organizer = await getOrganizerDetail(organizerId)
+
+		// Pass data as initial prop to avoid client-side fetch
+		return (
+			<OrganizerDetailPage organizerId={organizerId} initialData={organizer} />
+		)
+	} catch {
+		// If not found, still render the component
+		return <OrganizerDetailPage organizerId={organizerId} />
+	}
 }
