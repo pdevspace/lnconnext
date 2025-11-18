@@ -14,7 +14,6 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import {
 	CreateOrganizerRequest,
-	CreateOrganizerSocialMediaItem,
 	Organizer,
 	UpdateOrganizerRequest,
 } from '@/types/organizer'
@@ -64,8 +63,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 				urlLink: sm.urlLink,
 			})) || [],
 	})
-
-	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const addSocialMedia = () => {
 		setFormData((prev) => ({
@@ -133,9 +130,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 					required
 					className="mt-1"
 				/>
-				{errors.name && (
-					<p className="text-sm text-destructive mt-1">{errors.name}</p>
-				)}
 			</div>
 
 			{/* Bio Field */}
@@ -151,9 +145,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 					className="mt-1 min-h-[100px]"
 					rows={4}
 				/>
-				{errors.bio && (
-					<p className="text-sm text-destructive mt-1">{errors.bio}</p>
-				)}
 			</div>
 
 			{/* Website Field */}
@@ -170,9 +161,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 					placeholder="https://example.com (optional)"
 					className="mt-1"
 				/>
-				{errors.website && (
-					<p className="text-sm text-destructive mt-1">{errors.website}</p>
-				)}
 			</div>
 
 			{/* Social Media Section */}
@@ -231,11 +219,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 										placeholder="Optional display text"
 										className="mt-1"
 									/>
-									{errors[`social-${index}-displayText`] && (
-										<p className="text-xs text-destructive mt-1">
-											{errors[`social-${index}-displayText`]}
-										</p>
-									)}
 								</div>
 
 								<div className="md:col-span-2 flex items-end gap-2">
@@ -252,11 +235,6 @@ export const OrganizerForm: React.FC<OrganizerFormProps> = ({
 											placeholder="https://..."
 											className="mt-1"
 										/>
-										{errors[`social-${index}-urlLink`] && (
-											<p className="text-xs text-destructive mt-1">
-												{errors[`social-${index}-urlLink`]}
-											</p>
-										)}
 									</div>
 									<Button
 										type="button"

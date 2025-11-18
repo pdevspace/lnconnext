@@ -5,7 +5,7 @@ export interface User {
 	email: string
 	emailVerified: boolean
 	role: string
-	lastLoginAt: string | Date | null
+	lastLoginAt: Date | null
 }
 
 // Request Types

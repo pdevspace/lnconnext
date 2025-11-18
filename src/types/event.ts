@@ -21,8 +21,8 @@ export interface EventParticipant {
 export interface EventSection {
 	id: string
 	sectionName: string
-	startTime: string | Date | null
-	endTime: string | Date | null
+	startTime: Date | null
+	endTime: Date | null
 	spot: string
 	description: string
 	participants: EventSectionParticipant[]
@@ -46,8 +46,8 @@ export interface Event {
 	id: string
 	name: string
 	description: string
-	startDate: string | Date
-	endDate: string | Date | null
+	startDate: Date
+	endDate: Date | null
 	images: string[]
 	organizerId: string
 	organizerName: string
@@ -56,7 +56,7 @@ export interface Event {
 	websites: EventWebsite[]
 	sections: EventSection[]
 	eventParticipants: EventParticipant[]
-	updatedAt: string | Date
+	updatedAt: Date
 }
 
 // Request Types

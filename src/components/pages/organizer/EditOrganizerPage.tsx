@@ -6,9 +6,9 @@ import { useToast } from '@/contexts/ToastContext'
 import { useOrganizer } from '@/hooks/useOrganizer'
 import { UpdateOrganizerRequest } from '@/types/organizer'
 
-import { useRouter } from 'next/navigation'
-
 import { useEffect } from 'react'
+
+import { useRouter } from 'next/navigation'
 
 import { ArrowLeft } from 'lucide-react'
 

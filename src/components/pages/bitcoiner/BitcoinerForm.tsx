@@ -16,7 +16,6 @@ import { useOrganizers } from '@/hooks/useOrganizer'
 import {
 	Bitcoiner,
 	CreateBitcoinerRequest,
-	CreateBitcoinerSocialMediaItem,
 	UpdateBitcoinerRequest,
 } from '@/types/bitcoiner'
 
@@ -69,8 +68,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 			})) || [],
 		organizerId: bitcoiner?.organizerId || null,
 	})
-
-	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const selectedOrganizer = organizers.find(
 		(org) => org.id === formData.organizerId
@@ -142,9 +139,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 					required
 					className="mt-1"
 				/>
-				{errors.name && (
-					<p className="text-sm text-destructive mt-1">{errors.name}</p>
-				)}
 			</div>
 
 			{/* Bio Field */}
@@ -160,9 +154,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 					className="mt-1 min-h-[100px]"
 					rows={4}
 				/>
-				{errors.bio && (
-					<p className="text-sm text-destructive mt-1">{errors.bio}</p>
-				)}
 			</div>
 
 			{/* Organizer Section */}
@@ -275,11 +266,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 										placeholder="Optional display text"
 										className="mt-1"
 									/>
-									{errors[`social-${index}-displayText`] && (
-										<p className="text-xs text-destructive mt-1">
-											{errors[`social-${index}-displayText`]}
-										</p>
-									)}
 								</div>
 
 								<div className="md:col-span-2 flex items-end gap-2">
@@ -296,11 +282,6 @@ export const BitcoinerForm: React.FC<BitcoinerFormProps> = ({
 											placeholder="https://..."
 											className="mt-1"
 										/>
-										{errors[`social-${index}-urlLink`] && (
-											<p className="text-xs text-destructive mt-1">
-												{errors[`social-${index}-urlLink`]}
-											</p>
-										)}
 									</div>
 									<Button
 										type="button"

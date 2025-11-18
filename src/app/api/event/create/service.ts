@@ -271,7 +271,7 @@ export class CreateEvent extends ApiController<
 			)
 
 			// section participants
-			let sectionParticipantIds: string[] = []
+			const sectionParticipantIds: string[] = []
 			if (!Array.isArray(section.participantIds)) {
 				throw new ValidationError(
 					`Section ${trimmedSectionName}: participantIds must be an array`
@@ -405,7 +405,7 @@ export class CreateEvent extends ApiController<
 							},
 						})),
 					},
-				} as any,
+				},
 				include: {
 					websites: true,
 					sections: {

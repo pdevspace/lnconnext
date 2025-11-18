@@ -140,7 +140,7 @@ export class ListEvent extends ApiController<
 			const total = await prisma.event.count({ where })
 
 			// Get events
-			const events = (await prisma.event.findMany({
+			const events = await prisma.event.findMany({
 				where,
 				include: {
 					organizer: true,
@@ -152,10 +152,10 @@ export class ListEvent extends ApiController<
 				orderBy: {
 					startDate: 'asc',
 				},
-			})) as any
+			})
 
 			return {
-				events: events.map((event: any) => ({
+				events: events.map((event) => ({
 					id: event.id,
 					name: event.name,
 					startDate: event.startDate,

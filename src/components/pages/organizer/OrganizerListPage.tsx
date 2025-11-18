@@ -23,7 +23,7 @@ export function OrganizerListPage() {
 		selectedPlatform: '',
 	})
 
-	const { organizers, loading, error, fetchOrganizers } = useOrganizers(filters)
+	const { organizers, loading, error } = useOrganizers(filters)
 
 	useEffect(() => {
 		if (error) {

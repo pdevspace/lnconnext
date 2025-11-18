@@ -16,8 +16,6 @@ import { useBitcoiners } from '@/hooks/useBitcoiner'
 import { useOrganizers } from '@/hooks/useOrganizer'
 import {
 	CreateEventRequest,
-	CreateEventSectionItem,
-	CreateEventWebsiteItem,
 	Event,
 	UpdateEventRequest,
 	WEBSITE_TYPE_OPTIONS,
@@ -200,7 +198,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 		)
 	)
 
-	const [errors, setErrors] = useState<Record<string, string>>({})
 	const [showLocation, setShowLocation] = useState(!!event?.location)
 
 	const selectedOrganizer = organizers.find(
@@ -320,21 +317,16 @@ export const EventForm: React.FC<EventFormProps> = ({
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 
-		setErrors({})
-
 		// Validation
 		if (!formData.name.trim()) {
-			setErrors({ name: 'Name is required' })
 			return
 		}
 
 		if (!formData.startDate) {
-			setErrors({ startDate: 'Start date is required' })
 			return
 		}
 
 		if (!formData.startTime) {
-			setErrors({ startTime: 'Start time is required' })
 			return
 		}
 
@@ -347,12 +339,10 @@ export const EventForm: React.FC<EventFormProps> = ({
 			formData.endTime &&
 			new Date(`${formData.endDate}T${formData.endTime}`) <= startDateTime
 		) {
-			setErrors({ endDate: 'End date/time must be after start date/time' })
 			return
 		}
 
 		if (!formData.organizerId) {
-			setErrors({ organizerId: 'Organizer is required' })
 			return
 		}
 
@@ -381,7 +371,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 		})
 
 		if (Object.keys(websiteErrors).length > 0) {
-			setErrors(websiteErrors)
 			return
 		}
 
@@ -403,7 +392,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 		})
 
 		if (Object.keys(sectionErrors).length > 0) {
-			setErrors(sectionErrors)
 			return
 		}
 
@@ -586,16 +574,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 											wrapperClassName="w-full"
 										/>
 									</div>
-									{errors.startDate && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.startDate}
-										</p>
-									)}
-									{errors.startTime && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.startTime}
-										</p>
-									)}
 								</div>
 
 								<div>
@@ -631,16 +609,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 											isClearable
 										/>
 									</div>
-									{errors.endDate && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.endDate}
-										</p>
-									)}
-									{errors.endTime && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.endTime}
-										</p>
-									)}
 								</div>
 							</CardContent>
 						</Card>
@@ -788,11 +756,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 														placeholder="Optional display text"
 														className="mt-1"
 													/>
-													{errors[`website-${index}-displayText`] && (
-														<p className="text-xs text-destructive mt-1">
-															{errors[`website-${index}-displayText`]}
-														</p>
-													)}
 												</div>
 												<div className="flex items-end gap-2">
 													<div className="flex-1">
@@ -811,11 +774,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 															placeholder="https://..."
 															className="mt-1"
 														/>
-														{errors[`website-${index}-url`] && (
-															<p className="text-xs text-destructive mt-1">
-																{errors[`website-${index}-url`]}
-															</p>
-														)}
 													</div>
 													<Button
 														type="button"
@@ -871,11 +829,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 										required
 										className="mt-1"
 									/>
-									{errors.name && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.name}
-										</p>
-									)}
 								</div>
 
 								<div>
@@ -930,11 +883,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 											/>
 										)}
 									</div>
-									{errors.organizerId && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.organizerId}
-										</p>
-									)}
 								</div>
 
 								<div>
@@ -951,11 +899,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 										className="mt-1 min-h-[100px]"
 										rows={4}
 									/>
-									{errors.description && (
-										<p className="text-sm text-destructive mt-1">
-											{errors.description}
-										</p>
-									)}
 								</div>
 							</CardContent>
 						</Card>
@@ -1154,11 +1097,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 															}
 															className="mt-1"
 														/>
-														{errors[`section-${index}-sectionName`] && (
-															<p className="text-xs text-destructive mt-1">
-																{errors[`section-${index}-sectionName`]}
-															</p>
-														)}
 													</div>
 													<div>
 														<Label
@@ -1215,11 +1153,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 																isClearable
 															/>
 														</div>
-														{errors[`section-${index}-startTime`] && (
-															<p className="text-xs text-destructive mt-1">
-																{errors[`section-${index}-startTime`]}
-															</p>
-														)}
 													</div>
 													<div>
 														<Label
@@ -1266,11 +1199,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 																}
 															/>
 														</div>
-														{errors[`section-${index}-endTime`] && (
-															<p className="text-xs text-destructive mt-1">
-																{errors[`section-${index}-endTime`]}
-															</p>
-														)}
 													</div>
 												</div>
 												<div>
@@ -1509,9 +1437,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 									required
 									className="mt-1"
 								/>
-								{errors.name && (
-									<p className="text-sm text-destructive mt-1">{errors.name}</p>
-								)}
 							</div>
 
 							<div>
@@ -1531,11 +1456,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 									className="mt-1 min-h-[100px]"
 									rows={4}
 								/>
-								{errors.description && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.description}
-									</p>
-								)}
 							</div>
 						</CardContent>
 					</Card>
@@ -1670,11 +1590,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 										</Link>
 									)}
 								</div>
-								{errors.organizerId && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.organizerId}
-									</p>
-								)}
 							</div>
 						</CardContent>
 					</Card>
@@ -1714,16 +1629,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 										wrapperClassName="w-full"
 									/>
 								</div>
-								{errors.startDate && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.startDate}
-									</p>
-								)}
-								{errors.startTime && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.startTime}
-									</p>
-								)}
 							</div>
 
 							<div>
@@ -1759,16 +1664,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 										wrapperClassName="w-full"
 									/>
 								</div>
-								{errors.endDate && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.endDate}
-									</p>
-								)}
-								{errors.endTime && (
-									<p className="text-sm text-destructive mt-1">
-										{errors.endTime}
-									</p>
-								)}
 							</div>
 						</CardContent>
 					</Card>
@@ -1841,11 +1736,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 													placeholder="Optional display text"
 													className="mt-1"
 												/>
-												{errors[`website-${index}-displayText`] && (
-													<p className="text-xs text-destructive mt-1">
-														{errors[`website-${index}-displayText`]}
-													</p>
-												)}
 											</div>
 											<div className="flex items-end gap-2">
 												<div className="flex-1">
@@ -1864,11 +1754,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 														placeholder="https://..."
 														className="mt-1"
 													/>
-													{errors[`website-${index}-url`] && (
-														<p className="text-xs text-destructive mt-1">
-															{errors[`website-${index}-url`]}
-														</p>
-													)}
 												</div>
 												<Button
 													type="button"
@@ -2118,11 +2003,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 													}
 													className="mt-1"
 												/>
-												{errors[`website-${index}-displayText`] && (
-													<p className="text-xs text-destructive mt-1">
-														{errors[`website-${index}-displayText`]}
-													</p>
-												)}
 											</div>
 											<div className="md:col-span-2 flex items-end gap-2">
 												<div className="flex-1">
@@ -2141,11 +2021,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 														placeholder="https://..."
 														className="mt-1"
 													/>
-													{errors[`website-${index}-url`] && (
-														<p className="text-xs text-destructive mt-1">
-															{errors[`website-${index}-url`]}
-														</p>
-													)}
 												</div>
 												<Button
 													type="button"
@@ -2222,11 +2097,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 														}
 														className="mt-1"
 													/>
-													{errors[`section-${index}-sectionName`] && (
-														<p className="text-xs text-destructive mt-1">
-															{errors[`section-${index}-sectionName`]}
-														</p>
-													)}
 												</div>
 												<div>
 													<Label
@@ -2281,11 +2151,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 															isClearable
 														/>
 													</div>
-													{errors[`section-${index}-startTime`] && (
-														<p className="text-xs text-destructive mt-1">
-															{errors[`section-${index}-startTime`]}
-														</p>
-													)}
 												</div>
 												<div>
 													<Label
@@ -2330,11 +2195,6 @@ export const EventForm: React.FC<EventFormProps> = ({
 															}
 														/>
 													</div>
-													{errors[`section-${index}-endTime`] && (
-														<p className="text-xs text-destructive mt-1">
-															{errors[`section-${index}-endTime`]}
-														</p>
-													)}
 												</div>
 											</div>
 											<div>

@@ -13,7 +13,7 @@ export interface Bitcoiner {
 	socialMedia: BitcoinerSocialMedia[]
 	organizerId: string | null
 	organizerName: string | null
-	updatedAt: string | Date
+	updatedAt: Date
 }
 
 // Request Types

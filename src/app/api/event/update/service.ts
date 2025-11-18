@@ -276,7 +276,7 @@ export class UpdateEvent extends ApiController<
 			)
 
 			// section participants
-			let sectionParticipantIds: string[] = []
+			const sectionParticipantIds: string[] = []
 			if (!Array.isArray(section.participantIds)) {
 				throw new ValidationError(
 					`Section ${trimmedSectionName}: participantIds must be an array`
@@ -309,6 +309,7 @@ export class UpdateEvent extends ApiController<
 		)
 
 		// Normalize payload
+		payload.id = id
 		payload.name = trimmedName
 		payload.description = trimmedDescription
 		payload.startDate = startDate
@@ -352,7 +353,7 @@ export class UpdateEvent extends ApiController<
 			}
 
 			// Get existing event
-			const existingEvent = (await prisma.event.findUnique({
+			const existingEvent = await prisma.event.findUnique({
 				where: {
 					id: this.payload.id,
 				},
@@ -365,7 +366,7 @@ export class UpdateEvent extends ApiController<
 						},
 					},
 				},
-			})) as any
+			})
 
 			if (!existingEvent) {
 				throw new NotFoundError('Event not found')
@@ -381,8 +382,8 @@ export class UpdateEvent extends ApiController<
 				const location = await prisma.location.create({
 					data: {
 						buildingName: this.payload.location.buildingName,
-						address: this.payload.location.address as any,
-						city: this.payload.location.city as any,
+						address: this.payload.location.address || null,
+						city: this.payload.location.city || null,
 						googleMapsUrl: this.payload.location.googleMapsUrl,
 						activeFlag: 'A',
 						updatedByUid: this.user.uid,
@@ -413,27 +414,27 @@ export class UpdateEvent extends ApiController<
 							}
 						: undefined,
 					websites: {
-						create: existingEvent.websites.map((website: any) => ({
+						create: existingEvent.websites.map((website) => ({
 							url: website.url,
 							displayText: website.displayText,
 							type: website.type,
 						})),
 					},
 					sections: {
-						create: existingEvent.sections.map((section: any) => ({
+						create: existingEvent.sections.map((section) => ({
 							sectionName: section.sectionName,
 							startTime: section.startTime,
 							endTime: section.endTime,
 							spot: section.spot,
 							description: section.description,
 							participants: {
-								create: section.participants.map((participant: any) => ({
+								create: section.participants.map((participant) => ({
 									bitcoinerId: participant.bitcoinerId,
 								})),
 							},
 						})),
 					},
-				} as any,
+				},
 			})
 
 			// Step 2: Edit the original item to be new details
@@ -484,7 +485,7 @@ export class UpdateEvent extends ApiController<
 							},
 						})),
 					},
-				} as any,
+				},
 			})
 
 			return {}

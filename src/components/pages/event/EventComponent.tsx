@@ -387,7 +387,9 @@ function EventHeader({ event, status }: EventHeaderProps) {
 	}
 
 	const priceDisplay = event.register
-		? event.register.price && event.register.price > 0 && event.register.currency
+		? event.register.price &&
+			event.register.price > 0 &&
+			event.register.currency
 			? `${event.register.price} ${event.register.currency}`
 			: event.register.price === 0 || !event.register.price
 				? 'Free'

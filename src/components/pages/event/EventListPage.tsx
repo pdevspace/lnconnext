@@ -22,7 +22,7 @@ export default function EventListPage() {
 		searchTerm: '',
 	})
 
-	const { events, loading, error, fetchEvents } = useEvents(filters)
+	const { events, loading, error } = useEvents(filters)
 
 	useEffect(() => {
 		if (error) {

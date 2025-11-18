@@ -18,7 +18,7 @@ export interface Organizer {
 	website: string
 	socialMedia: OrganizerSocialMedia[]
 	members: OrganizerBitcoinerItem[]
-	updatedAt: string | Date
+	updatedAt: Date
 }
 
 // Request Types
