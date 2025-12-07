@@ -1,8 +1,7 @@
 import { getEventsList } from '@/cache/event'
 import EventListPage from '@/components/pages/event/EventListPage'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 360 // Revalidate every 360 seconds
 
 export default async function EventListPageRoute() {
 	// Fetch data on the server

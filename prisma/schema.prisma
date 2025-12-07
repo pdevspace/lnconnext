@@ -51,6 +51,10 @@ model Bitcoiner {
 	sectionBitcoiners SectionBitcoiner[]
 
 	@@map("bitcoiners")
+	@@index([name])
+	@@index([updatedAt])
+	@@index([activeFlag])
+	@@index([organizerId])
 }
 
 model BitcoinerSocialMedia {
@@ -64,6 +68,8 @@ model BitcoinerSocialMedia {
 	bitcoiner Bitcoiner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
 	@@map("bitcoiner_social_media")
+	@@index([platform])
+	@@index([ownerId])
 }
 
 model Organizer {
@@ -82,6 +88,9 @@ model Organizer {
 	events Event[]
 
 	@@map("organizers")
+	@@index([name])
+	@@index([updatedAt])
+	@@index([activeFlag])
 }
 
 model OrganizerSocialMedia {
@@ -95,6 +104,8 @@ model OrganizerSocialMedia {
 	organizer Organizer @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
 	@@map("organizer_social_media")
+	@@index([platform])
+	@@index([ownerId])
 }
 
 model Event {
@@ -121,6 +132,13 @@ model Event {
 	register EventRegister?
 
 	@@map("events")
+	@@index([name])
+	@@index([startDate])
+	@@index([endDate])
+	@@index([updatedAt])
+	@@index([activeFlag])
+	@@index([organizerId])
+	@@index([locationId])
 }
 
 model Location {
@@ -138,6 +156,8 @@ model Location {
 	events Event[]
 
 	@@map("locations")
+	@@index([city])
+	@@index([activeFlag])
 }
 
 model EventSection {
@@ -154,6 +174,7 @@ model EventSection {
 	participants SectionBitcoiner[]
 
 	@@map("event_sections")
+	@@index([eventId])
 }
 
 model SectionBitcoiner {
@@ -167,6 +188,8 @@ model SectionBitcoiner {
 
 	@@unique([sectionId, bitcoinerId])
 	@@map("section_bitcoiners")
+	@@index([sectionId])
+	@@index([bitcoinerId])
 }
 
 model EventRegister {
@@ -194,4 +217,6 @@ model Website {
 	event Event? @relation("EventWebsites", fields: [eventId], references: [id], onDelete: Cascade)
 
 	@@map("websites")
+	@@index([eventId])
+	@@index([type])
 }

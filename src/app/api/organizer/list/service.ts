@@ -66,7 +66,7 @@ export class ListOrganizer extends ApiController<
 	async toResult(): Promise<ListOrganizerResponse> {
 		try {
 			const filters = this.payload.filters || {}
-			const { searchTerm, selectedPlatform, limit = 100, offset = 0 } = filters
+			const { searchTerm, selectedPlatform, limit = 20, offset = 0 } = filters
 
 			// Build where clause
 			const where: {

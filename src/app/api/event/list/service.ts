@@ -93,7 +93,7 @@ export class ListEvent extends ApiController<
 				locationId,
 				startDateFrom,
 				startDateTo,
-				limit = 100,
+				limit = 20,
 				offset = 0,
 			} = filters
 

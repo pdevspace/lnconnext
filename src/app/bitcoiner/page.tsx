@@ -1,8 +1,7 @@
 import { getBitcoinersList } from '@/cache/bitcoiner'
 import { BitcoinerListPage } from '@/components/pages/bitcoiner/BitcoinerListPage'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 360 // Revalidate every 360 seconds
 
 export default async function BitcoinerPageRoute() {
 	// Fetch data on the server
