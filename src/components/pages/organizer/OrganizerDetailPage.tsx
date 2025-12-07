@@ -7,6 +7,7 @@ import { useToast } from '@/contexts/ToastContext'
 import { useOrganizer } from '@/hooks/useOrganizer'
 import { useIsEditor } from '@/hooks/useUser'
 import { Organizer } from '@/types/organizer'
+import { useAuth } from '@/utils/AuthContext'
 
 import { useEffect } from 'react'
 
@@ -39,6 +40,7 @@ export function OrganizerDetailPage({
 	const router = useRouter()
 	const { isEditor } = useIsEditor()
 	const { showError } = useToast()
+	const { user, loading: authLoading } = useAuth()
 
 	// Use hook for mutations and refetching, but use initialData if provided
 	const {
@@ -74,6 +76,39 @@ export function OrganizerDetailPage({
 				alert('Failed to delete organizer')
 			}
 		}
+	}
+
+	// Show auth check screen
+	if (authLoading) {
+		return (
+			<div className="min-h-screen bg-background">
+				<div className="container mx-auto px-4 py-8">
+					<div className="max-w-4xl mx-auto">
+						<div className="animate-pulse">
+							<div className="h-8 bg-muted rounded w-32 mb-6"></div>
+							<div className="flex items-start gap-6 mb-8">
+								<div className="w-24 h-24 bg-muted rounded-full"></div>
+								<div className="flex-1">
+									<div className="h-8 bg-muted rounded w-64 mb-2"></div>
+									<div className="h-4 bg-muted rounded w-32"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	// Not authenticated - redirect to list page
+	useEffect(() => {
+		if (!authLoading && !user) {
+			router.push('/organizer')
+		}
+	}, [authLoading, user, router])
+
+	if (!user) {
+		return null
 	}
 
 	if (isLoading) {
