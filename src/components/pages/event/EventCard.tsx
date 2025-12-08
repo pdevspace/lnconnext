@@ -1,13 +1,14 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ListEventItem } from '@/types/event'
 
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Calendar, MapPin } from 'lucide-react'
+import { Calendar, MapPin, Share2 } from 'lucide-react'
 
 interface EventCardProps {
 	event: ListEventItem
@@ -15,6 +16,21 @@ interface EventCardProps {
 
 export const EventCard: React.FC<EventCardProps> = ({ event }) => {
 	const isUpcoming = new Date(event.startDate) > new Date()
+
+	const handleShare = (e: React.MouseEvent) => {
+		e.preventDefault()
+		e.stopPropagation()
+
+		const url = `${window.location.origin}/event/${event.id}`
+		const text = `Check out ${event.name}`
+
+		// Facebook share
+		window.open(
+			`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+			'_blank',
+			'width=600,height=400'
+		)
+	}
 
 	return (
 		<Link href={`/event/${event.id}`} className="block">
@@ -40,9 +56,20 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
 								<h3 className="font-semibold text-lg text-foreground truncate group-hover:text-primary transition-colors">
 									{event.name}
 								</h3>
-								<Badge variant={isUpcoming ? 'default' : 'secondary'}>
-									{isUpcoming ? 'Upcoming' : 'Past'}
-								</Badge>
+								<div className="flex items-center gap-2 flex-shrink-0 ml-2">
+									<Badge variant={isUpcoming ? 'default' : 'secondary'}>
+										{isUpcoming ? 'Upcoming' : 'Past'}
+									</Badge>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="h-8 w-8 p-0"
+										onClick={handleShare}
+										title="Share on Facebook"
+									>
+										<Share2 className="w-4 h-4" />
+									</Button>
+								</div>
 							</div>
 
 							<div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
